@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#1a1a1a"/>
+  <g fill="none" stroke="#ffe600" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity=".85">
+    <path d="M96 238c0-22 14-30 34-32l52-4 30-38c6-8 18-10 26-4l18 14c22 16 40 24 66 30 22 5 34 18 34 34v14H96z"/>
+    <path d="M96 256h264"/>
+  </g>
+  <text x="200" y="320" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-size="26" font-weight="700" fill="#a3a3a3">FOTO EM BREVE</text>
+</svg>
