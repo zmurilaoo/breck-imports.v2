@@ -5,7 +5,6 @@ const SELECTOR = [
   ".section-title",
   ".section-banner",
   ".product-card",
-  ".home-category",
   ".service-item",
   ".faq-item",
   ".testimonial",

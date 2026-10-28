@@ -28,7 +28,10 @@ export function CookieBanner() {
 
 export function WhatsAppButton() {
   return (
-    <a className="whatsapp-float" href={contact.whatsappUrl} target="_blank" rel="noreferrer" aria-label="Fale conosco pelo WhatsApp">
+    <a
+      className="whatsapp-float"
+      href={`${contact.whatsappUrl}?text=${encodeURIComponent(contact.whatsappMessage)}`}
+      target="_blank" rel="noreferrer" aria-label="Fale conosco pelo WhatsApp">
       <WhatsAppIcon size={30} />
     </a>
   );

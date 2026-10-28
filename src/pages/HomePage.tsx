@@ -5,7 +5,7 @@ import {
   Hero,
   InstagramSection,
   ProductSection,
-  PromoProducts,
+  StoreSection,
 } from "../components/home/HomeSections";
 import { getSection } from "../data/catalog";
 import { banners } from "../data/site";
@@ -19,22 +19,28 @@ export function HomePage() {
       <CategoryCarousel />
       <ProductSection
         label="2 pares por R$500"
+        title="AS MAIS COMPRADAS"
+        subtitle="As chuteiras que a galera mais tá comprando"
         products={getSection("promo500")}
-        banner={banners.promo500}
+        banner={[banners.promo500, banners.meia]}
       />
       <ProductSection
-        label="2 pares por R$350 — Air Max TN"
-        products={getSection("tn350")}
-        cta={{ label: "VER MODELOS DA PROMOÇÃO", to: "/categoria/2-pares-350" }}
+        label="Chuteiras Campo"
+        title="CHUTEIRAS CAMPO"
+        products={getSection("chuteirasCampo")}
+        cta={{ label: "VER TODAS DE CAMPO", to: "/categoria/chuteira-campo" }}
       />
       <ProductSection
-        label="2 pares por R$400 — Air Max DN8"
-        products={getSection("dn8400")}
-        cta={{ label: "VER TODOS DN8 DISPONÍVEIS", to: "/categoria/air-max-dn8" }}
+        label="Chuteiras Society"
+        title="CHUTEIRAS SOCIETY"
+        products={getSection("chuteirasSociety")}
+        cta={{ label: "VER TODAS SOCIETY", to: "/categoria/chuteira-society" }}
       />
       <ProductSection
-        label="Chuteiras"
-        products={getSection("chuteiras")}
+        label="Chuteiras Futsal"
+        title="CHUTEIRAS FUTSAL"
+        products={getSection("chuteirasFutsal")}
+        cta={{ label: "VER TODAS FUTSAL", to: "/categoria/chuteira-futsal" }}
       />
       <ProductSection
         label="Novidades"
@@ -42,10 +48,10 @@ export function HomePage() {
         subtitle="Se liga nos novos lançamentos abaixo"
         products={getSection("novidades")}
       />
-      <PromoProducts products={getSection("esportivos")} />
       <GridBanner />
       <Faq />
       <InstagramSection />
+      <StoreSection />
     </>
   );
 }

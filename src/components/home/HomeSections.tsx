@@ -2,10 +2,11 @@ import { useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { banners, contact, faq, hero, homeCategories, services, testimonials } from "../../data/site";
 import type { Banner, Product } from "../../types";
-import { InstagramIcon, MinusIcon, PlusIcon, StarIcon } from "../Icons";
+import { InstagramIcon, MinusIcon, PinIcon, PlusIcon, StarIcon, WhatsAppIcon } from "../Icons";
 import { ProductCard } from "../product/ProductCard";
 import { Carousel } from "../ui/Carousel";
 import { BrandBanner } from "./BrandBanner";
+import { useInView } from "../../hooks/useInView";
 
 export function Hero() {
   return (
@@ -51,16 +52,39 @@ export function ServiceBanners() {
 }
 
 export function CategoryCarousel() {
+  const [ref, inView] = useInView<HTMLElement>(0.3);
   return (
-    <section className="section home-categories" aria-label="Categorias">
+    <section
+      ref={ref}
+      className={`section home-categories${inView ? " is-live" : ""}`}
+      aria-label="Categorias"
+    >
+      {/* Filtro que deforma o fundo das bolinhas em chamas */}
+      <svg className="cat-fire-defs" aria-hidden="true">
+        <filter id="cat-fire">
+          <feTurbulence type="fractalNoise" baseFrequency="0.05 0.11" numOctaves="3" seed="7" />
+          <feDisplacementMap in="SourceGraphic" scale="32" />
+        </filter>
+      </svg>
       <div className="container">
+        <p className="cat-shout cat-shout-title">
+          <CrownIcon />
+          Escolhe a sua!
+        </p>
         <Carousel variant="categories" label="Categorias">
-          {homeCategories.map((c) => (
-            <Link key={c.name} to={c.to} className="home-category">
+          {homeCategories.map((c, i) => (
+            <Link
+              key={c.name}
+              to={c.to}
+              className="home-category"
+              aria-label={c.name}
+              style={{ "--i": i } as CSSProperties}
+            >
               <div className="home-category-image">
-                <img src={c.image} alt="" loading="lazy" />
+                <span className="home-category-shoe">
+                  <img src={c.image} alt="" loading="lazy" />
+                </span>
               </div>
-              <span className="home-category-name">{c.name}</span>
             </Link>
           ))}
         </Carousel>
@@ -69,19 +93,40 @@ export function CategoryCarousel() {
   );
 }
 
+/** Coroinha desenhada à mão, igual às do hero */
+function CrownIcon({ className = "cat-crown" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 40 30" aria-hidden="true">
+      <path d="M4 26 2 6l11 9L20 2l7 13 11-9-2 20Z" />
+    </svg>
+  );
+}
+
 interface ProductSectionProps {
   products: Product[];
   label: string;
   title?: string;
   subtitle?: string;
-  banner?: Banner;
+  /** Um ou mais banners empilhados acima dos produtos */
+  banner?: Banner | Banner[];
   cta?: { label: string; to: string };
 }
 
 export function ProductSection({ products, label, title, subtitle, banner, cta }: ProductSectionProps) {
+  const bannerList = banner ? ([] as Banner[]).concat(banner) : [];
   return (
     <section className="section product-section" aria-label={label}>
-      {banner && <BrandBanner banner={banner} className="section-banner" />}
+      {bannerList.length === 1 && <BrandBanner banner={bannerList[0]} className="section-banner" />}
+      {/* Mais de um banner: mesmo lugar, com setas para trocar */}
+      {bannerList.length > 1 && (
+        <div className="section-banner banner-slider">
+          <Carousel variant="hero" label={`Banners — ${label}`} dots>
+            {bannerList.map((b) => (
+              <BrandBanner key={b.image} banner={b} />
+            ))}
+          </Carousel>
+        </div>
+      )}
       <div className="container">
         {title && (
           <div className="section-title">
@@ -190,6 +235,65 @@ export function Testimonials() {
             </figure>
           ))}
         </Carousel>
+      </div>
+    </section>
+  );
+}
+
+/** Foto da loja física: inclina seguindo o mouse, com chamada para visitar e falar no WhatsApp */
+export function StoreSection() {
+  const [tilt, setTilt] = useState({ x: 0, y: 0, active: false });
+  const visitMessage = encodeURIComponent(
+    "Olá, Breck Imports! Vi a loja de vocês no site e quero passar aí pra conhecer. Qual o horário de hoje?",
+  );
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address + ", São Paulo")}`;
+
+  return (
+    <section className="section store-section" aria-label="Nossa loja">
+      <div className="container store-inner">
+        <div
+          className={`store-photo${tilt.active ? " is-tilting" : ""}`}
+          style={{ "--rx": `${tilt.y * -8}deg`, "--ry": `${tilt.x * 10}deg`, "--mx": `${(tilt.x + 0.5) * 100}%`, "--my": `${(tilt.y + 0.5) * 100}%` } as CSSProperties}
+          onMouseMove={(e) => {
+            const r = e.currentTarget.getBoundingClientRect();
+            setTilt({ x: (e.clientX - r.left) / r.width - 0.5, y: (e.clientY - r.top) / r.height - 0.5, active: true });
+          }}
+          onMouseLeave={() => setTilt({ x: 0, y: 0, active: false })}
+        >
+          <img src="/images/loja-breck.webp" alt="Fachada da loja Breck Imports com a parede cheia de chuteiras" loading="lazy" />
+          <span className="store-photo-shine" aria-hidden="true" />
+          <span className="store-badge">
+            <PinIcon size={14} /> Loja física
+          </span>
+        </div>
+        <div className="store-info">
+          <p className="cat-shout store-shout">
+            <CrownIcon />
+            Vem pra loja!
+          </p>
+          <h2>Conheça a Breck Imports pessoalmente</h2>
+          <p className="store-text">
+            Parede cheia de chuteiras pra você ver de perto, calçar e sair jogando. Chama no WhatsApp e já garante a sua.
+          </p>
+          <ul className="store-details">
+            <li>
+              <PinIcon size={18} />
+              <span>{contact.address}</span>
+            </li>
+            <li>
+              <WhatsAppIcon size={18} />
+              <span>{contact.phoneDisplay}</span>
+            </li>
+          </ul>
+          <div className="store-actions">
+            <a className="btn btn-primary store-btn" href={`${contact.whatsappUrl}?text=${visitMessage}`} target="_blank" rel="noreferrer">
+              <WhatsAppIcon size={18} /> Chamar no WhatsApp
+            </a>
+            <a className="btn store-btn store-btn-ghost" href={mapsUrl} target="_blank" rel="noreferrer">
+              <PinIcon size={18} /> Como chegar
+            </a>
+          </div>
+        </div>
       </div>
     </section>
   );

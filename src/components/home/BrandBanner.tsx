@@ -1,29 +1,8 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import type { Banner, BannerMascot } from "../../types";
 import { Mascot } from "../Mascot";
-
-/** Marca o banner como "ao vivo" quando entra na tela, disparando as animações de entrada. */
-function useInView<T extends Element>() {
-  const ref = useRef<T>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.35 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-  return [ref, inView] as const;
-}
+import { useInView } from "../../hooks/useInView";
 
 function BannerMascotLayer({ mascot }: { mascot: BannerMascot }) {
   return (

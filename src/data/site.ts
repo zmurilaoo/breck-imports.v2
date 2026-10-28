@@ -1,11 +1,13 @@
 import type { Banner, NavLink } from "../types";
 
 export const contact = {
-  whatsapp: "5511990158763",
-  whatsappUrl: "https://wa.me/5511990158763",
-  phoneDisplay: "(11) 99015-8763",
-  phoneShort: "11 99015-8763",
-  phoneHref: "tel:+5511990158763",
+  whatsapp: "5511960259062",
+  whatsappUrl: "https://wa.me/5511960259062",
+  /** Mensagem que já vem escrita quando o cliente abre o WhatsApp pelo botão flutuante ou pela seção da loja */
+  whatsappMessage: "Olá, Breck Imports! Vim pelo site e quero saber mais sobre as chuteiras. Pode me ajudar? ⚽",
+  phoneDisplay: "(11) 96025-9062",
+  phoneShort: "11 96025-9062",
+  phoneHref: "tel:+5511960259062",
   site: "breckimports.com.br",
   siteUrl: "https://breckimports.com.br",
   address: "Rua Conselheiro Belisário 41, Shopping Stunt (ST1-177,178)",
@@ -83,6 +85,9 @@ export const categoryNames: Record<string, string> = {
   "2-pares-400": "2 Pares por R$400 (DN8)",
   "2-pares-500": "2 Pares por R$500",
   chuteiras: "Chuteiras",
+  "chuteira-campo": "Chuteiras Campo",
+  "chuteira-society": "Chuteiras Society",
+  "chuteira-futsal": "Chuteiras Futsal",
   mercurial: "Mercurial",
   esportivos: "Esportivos",
   adizero: "Adizero",
@@ -92,6 +97,9 @@ export const categoryNames: Record<string, string> = {
   vomero: "Vomero",
   "on-cloud": "On Cloud",
   nike: "Nike",
+  adidas: "Adidas",
+  puma: "Puma",
+  joma: "Joma",
   "air-max-tn": "Air Max Tn",
   "air-max-dn": "Air Max Dn",
   "air-max-dn8": "Air Max Dn8",
@@ -130,6 +138,11 @@ export const banners = {
   promo500: {
     image: "/images/breck-imports-colecao-chuteira.png",
     alt: "Coleção de chuteiras — ver todas",
+    to: "/categoria/chuteiras",
+  },
+  meia: {
+    image: "/images/breck-chuteira-meia.webp",
+    alt: "Leve uma chuteira e ganhe um par de meia grátis",
     to: "/categoria/chuteiras",
   },
   tn350: {
@@ -171,11 +184,11 @@ export const services = [
 ];
 
 export const homeCategories = [
-  { name: "Air Max Tn", image: "/images/sem-foto.svg", to: "/categoria/air-max-tn" },
-  { name: "Air Max Dn", image: "/images/sem-foto.svg", to: "/categoria/air-max-dn" },
-  { name: "Air Max 95", image: "/images/sem-foto.svg", to: "/categoria/air-max-95" },
-  { name: "Mizuno", image: "/images/sem-foto.svg", to: "/categoria/mizuno" },
-  { name: "Mercurial", image: "/images/sem-foto.svg", to: "/categoria/mercurial" },
+  { name: "Mercurial", image: "/images/categorias/breck-chuteira1.png", to: "/categoria/mercurial" },
+  { name: "Chuteiras", image: "/images/categorias/breck-chuteira2.png", to: "/categoria/chuteiras" },
+  { name: "Phantom", image: "/images/categorias/chuteira-phantom.png", to: "/categoria/chuteiras" },
+  { name: "Chuteira 4", image: "/images/categorias/breck-chuteira4.png", to: "/categoria/chuteiras" },
+  { name: "Chuteira 5", image: "/images/categorias/breck-chuteira5.png", to: "/categoria/chuteiras" },
 ];
 
 export const faq = [

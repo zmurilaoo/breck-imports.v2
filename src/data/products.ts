@@ -1,14 +1,15 @@
 // Catálogo de produtos da loja
 import type { Product } from "../types";
+import { chuteiras } from "./chuteiras";
 
-export const products: Product[] = 
+const baseProducts: Product[] = 
 [
   {
     "slug": "adizero-pro-4-brown-and-black",
     "name": "Adizero Pro 4 “Brown and Black”",
     "price": 349,
     "comparePrice": 599,
-    "label": "2 PARES POR R$500",
+    "label": null,
     "images": [
       "/images/chuteira.webp"
     ],
@@ -52,7 +53,7 @@ export const products: Product[] =
     "name": "Adizero Pro 4 “Black and White”",
     "price": 349,
     "comparePrice": 599,
-    "label": "2 PARES POR R$500",
+    "label": null,
     "images": [
       "/images/chuteira2.webp"
     ],
@@ -96,7 +97,7 @@ export const products: Product[] =
     "name": "Adizero Pro 4 “All White”",
     "price": 349,
     "comparePrice": 599,
-    "label": "2 PARES POR R$500",
+    "label": null,
     "images": [
       "/images/chuteira3.webp"
     ],
@@ -148,7 +149,7 @@ export const products: Product[] =
     "name": "Adizero Pro 4 “Red”",
     "price": 349,
     "comparePrice": 599,
-    "label": "2 PARES POR R$500",
+    "label": null,
     "images": [
       "/images/chuteira4.webp"
     ],
@@ -192,7 +193,7 @@ export const products: Product[] =
     "name": "Adizero Pro 4 “Navy Blue”",
     "price": 349,
     "comparePrice": 599,
-    "label": "2 PARES POR R$500",
+    "label": null,
     "images": [
       "/images/sem-foto.svg"
     ],
@@ -1385,12 +1386,12 @@ export const products: Product[] =
   },
   {
     "slug": "chuteira-society-ebexe",
-    "name": "Chuteira Society",
+    "name": "Mercurial Vapor 16",
     "price": 329,
     "comparePrice": null,
     "label": null,
     "images": [
-      "/images/sem-foto.svg"
+      "/images/mercurial-vapor-16.webp"
     ],
     "sizes": [
       {
@@ -3215,13 +3216,20 @@ export const products: Product[] =
   }
 ];
 
+export const products: Product[] = [...baseProducts, ...chuteiras];
+
 export const homeSections = {
   "promo500": [
-    "adizero-pro-4-brown-and-black",
-    "adizero-pro-4-black-and-white",
-    "adizero-pro-4-all-white",
-    "adizero-pro-4-red-d63re",
-    "adizero-pro-4-navy-blue-1p4i4"
+    "nike-phantom-ph-01",
+    "mercurial-superfly-16-sf16-10",
+    "adidas-f50-campo-f50c-05",
+    "puma-future-7-puma-02",
+    "mercurial-vapor-16-mv16-12",
+    "nike-mercurial-vapor-16-gripknit-azul-e-laranja-nk-v16g-soc",
+    "mercurial-superfly-16-sf16-24",
+    "nike-phantom-ph-02",
+    "nike-tiempo-legend-10-ciano-e-preto-soc-24",
+    "mercurial-superfly-16-sf16p-03"
   ],
   "tn350": [
     "air-max-tn-voltage-purple",
@@ -3251,16 +3259,47 @@ export const homeSections = {
     "air-max-dn8-blue",
     "air-max-dn8-yellow"
   ],
-  "chuteiras": [
-    "chuteira-airzoom-gripknit-1wxxz",
-    "chuteira-mercurial-gripknit-1qd22",
-    "chuteira-society-ebexe",
-    "chuteira-vapor-atomknit-1i4ay",
-    "chuteira-airzoom-gripknit-1yjl2",
-    "adidas-f50-5o8lh",
-    "chuteira-airzoom-gripknit-xq7ww",
-    "chuteira-vapor-flyweave-ultra-168ny",
-    "chuteira-vapor-atomknit-n5u8l"
+  "chuteirasCampo": [
+    "nike-phantom-ph-01",
+    "nike-phantom-ph-02",
+    "nike-phantom-ph-03",
+    "nike-phantom-ph-04",
+    "nike-phantom-ph-05",
+    "nike-phantom-ph-06",
+    "nike-phantom-ph-07",
+    "nike-phantom-ph-08",
+    "nike-phantom-ph-09",
+    "nike-phantom-ph-10",
+    "nike-phantom-ph-11",
+    "nike-phantom-ph-12"
+  ],
+  "chuteirasSociety": [
+    "mercurial-vapor-16-mv16-01",
+    "mercurial-vapor-16-mv16-02",
+    "mercurial-vapor-16-mv16-03",
+    "mercurial-vapor-16-mv16-04",
+    "mercurial-vapor-16-mv16-05",
+    "mercurial-vapor-16-mv16-06",
+    "mercurial-vapor-16-mv16-07",
+    "mercurial-vapor-16-mv16-08",
+    "mercurial-vapor-16-mv16-09",
+    "mercurial-vapor-16-mv16-10",
+    "mercurial-vapor-16-mv16-11",
+    "mercurial-vapor-16-mv16-12"
+  ],
+  "chuteirasFutsal": [
+    "nike-phantom-branco-e-colorido-fut-01",
+    "joma-top-flex-branco-e-vermelho-fut-02",
+    "nike-mercurial-vapor-rosa-e-preto-fut-03",
+    "nike-phantom-roxo-e-lilas-fut-04",
+    "joma-top-flex-preto-e-vermelho-fut-05",
+    "nike-mercurial-vapor-15-branco-e-azul-fut-06",
+    "nike-mercurial-vapor-safari-cinza-safari-fut-07",
+    "nike-phantom-turquesa-e-rosa-fut-08",
+    "nike-mercurial-vapor-15-amarelo-e-preto-fut-09",
+    "joma-top-flex-branco-e-dourado-fut-10",
+    "joma-regate-rebound-branco-e-colorido-fut-11",
+    "joma-top-flex-branco-e-laranja-fut-12"
   ],
   "novidades": [
     "new-balance-530-1solc",
