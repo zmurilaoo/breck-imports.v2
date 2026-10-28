@@ -28,3 +28,4 @@ dist-ssr
 
 # Netlify CLI (vínculo local com o site)
 .netlify
+.vercel

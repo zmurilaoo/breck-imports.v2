@@ -1250,6 +1250,13 @@ li:focus-within > .nav-dropdown {
   isolation: isolate;
   background: #120800;
   box-shadow: 0 0 0 3px #ffd400, 0 0 18px rgba(255, 170, 0, 0.45);
+  /* No Safari/iOS o filtro do fogo escapa do border-radius: a máscara força o recorte redondo */
+  clip-path: circle(50%);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+}
+/* Como o recorte esconde o box-shadow, o anel dourado e o brilho vêm do link em volta */
+.home-category {
+  filter: drop-shadow(0 0 1.5px #ffd400) drop-shadow(0 0 1.5px #ffd400) drop-shadow(0 0 10px rgba(255, 170, 0, 0.5));
 }
 .home-category-image::before,
 .home-category-image::after {
