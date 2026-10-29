@@ -3621,3 +3621,14 @@ li:focus-within > .nav-dropdown {
 .checkout-result {
   padding-inline: 16px;
 }
+
+/* Faixa das bolinhas mais enxuta: menos preto em cima e embaixo */
+.section.home-categories {
+  padding: 14px 0 0;
+}
+.home-categories .carousel-categories .carousel-track {
+  padding-bottom: 12px;
+}
+.home-categories + .section {
+  padding-top: 12px;
+}
