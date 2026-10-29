@@ -11,9 +11,9 @@ export const contact = {
   phoneHref: "tel:+5511960259062",
   site: "breckimports.com.br",
   siteUrl: "https://breckimports.com.br",
-  address: "Rua Conselheiro Belisário 41, Shopping Stunt (ST1-177,178)",
-  instagram: "https://instagram.com/breck_imports",
-  instagramHandle: "@breck_imports",
+  address: "Feirinha da Madrugada, 1º Andar, L10525, Corredor I",
+  instagram: "https://www.instagram.com/breck_importss/",
+  instagramHandle: "@breck_importss",
 };
 
 export const announcements = ["5% OFF PAGANDO NO PIX", "FRETE GRÁTIS PARA O SUDESTE"];
@@ -201,17 +201,17 @@ export const services = [
 ];
 
 export const homeCategories = [
-  { name: "Mercurial", image: "/images/categorias/breck-chuteira1.png", to: "/categoria/mercurial" },
-  { name: "Chuteiras", image: "/images/categorias/breck-chuteira2.png", to: "/categoria/chuteiras" },
-  { name: "Phantom", image: "/images/categorias/chuteira-phantom.png", to: "/categoria/chuteiras" },
-  { name: "Chuteira 4", image: "/images/categorias/breck-chuteira4.png", to: "/categoria/chuteiras" },
-  { name: "Chuteira 5", image: "/images/categorias/breck-chuteira5.png", to: "/categoria/chuteiras" },
+  { name: "Vapor 15", image: "/images/categorias/breck-chuteira1.png", to: "/categoria/mercurial" },
+  { name: "X Speedportal", image: "/images/categorias/breck-chuteira2.png", to: "/categoria/chuteiras" },
+  { name: "Phantom GX", image: "/images/categorias/chuteira-phantom.png", to: "/categoria/chuteiras" },
+  { name: "Vapor 15 Ready", image: "/images/categorias/breck-chuteira4.png", to: "/categoria/chuteiras" },
+  { name: "Joma Top Flex", image: "/images/categorias/breck-chuteira5.png", to: "/categoria/chuteiras" },
 ];
 
 export const faq = [
   {
     q: "A BRECK IMPORTS É CONFIAVEL?",
-    a: "Sim! Temos loja física na Rua Conselheiro Belisário 41, Shopping Stunt (ST1-177,178), milhares de clientes atendidos em todo o Brasil e site protegido com certificado de segurança. Você também pode falar com a gente a qualquer momento pelo WhatsApp.",
+    a: "Sim! Temos loja física na Feirinha da Madrugada, 1º Andar, L10525, Corredor I, milhares de clientes atendidos em todo o Brasil e site protegido com certificado de segurança. Você também pode falar com a gente a qualquer momento pelo WhatsApp.",
   },
   {
     q: "QUAL PRAZO DE ENTREGA?",

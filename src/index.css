@@ -1609,6 +1609,27 @@ li:focus-within > .nav-dropdown {
   font-size: 0.8rem;
   text-transform: uppercase;
 }
+/* Nome curto embaixo da bolinha, no mesmo estilo do "Escolhe a sua!" */
+.home-categories .home-category-name {
+  font-family: "Permanent Marker", "Montserrat", cursive;
+  font-weight: 400;
+  font-size: clamp(0.8rem, 1.6vw, 1rem);
+  letter-spacing: 0.02em;
+  color: #fff;
+  white-space: nowrap;
+}
+.home-categories:not(.is-live) .home-category-name {
+  opacity: 0;
+}
+.home-categories.is-live .home-category-name {
+  animation: cat-name-in 0.5s calc(var(--d) + 0.5s) ease-out both;
+}
+@keyframes cat-name-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
 
 .section-banner {
   margin-bottom: 20px;

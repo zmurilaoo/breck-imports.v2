@@ -85,6 +85,7 @@ export function CategoryCarousel() {
                   <img src={c.image} alt="" loading="lazy" />
                 </span>
               </div>
+              <span className="home-category-name">{c.name}</span>
             </Link>
           ))}
         </Carousel>
