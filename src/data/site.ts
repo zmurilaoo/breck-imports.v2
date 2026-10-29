@@ -141,8 +141,8 @@ export const banners = {
     to: "/categoria/chuteiras",
   },
   meia: {
-    image: "/images/colecao-chuteiras-estadio-neon.webp",
-    alt: "Coleção de chuteiras no estádio neon — ver todas",
+    image: "/images/colecao-breck-oficial.webp",
+    alt: "Coleção Breck oficial — ver todas as chuteiras",
     to: "/categoria/chuteiras",
   },
   tn350: {
