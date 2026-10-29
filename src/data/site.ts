@@ -1,4 +1,5 @@
 import type { Banner, NavLink } from "../types";
+import { products } from "./products";
 
 export const contact = {
   whatsapp: "5511960259062",
@@ -49,7 +50,11 @@ const mizunoLinks: NavLink[] = [
   { label: "Prophecy 15", to: "/categoria/prophecy-15" },
   { label: "Prophecy 14", to: "/categoria/prophecy-14" },
   { label: "Prophecy 13", to: "/categoria/prophecy-13" },
-  { label: "Sorayama", to: "/categoria/sorayama" },
+  { label: "Prophecy 9", to: "/categoria/prophecy-9" },
+  { label: "Prophecy 8", to: "/categoria/prophecy-8" },
+  { label: "Prophecy 7", to: "/categoria/prophecy-7" },
+  { label: "Prophecy 6", to: "/categoria/prophecy-6" },
+  { label: "Prophecy 1", to: "/categoria/prophecy-1" },
 ];
 
 const newBalanceLinks: NavLink[] = [
@@ -59,7 +64,18 @@ const newBalanceLinks: NavLink[] = [
   { label: "1000", to: "/categoria/1000" },
 ];
 
-const categoryNav: NavLink[] = [
+// Some do menu toda categoria que ficou sem produto (ex.: Gucci, New Balance)
+const filledCategories = new Set(products.flatMap((p) => p.categories));
+const isFilled = (l: NavLink) => !l.to.startsWith("/categoria/") || filledCategories.has(l.to.slice("/categoria/".length));
+function prune(links: NavLink[]): NavLink[] {
+  return links.flatMap((l) => {
+    const children = l.children && prune(l.children);
+    if (!isFilled(l) && !children?.length) return [];
+    return [{ ...l, children: children?.length ? children : undefined }];
+  });
+}
+
+const categoryNav: NavLink[] = prune([
   { label: "Promoções", to: "/categoria/promocoes", children: promoLinks },
   { label: "Chuteiras", to: "/categoria/chuteiras" },
   { label: "Esportivos", to: "/categoria/esportivos", children: esportivosLinks },
@@ -68,7 +84,7 @@ const categoryNav: NavLink[] = [
   { label: "New Balance", to: "/categoria/new-balance", children: newBalanceLinks },
   { label: "Gucci", to: "/categoria/gucci" },
   { label: "Rastreio", to: "/pagina/rastreio" },
-];
+]);
 
 export const mainNav: NavLink[] = [
   { label: "Início", to: "/" },
@@ -111,6 +127,11 @@ export const categoryNames: Record<string, string> = {
   nocta: "NOCTA",
   bailleli: "Bailleli",
   mizuno: "Mizuno",
+  "prophecy-1": "Mizuno Wave Prophecy 1",
+  "prophecy-6": "Mizuno Wave Prophecy 6",
+  "prophecy-7": "Mizuno Wave Prophecy 7",
+  "prophecy-8": "Mizuno Wave Prophecy 8",
+  "prophecy-9": "Mizuno Wave Prophecy 9",
   "prophecy-15": "Prophecy 15",
   "prophecy-14": "Prophecy 14",
   "prophecy-13": "Prophecy 13",
@@ -221,7 +242,7 @@ export const testimonials = [
   { name: "Jorge, Londrina", image: "/images/depo-jorge.webp", text: "Segundo Air Max que compro na Breck Imports, impossivel não falar dessa loja quando o assunto é tênis de alta qualidade rs." },
 ];
 
-export const footerNav = [
+export const footerNav = prune([
   { label: "Início", to: "/" },
   { label: "Produtos", to: "/produtos" },
   { label: "Promoções", to: "/categoria/promocoes" },
@@ -232,7 +253,7 @@ export const footerNav = [
   { label: "New Balance", to: "/categoria/new-balance" },
   { label: "Prazos e Entregas", to: "/pagina/prazos-e-entregas" },
   { label: "Rastreie Seu Pedido!", to: "/pagina/rastreio" },
-];
+]);
 
 export const institutionalNav = [
   { label: "Contato", to: "/pagina/contato" },

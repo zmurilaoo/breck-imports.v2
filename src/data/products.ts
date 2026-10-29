@@ -1,6 +1,7 @@
 // Catálogo de produtos da loja
 import type { Product } from "../types";
 import { chuteiras } from "./chuteiras";
+import { tenis } from "./tenis";
 
 const baseProducts: Product[] = 
 [
@@ -3218,7 +3219,16 @@ const baseProducts: Product[] =
 
 // As chuteiras antigas saíram: todas as chuteiras agora vêm de ./chuteiras
 const isChuteira = (p: Product) => p.categories.includes("chuteiras") || /chuteira/i.test(p.name);
-export const products: Product[] = [...baseProducts.filter((p) => !isChuteira(p)), ...chuteiras];
+// Os Air Max TN antigos (sem foto) também saíram: os novos vêm de ./tenis junto com a Mizuno
+const isOldTn = (p: Product) => p.categories.includes("air-max-tn");
+// Produto sem foto não aparece na loja
+const hasPhoto = (p: Product) => !p.images[0]?.includes("sem-foto");
+export const products: Product[] = [...baseProducts.filter((p) => !isChuteira(p) && !isOldTn(p)), ...chuteiras, ...tenis].filter(hasPhoto);
+
+// Novidades: TN e Mizuno intercalados
+const tns = tenis.filter((p) => p.categories.includes("air-max-tn"));
+const mizunos = tenis.filter((p) => p.categories.includes("mizuno"));
+const novidades = Array.from({ length: 6 }, (_, i) => [tns[i], mizunos[i * 3]]).flat().filter(Boolean).map((p) => p.slug);
 
 const slugsOf = (tipo: string, limit = 12) =>
   chuteiras.filter((p) => p.categories.includes(tipo)).slice(0, limit).map((p) => p.slug);
@@ -3267,31 +3277,7 @@ export const homeSections = {
   "chuteirasCampo": slugsOf("chuteira-campo"),
   "chuteirasSociety": slugsOf("chuteira-society"),
   "chuteirasFutsal": slugsOf("chuteira-futsal"),
-  "novidades": [
-    "new-balance-530-1solc",
-    "chuteira-phantom-moai5",
-    "chuteira-phantom-11455",
-    "chuteira-phantom-p6qlz",
-    "chuteira-phantom-ae2js",
-    "on-cloud-tcphase-1mxym",
-    "on-cloud-tcphase-7ssem",
-    "on-cloud-tcphase-tebc7",
-    "on-cloud-tcphase-roerg",
-    "on-cloud-tcphase-ycpvh",
-    "on-cloud-tcphase-tlbhr",
-    "on-cloud-tcphase-y9nh0",
-    "on-cloud-tcphase-188no",
-    "airmax-tn-1ayt4",
-    "airmax-tn-kyivz",
-    "airmax-tn-1j7nt",
-    "airmax-tn-ojfdt",
-    "airmax-tn-1c667",
-    "airmax-tn-jmr7j",
-    "airmax-tn-yoxae",
-    "new-balance-530-1o1xr",
-    "new-balance-530-fl4e7",
-    "new-balance-530-186x7"
-  ],
+  "novidades": novidades,
   "esportivos": [
     "adizero-prime-x3-610vb",
     "adizero-prime-x3-12dmo",
