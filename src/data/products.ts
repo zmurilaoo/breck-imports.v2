@@ -3223,15 +3223,11 @@ const isChuteira = (p: Product) => p.categories.includes("chuteiras") || /chutei
 const isOldTn = (p: Product) => p.categories.includes("air-max-tn");
 // Produto sem foto não aparece na loja
 const hasPhoto = (p: Product) => !p.images[0]?.includes("sem-foto");
-export const products: Product[] = [...baseProducts.filter((p) => !isChuteira(p) && !isOldTn(p)), ...chuteiras, ...tenis].filter(hasPhoto);
+export const products: Product[] = [...baseProducts.filter((p) => !isChuteira(p) && !isOldTn(p)), ...chuteiras, ...tenis.map((p) => ({ ...p, categories: [...p.categories, "tenis"] }))].filter(hasPhoto);
 
-// Novidades: TN e Mizuno intercalados
-const tns = tenis.filter((p) => p.categories.includes("air-max-tn"));
-const mizunos = tenis.filter((p) => p.categories.includes("mizuno"));
-const novidades = Array.from({ length: 6 }, (_, i) => [tns[i], mizunos[i * 3]]).flat().filter(Boolean).map((p) => p.slug);
 
 const slugsOf = (tipo: string, limit = 12) =>
-  chuteiras.filter((p) => p.categories.includes(tipo)).slice(0, limit).map((p) => p.slug);
+  [...chuteiras, ...tenis].filter((p) => p.categories.includes(tipo)).slice(0, limit).map((p) => p.slug);
 
 export const homeSections = {
   "promo500": [
@@ -3277,7 +3273,8 @@ export const homeSections = {
   "chuteirasCampo": slugsOf("chuteira-campo"),
   "chuteirasSociety": slugsOf("chuteira-society"),
   "chuteirasFutsal": slugsOf("chuteira-futsal"),
-  "novidades": novidades,
+  "airMaxTn": slugsOf("air-max-tn", 15),
+  "mizuno": slugsOf("mizuno"),
   "esportivos": [
     "adizero-prime-x3-610vb",
     "adizero-prime-x3-12dmo",

@@ -42,11 +42,20 @@ export function HomePage() {
         products={getSection("chuteirasFutsal")}
         cta={{ label: "VER TODAS FUTSAL", to: "/categoria/chuteira-futsal" }}
       />
+      {/* Tênis separados das chuteiras: cada linha com a sua vitrine */}
       <ProductSection
-        label="Novidades"
-        title="NOVIDADES NA BRECK IMPORTS"
-        subtitle="Se liga nos novos lançamentos abaixo"
-        products={getSection("novidades")}
+        label="Air Max TN"
+        title="AIR MAX TN"
+        subtitle="O clássico que nunca sai de moda"
+        products={getSection("airMaxTn")}
+        cta={{ label: "VER TODOS OS AIR MAX TN", to: "/categoria/air-max-tn" }}
+      />
+      <ProductSection
+        label="Mizuno"
+        title="MIZUNO WAVE PROPHECY"
+        subtitle="Conforto e estilo em cada passo"
+        products={getSection("mizuno")}
+        cta={{ label: "VER TODOS OS MIZUNO", to: "/categoria/mizuno" }}
       />
       <GridBanner />
       <Faq />

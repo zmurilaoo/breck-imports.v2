@@ -33,19 +33,6 @@ const esportivosLinks: NavLink[] = [
   { label: "On Cloud", to: "/categoria/on-cloud" },
 ];
 
-const nikeLinks: NavLink[] = [
-  { label: "Air Max Tn", to: "/categoria/air-max-tn" },
-  { label: "Air Max Dn", to: "/categoria/air-max-dn" },
-  { label: "Air Max Dn8", to: "/categoria/air-max-dn8" },
-  { label: "Air Max 90", to: "/categoria/air-max-90" },
-  { label: "Air Max 95", to: "/categoria/air-max-95" },
-  { label: "Air Max 97", to: "/categoria/air-max-97" },
-  { label: "Air Max Drift", to: "/categoria/air-max-drift" },
-  { label: "Air Max Scorpion", to: "/categoria/air-max-scorpion" },
-  { label: "NOCTA", to: "/categoria/nocta" },
-  { label: "Bailleli", to: "/categoria/bailleli" },
-];
-
 const mizunoLinks: NavLink[] = [
   { label: "Prophecy 15", to: "/categoria/prophecy-15" },
   { label: "Prophecy 14", to: "/categoria/prophecy-14" },
@@ -55,13 +42,6 @@ const mizunoLinks: NavLink[] = [
   { label: "Prophecy 7", to: "/categoria/prophecy-7" },
   { label: "Prophecy 6", to: "/categoria/prophecy-6" },
   { label: "Prophecy 1", to: "/categoria/prophecy-1" },
-];
-
-const newBalanceLinks: NavLink[] = [
-  { label: "9060", to: "/categoria/9060" },
-  { label: "2000", to: "/categoria/2000" },
-  { label: "530", to: "/categoria/530" },
-  { label: "1000", to: "/categoria/1000" },
 ];
 
 // Some do menu toda categoria que ficou sem produto (ex.: Gucci, New Balance)
@@ -75,14 +55,29 @@ function prune(links: NavLink[]): NavLink[] {
   });
 }
 
+// Chuteiras de um lado, tênis do outro; Air Max TN e Mizuno com aba própria
 const categoryNav: NavLink[] = prune([
-  { label: "Promoções", to: "/categoria/promocoes", children: promoLinks },
-  { label: "Chuteiras", to: "/categoria/chuteiras" },
-  { label: "Esportivos", to: "/categoria/esportivos", children: esportivosLinks },
-  { label: "Nike", to: "/categoria/nike", children: nikeLinks },
+  {
+    label: "Chuteiras",
+    to: "/categoria/chuteiras",
+    children: [
+      { label: "Campo", to: "/categoria/chuteira-campo" },
+      { label: "Society", to: "/categoria/chuteira-society" },
+      { label: "Futsal", to: "/categoria/chuteira-futsal" },
+    ],
+  },
+  {
+    label: "Tênis",
+    to: "/categoria/tenis",
+    children: [
+      { label: "Air Max TN", to: "/categoria/air-max-tn" },
+      { label: "Mizuno", to: "/categoria/mizuno" },
+    ],
+  },
+  { label: "Air Max TN", to: "/categoria/air-max-tn" },
   { label: "Mizuno", to: "/categoria/mizuno", children: mizunoLinks },
-  { label: "New Balance", to: "/categoria/new-balance", children: newBalanceLinks },
-  { label: "Gucci", to: "/categoria/gucci" },
+  { label: "Promoções", to: "/categoria/promocoes", children: promoLinks },
+  { label: "Esportivos", to: "/categoria/esportivos", children: esportivosLinks },
   { label: "Rastreio", to: "/pagina/rastreio" },
 ]);
 
@@ -101,6 +96,7 @@ export const categoryNames: Record<string, string> = {
   "2-pares-400": "2 Pares por R$400 (DN8)",
   "2-pares-500": "2 Pares por R$500",
   chuteiras: "Chuteiras",
+  tenis: "Tênis",
   "chuteira-campo": "Chuteiras Campo",
   "chuteira-society": "Chuteiras Society",
   "chuteira-futsal": "Chuteiras Futsal",
@@ -248,7 +244,7 @@ export const footerNav = prune([
   { label: "Promoções", to: "/categoria/promocoes" },
   { label: "Chuteiras", to: "/categoria/chuteiras" },
   { label: "Esportivos", to: "/categoria/esportivos" },
-  { label: "Nike", to: "/categoria/nike" },
+  { label: "Air Max TN", to: "/categoria/air-max-tn" },
   { label: "Mizuno", to: "/categoria/mizuno" },
   { label: "New Balance", to: "/categoria/new-balance" },
   { label: "Prazos e Entregas", to: "/pagina/prazos-e-entregas" },
