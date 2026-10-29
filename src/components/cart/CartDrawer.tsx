@@ -6,12 +6,6 @@ import { useLockBody } from "../../hooks/useLockBody";
 import { formatPrice, MAX_INSTALLMENTS, pixPrice } from "../../utils/format";
 import { CartIcon, CloseIcon, MinusIcon, PlusIcon, TrashIcon } from "../Icons";
 
-/** Estados da região Sudeste pela faixa de CEP (frete grátis). */
-function isSudeste(cep: string): boolean {
-  const n = Number(cep.slice(0, 2));
-  return n >= 1 && n <= 39;
-}
-
 export function CartDrawer() {
   const { lines, subtotal, isOpen, close, setQuantity, remove, count } = useCart();
   const [cep, setCep] = useState("");
@@ -24,11 +18,7 @@ export function CartDrawer() {
       setShipping("Digite um CEP válido com 8 dígitos.");
       return;
     }
-    setShipping(
-      isSudeste(digits)
-        ? "Frete grátis para o Sudeste!"
-        : "O valor do frete para sua região será informado no checkout.",
-    );
+    setShipping("Clique em Finalizar compra: lá aparecem PAC, SEDEX e Mini Envios com o valor certinho pro seu CEP.");
   };
 
   const checkoutMessage = encodeURIComponent(
@@ -129,13 +119,11 @@ export function CartDrawer() {
               <p className="cart-total-pix">
                 ou <strong>{formatPrice(pixPrice(subtotal))}</strong> com Pix · até {MAX_INSTALLMENTS}x no cartão
               </p>
-              <a
-                className="btn btn-primary btn-block"
-                href={`${contact.whatsappUrl}?text=${checkoutMessage}`}
-                target="_blank"
-                rel="noreferrer"
-              >
+              <Link to="/checkout" className="btn btn-primary btn-block" onClick={close}>
                 Finalizar compra
+              </Link>
+              <a className="btn-link" href={`${contact.whatsappUrl}?text=${checkoutMessage}`} target="_blank" rel="noreferrer">
+                Prefere comprar pelo WhatsApp?
               </a>
               <button type="button" className="btn-link" onClick={close}>
                 Ver mais produtos

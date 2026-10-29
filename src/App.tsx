@@ -12,6 +12,7 @@ import { UIProvider } from "./context/UIContext";
 import { useUI } from "./context/ui-context";
 import { useScrollReveal } from "./hooks/useScrollReveal";
 import { AccountPage } from "./pages/AccountPage";
+import { CheckoutPage, OrderResultPage } from "./pages/CheckoutPage";
 import { HomePage } from "./pages/HomePage";
 import { InfoPage } from "./pages/InfoPage";
 import { ListingPage } from "./pages/ListingPage";
@@ -63,6 +64,8 @@ export default function App() {
               <Route path="categoria/:slug" element={<ListingPage mode="category" />} />
               <Route path="busca" element={<ListingPage mode="search" />} />
               <Route path="pagina/:slug" element={<InfoPage />} />
+              <Route path="checkout" element={<CheckoutPage />} />
+              <Route path="pedido/:status" element={<OrderResultPage />} />
               <Route path="conta/login" element={<AccountPage mode="login" />} />
               <Route path="conta/cadastro" element={<AccountPage mode="register" />} />
               <Route path="*" element={<NotFoundPage />} />

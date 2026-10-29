@@ -1832,15 +1832,127 @@ li:focus-within > .nav-dropdown {
   object-fit: cover;
   transition: opacity 0.35s, transform 0.5s;
 }
-.product-card-image .img-secondary {
+/* Galeria no card: as fotos trocam com uma "cortina" dourada, barrinhas estilo stories e contador */
+.product-card-image .card-slide {
   opacity: 0;
+  clip-path: inset(0 0 0 100%);
+  transform: scale(1.12);
+  transition:
+    clip-path 0.55s cubic-bezier(0.7, 0, 0.2, 1),
+    transform 1.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0s 0.55s;
 }
-@media (hover: hover) {
-  .product-card:hover .img-secondary {
-    opacity: 1;
+.product-card-image .card-slide.is-active {
+  opacity: 1;
+  z-index: 1;
+  clip-path: inset(0 0 0 0);
+  transform: scale(1);
+  transition:
+    clip-path 0.55s cubic-bezier(0.7, 0, 0.2, 1),
+    transform 1.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0s;
+}
+/* Faixa de luz que acompanha a borda da cortina */
+.card-sweep {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 40%, rgba(255, 212, 0, 0.55) 50%, transparent 60%);
+  translate: -110% 0;
+  animation: card-sweep 0.6s cubic-bezier(0.7, 0, 0.2, 1);
+}
+.product-card-image:not(:hover) .card-sweep {
+  display: none;
+}
+@keyframes card-sweep {
+  from {
+    translate: 110% 0;
   }
-  .product-card:hover .img-main {
-    transform: scale(1.04);
+  to {
+    translate: -110% 0;
+  }
+}
+.card-bars {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 3;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  translate: 0 6px;
+  transition: opacity 0.3s, translate 0.3s;
+}
+.card-bars span {
+  position: relative;
+  flex: 1;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.35);
+  overflow: hidden;
+}
+.card-bars span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #ffd400;
+  box-shadow: 0 0 6px #ffd400;
+  transform-origin: left;
+  scale: 0 1;
+}
+.card-bars .is-done::after {
+  scale: 1 1;
+}
+.card-bars .is-running::after {
+  animation: card-bar var(--slide-ms, 1.1s) linear forwards;
+}
+@keyframes card-bar {
+  to {
+    scale: 1 1;
+  }
+}
+.card-count {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 3;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #000;
+  background: #ffd400;
+  opacity: 0;
+  scale: 0.6;
+  transition: opacity 0.3s, scale 0.3s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+.product-card-image .labels {
+  z-index: 3;
+}
+.product-card.is-hover .card-bars,
+.product-card.is-hover .card-count {
+  opacity: 1;
+  translate: 0 0;
+  scale: 1;
+}
+/* No celular as barrinhas ficam sempre à mostra, pra indicar que dá pra arrastar */
+@media (hover: none) {
+  .is-gallery .card-bars {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-card-image .card-slide,
+  .product-card-image .card-slide.is-active {
+    clip-path: none;
+    transform: none;
+    transition: opacity 0.2s;
+  }
+  .card-sweep {
+    display: none;
   }
 }
 .labels {
@@ -3428,3 +3540,140 @@ li:focus-within > .nav-dropdown {
   }
 }
 
+
+/* ==========================================================================
+   Checkout (Mercado Pago + SuperFrete)
+   ========================================================================== */
+.checkout-title {
+  margin: 0 0 24px;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+}
+.checkout-grid {
+  display: grid;
+  gap: 24px;
+}
+@media (min-width: 900px) {
+  .checkout-grid {
+    grid-template-columns: 1fr 380px;
+    align-items: start;
+  }
+  .checkout-summary {
+    position: sticky;
+    top: 110px;
+  }
+}
+.checkout-form fieldset {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 20px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.checkout-form legend {
+  padding: 0 6px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.checkout-form input:not([type="radio"]) {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: inherit;
+  font: inherit;
+}
+.checkout-form input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.checkout-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.checkout-ship {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.checkout-ship.is-active {
+  border-color: var(--accent);
+  background: rgba(255, 212, 0, 0.08);
+}
+.checkout-ship input {
+  accent-color: #ffd400;
+}
+.checkout-summary {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.checkout-summary h2 {
+  margin: 0 0 14px;
+  font-size: 1.1rem;
+}
+.checkout-line {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+}
+.checkout-line img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.checkout-line small {
+  display: block;
+  opacity: 0.7;
+}
+.checkout-totals {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+  margin: 16px 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.checkout-totals strong:last-child {
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+.checkout-hint {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+.checkout-error {
+  margin: 0 0 12px;
+  color: #ff6b6b;
+  font-weight: 700;
+}
+.checkout-empty,
+.checkout-result {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  text-align: center;
+  min-height: 40vh;
+  align-content: center;
+}
+.checkout,
+.checkout-empty,
+.checkout-result {
+  padding-inline: 16px;
+}

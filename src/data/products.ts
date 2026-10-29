@@ -3216,20 +3216,25 @@ const baseProducts: Product[] =
   }
 ];
 
-export const products: Product[] = [...baseProducts, ...chuteiras];
+// As chuteiras antigas saíram: todas as chuteiras agora vêm de ./chuteiras
+const isChuteira = (p: Product) => p.categories.includes("chuteiras") || /chuteira/i.test(p.name);
+export const products: Product[] = [...baseProducts.filter((p) => !isChuteira(p)), ...chuteiras];
+
+const slugsOf = (tipo: string, limit = 12) =>
+  chuteiras.filter((p) => p.categories.includes(tipo)).slice(0, limit).map((p) => p.slug);
 
 export const homeSections = {
   "promo500": [
-    "nike-phantom-ph-01",
-    "mercurial-superfly-16-sf16-10",
-    "adidas-f50-campo-f50c-05",
-    "puma-future-7-puma-02",
-    "mercurial-vapor-16-mv16-12",
-    "nike-mercurial-vapor-16-gripknit-azul-e-laranja-nk-v16g-soc",
-    "mercurial-superfly-16-sf16-24",
-    "nike-phantom-ph-02",
-    "nike-tiempo-legend-10-ciano-e-preto-soc-24",
-    "mercurial-superfly-16-sf16p-03"
+    "f50-elite-campo-rx-1qkag",
+    "phantom-gx-6-elite-rose-xgmb3",
+    "chuteira-campo-ovre8",
+    "airzoom-superfly-elite-campo-verde-qgc1e",
+    "ad-f50-elite-vd-campo-nh2i9",
+    "phantom-gx6-elite-17v3n",
+    "pm-campo-future-elite-y5m48",
+    "phantom-gx-6-elite-18xas",
+    "sla-1v7tl",
+    "mercurial-vapor-1ra6u"
   ],
   "tn350": [
     "air-max-tn-voltage-purple",
@@ -3259,48 +3264,9 @@ export const homeSections = {
     "air-max-dn8-blue",
     "air-max-dn8-yellow"
   ],
-  "chuteirasCampo": [
-    "nike-phantom-ph-01",
-    "nike-phantom-ph-02",
-    "nike-phantom-ph-03",
-    "nike-phantom-ph-04",
-    "nike-phantom-ph-05",
-    "nike-phantom-ph-06",
-    "nike-phantom-ph-07",
-    "nike-phantom-ph-08",
-    "nike-phantom-ph-09",
-    "nike-phantom-ph-10",
-    "nike-phantom-ph-11",
-    "nike-phantom-ph-12"
-  ],
-  "chuteirasSociety": [
-    "mercurial-vapor-16-mv16-01",
-    "mercurial-vapor-16-mv16-02",
-    "mercurial-vapor-16-mv16-03",
-    "mercurial-vapor-16-mv16-04",
-    "mercurial-vapor-16-mv16-05",
-    "mercurial-vapor-16-mv16-06",
-    "mercurial-vapor-16-mv16-07",
-    "mercurial-vapor-16-mv16-08",
-    "mercurial-vapor-16-mv16-09",
-    "mercurial-vapor-16-mv16-10",
-    "mercurial-vapor-16-mv16-11",
-    "mercurial-vapor-16-mv16-12"
-  ],
-  "chuteirasFutsal": [
-    "nike-phantom-branco-e-colorido-fut-01",
-    "joma-top-flex-branco-e-vermelho-fut-02",
-    "nike-mercurial-vapor-rosa-e-preto-fut-03",
-    "nike-phantom-roxo-e-lilas-fut-04",
-    "joma-top-flex-preto-e-vermelho-fut-05",
-    "nike-mercurial-vapor-15-branco-e-azul-fut-06",
-    "nike-mercurial-vapor-safari-cinza-safari-fut-07",
-    "nike-phantom-turquesa-e-rosa-fut-08",
-    "nike-mercurial-vapor-15-amarelo-e-preto-fut-09",
-    "joma-top-flex-branco-e-dourado-fut-10",
-    "joma-regate-rebound-branco-e-colorido-fut-11",
-    "joma-top-flex-branco-e-laranja-fut-12"
-  ],
+  "chuteirasCampo": slugsOf("chuteira-campo"),
+  "chuteirasSociety": slugsOf("chuteira-society"),
+  "chuteirasFutsal": slugsOf("chuteira-futsal"),
   "novidades": [
     "new-balance-530-1solc",
     "chuteira-phantom-moai5",
@@ -3342,4 +3308,4 @@ export const homeSections = {
     "adizero-prime-x3-1pbfz",
     "adizero-prime-x3-qb8f8"
   ]
-} as const;
+};
