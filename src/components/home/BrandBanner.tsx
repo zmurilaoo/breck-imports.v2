@@ -62,7 +62,7 @@ function TnLayout() {
 }
 
 /** Banner da home com o personagem da Breck animado por cima da arte. */
-export function BrandBanner({ banner, className = "" }: { banner: Banner; className?: string }) {
+export function BrandBanner({ banner, className = "", eager = false }: { banner: Banner; className?: string; eager?: boolean }) {
   const [ref, inView] = useInView<HTMLSpanElement>();
   return (
     <Link to={banner.to} className={`brand-banner ${className}`} aria-label={banner.alt}>
@@ -70,7 +70,7 @@ export function BrandBanner({ banner, className = "" }: { banner: Banner; classN
         ref={ref}
         className={`brand-banner-stage${banner.layout ? ` layout-${banner.layout}` : ""}${inView ? " is-live" : ""}`}
       >
-        <img src={banner.image} alt={banner.alt} loading="lazy" />
+        <img src={banner.image} alt={banner.alt} loading={eager ? "eager" : "lazy"} />
         {banner.layout === "chuteiras" && <ChuteirasLayout />}
         {banner.layout === "tn" && <TnLayout />}
         {banner.mascots?.map((m) => <BannerMascotLayer key={`${m.fx}-${m.x}`} mascot={m} />)}

@@ -1,8 +1,8 @@
-import { useState, type CSSProperties } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { banners, contact, faq, hero, homeCategories, services, testimonials } from "../../data/site";
 import type { Banner, Product } from "../../types";
-import { InstagramIcon, MinusIcon, PinIcon, PlusIcon, StarIcon, WhatsAppIcon } from "../Icons";
+import { ChevronLeft, ChevronRight, InstagramIcon, MinusIcon, PinIcon, PlusIcon, StarIcon, WhatsAppIcon } from "../Icons";
 import { ProductCard } from "../product/ProductCard";
 import { Carousel } from "../ui/Carousel";
 import { BrandBanner } from "./BrandBanner";
@@ -119,15 +119,7 @@ export function ProductSection({ products, label, title, subtitle, banner, cta }
     <section className="section product-section" aria-label={label}>
       {bannerList.length === 1 && <BrandBanner banner={bannerList[0]} className="section-banner" />}
       {/* Mais de um banner: mesmo lugar, com setas para trocar */}
-      {bannerList.length > 1 && (
-        <div className="section-banner banner-slider">
-          <Carousel variant="hero" label={`Banners — ${label}`} dots>
-            {bannerList.map((b) => (
-              <BrandBanner key={b.image} banner={b} />
-            ))}
-          </Carousel>
-        </div>
-      )}
+      {bannerList.length > 1 && <BannerSlider banners={bannerList} label={label} />}
       <div className="container">
         {title && (
           <div className="section-title">
@@ -149,6 +141,72 @@ export function ProductSection({ products, label, title, subtitle, banner, cta }
         )}
       </div>
     </section>
+  );
+}
+
+/**
+ * Banners lado a lado, um por vez: desliza com transform (não com a rolagem do navegador),
+ * então no iPhone nunca para no meio nem mostra espaço vazio.
+ */
+function BannerSlider({ banners, label }: { banners: Banner[]; label: string }) {
+  const [index, setIndex] = useState(0);
+  const touchX = useRef<number | null>(null);
+  const swiped = useRef(false);
+  const go = (i: number) => setIndex((i + banners.length) % banners.length);
+
+  return (
+    <div
+      className="section-banner banner-slider"
+      role="region"
+      aria-roledescription="carrossel"
+      aria-label={`Banners — ${label}`}
+      onTouchStart={(e) => {
+        touchX.current = e.touches[0].clientX;
+        swiped.current = false;
+      }}
+      onTouchEnd={(e) => {
+        if (touchX.current === null) return;
+        const dx = e.changedTouches[0].clientX - touchX.current;
+        touchX.current = null;
+        if (Math.abs(dx) > 40) {
+          swiped.current = true;
+          go(index + (dx < 0 ? 1 : -1));
+        }
+      }}
+      onClickCapture={(e) => {
+        // Arrastar troca o banner em vez de abrir o link
+        if (swiped.current) {
+          e.preventDefault();
+          swiped.current = false;
+        }
+      }}
+    >
+      <div className="banner-slider-track" style={{ transform: `translateX(-${index * 100}%)` }}>
+        {banners.map((b, i) => (
+          <div className="banner-slider-slide" key={b.image} aria-hidden={i !== index} inert={i !== index}>
+            <BrandBanner banner={b} eager />
+          </div>
+        ))}
+      </div>
+      <button type="button" className="carousel-arrow carousel-prev" aria-label="Banner anterior" onClick={() => go(index - 1)}>
+        <ChevronLeft size={22} />
+      </button>
+      <button type="button" className="carousel-arrow carousel-next" aria-label="Próximo banner" onClick={() => go(index + 1)}>
+        <ChevronRight size={22} />
+      </button>
+      <div className="carousel-dots">
+        {banners.map((b, i) => (
+          <button
+            key={b.image}
+            type="button"
+            aria-label={`Banner ${i + 1}`}
+            aria-current={i === index}
+            className={i === index ? "is-active" : undefined}
+            onClick={() => go(i)}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 

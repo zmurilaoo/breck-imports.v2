@@ -1,10 +1,13 @@
-import { useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import { useUI } from "../../context/ui-context";
 import type { Product } from "../../types";
 import { discountPercent } from "../../utils/format";
 import { CartIcon, ChevronLeft, ChevronRight } from "../Icons";
 import { PriceBlock } from "./PriceBlock";
+
+/** Tempo de cada ângulo na troca automática do celular (ms) */
+const ANGLE_MS = 2200;
 
 export function ProductCard({ product }: { product: Product }) {
   const { openQuickShop } = useUI();
@@ -16,7 +19,29 @@ export function ProductCard({ product }: { product: Product }) {
   // null = foto padrão (1ª, ou 2ª com o mouse em cima); número = escolhida pelas setas
   const [picked, setPicked] = useState<number | null>(null);
   const [hover, setHover] = useState(false);
-  const active = picked ?? (hover && multi ? 1 : 0);
+  // No celular não tem hover: enquanto o card está na tela, ele alterna sozinho entre os dois ângulos
+  const [autoAngle, setAutoAngle] = useState(false);
+  const cardRef = useRef<HTMLElement>(null);
+  const active = picked ?? ((hover || autoAngle) && multi ? 1 : 0);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el || !multi || !window.matchMedia("(hover: none)").matches) return;
+    let timer: number | undefined;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        window.clearInterval(timer);
+        if (!entry.isIntersecting) return setAutoAngle(false);
+        timer = window.setInterval(() => setAutoAngle((a) => !a), ANGLE_MS);
+      },
+      { threshold: 0.6 },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      window.clearInterval(timer);
+    };
+  }, [multi]);
 
   const step = (dir: number) => (e: MouseEvent) => {
     e.preventDefault();
@@ -24,7 +49,7 @@ export function ProductCard({ product }: { product: Product }) {
   };
 
   return (
-    <article className="product-card">
+    <article className="product-card" ref={cardRef}>
       <Link
         to={`/produtos/${product.slug}`}
         className="product-card-image"

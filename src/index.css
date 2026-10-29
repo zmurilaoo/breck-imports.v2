@@ -3632,3 +3632,20 @@ li:focus-within > .nav-dropdown {
 .home-categories + .section {
   padding-top: 12px;
 }
+
+/* Slider dos banners: um banner inteiro por vez, desliza com transform */
+.banner-slider {
+  position: relative;
+  overflow: hidden;
+}
+.banner-slider-track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.banner-slider-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+.banner-slider-slide > * {
+  width: 100%;
+}
