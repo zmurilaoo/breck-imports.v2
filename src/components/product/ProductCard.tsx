@@ -1,13 +1,10 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { useUI } from "../../context/ui-context";
 import type { Product } from "../../types";
 import { discountPercent } from "../../utils/format";
 import { CartIcon } from "../Icons";
 import { PriceBlock } from "./PriceBlock";
-
-/** Tempo de cada foto no modo automático (ms) */
-const SLIDE_MS = 1100;
 
 export function ProductCard({ product }: { product: Product }) {
   const { openQuickShop } = useUI();
@@ -19,103 +16,96 @@ export function ProductCard({ product }: { product: Product }) {
   const [active, setActive] = useState(0);
   // As outras fotos só são baixadas quando a pessoa interage com o card
   const [warm, setWarm] = useState(false);
-  const [hovering, setHovering] = useState(false);
-  const scrubbing = useRef(false);
+  // Ponto de zoom: a foto aproxima seguindo o mouse
+  const [origin, setOrigin] = useState({ x: 50, y: 50 });
   const touchX = useRef<number | null>(null);
   const swiped = useRef(false);
-
-  // Com o mouse parado em cima, as fotos passam sozinhas (estilo stories)
-  useEffect(() => {
-    if (!hovering || !multi) return;
-    const id = window.setInterval(() => {
-      if (!scrubbing.current) setActive((i) => (i + 1) % images.length);
-    }, SLIDE_MS);
-    return () => window.clearInterval(id);
-  }, [hovering, multi, images.length]);
 
   const go = (i: number) => setActive((i + images.length) % images.length);
 
   return (
-    <article className={`product-card${hovering ? " is-hover" : ""}`}>
-      <Link
-        to={`/produtos/${product.slug}`}
-        className={`product-card-image${multi ? " is-gallery" : ""}`}
-        aria-label={product.name}
-        style={{ "--slide-ms": `${SLIDE_MS}ms` } as CSSProperties}
-        onMouseEnter={() => {
-          setWarm(true);
-          setHovering(true);
-        }}
+    <article className="product-card">
+      <div
+        className={`product-card-media${multi ? " is-gallery" : ""}`}
+        onMouseEnter={() => setWarm(true)}
         onMouseLeave={() => {
-          setHovering(false);
-          scrubbing.current = false;
           setActive(0);
-        }}
-        // Passar o mouse da esquerda pra direita "folheia" as fotos
-        onMouseMove={(e) => {
-          if (!multi) return;
-          const r = e.currentTarget.getBoundingClientRect();
-          const i = Math.min(images.length - 1, Math.floor(((e.clientX - r.left) / r.width) * images.length));
-          if (i !== active) {
-            scrubbing.current = true;
-            setActive(i);
-          }
-        }}
-        onTouchStart={(e) => {
-          setWarm(true);
-          touchX.current = e.touches[0].clientX;
-        }}
-        onTouchEnd={(e) => {
-          if (touchX.current === null || !multi) return;
-          const dx = e.changedTouches[0].clientX - touchX.current;
-          touchX.current = null;
-          if (Math.abs(dx) > 30) {
-            swiped.current = true;
-            go(active + (dx < 0 ? 1 : -1));
-          }
-        }}
-        onClick={(e) => {
-          // Um arrasto no celular troca a foto em vez de abrir o produto
-          if (swiped.current) {
-            e.preventDefault();
-            swiped.current = false;
-          }
+          setOrigin({ x: 50, y: 50 });
         }}
       >
-        {images.map((src, i) =>
-          i === 0 || warm ? (
-            <img
-              key={src}
-              src={src}
-              alt={i === 0 ? product.name : ""}
-              aria-hidden={i !== 0 || undefined}
-              loading="lazy"
-              className={`card-slide${i === active ? " is-active" : ""}`}
-            />
-          ) : null,
-        )}
-        {multi && (
-          <>
-            <span className="card-sweep" key={active} aria-hidden="true" />
-            <div className="card-bars" aria-hidden="true">
-              {images.map((_, i) => (
-                <span
-                  key={i}
-                  className={i < active ? "is-done" : i === active ? (hovering && !scrubbing.current ? "is-running" : "is-done") : ""}
-                />
+        <Link
+          to={`/produtos/${product.slug}`}
+          className="product-card-image"
+          aria-label={product.name}
+          style={{ "--ox": `${origin.x}%`, "--oy": `${origin.y}%` } as CSSProperties}
+          onMouseMove={(e) => {
+            const r = e.currentTarget.getBoundingClientRect();
+            setOrigin({ x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 });
+          }}
+          onTouchStart={(e) => {
+            setWarm(true);
+            touchX.current = e.touches[0].clientX;
+          }}
+          onTouchEnd={(e) => {
+            if (touchX.current === null || !multi) return;
+            const dx = e.changedTouches[0].clientX - touchX.current;
+            touchX.current = null;
+            if (Math.abs(dx) > 30) {
+              swiped.current = true;
+              go(active + (dx < 0 ? 1 : -1));
+            }
+          }}
+          onClick={(e) => {
+            // Um arrasto no celular troca a foto em vez de abrir o produto
+            if (swiped.current) {
+              e.preventDefault();
+              swiped.current = false;
+            }
+          }}
+        >
+          {images.map((src, i) =>
+            i === 0 || warm ? (
+              <img
+                key={src}
+                src={src}
+                alt={i === 0 ? product.name : ""}
+                aria-hidden={i !== 0 || undefined}
+                loading="lazy"
+                className={`card-slide${i === active ? " is-active" : ""}`}
+              />
+            ) : null,
+          )}
+          <div className="labels">
+            {soldOut && <span className="label label-muted">Esgotado</span>}
+            {discount && <span className="label">{discount}% OFF</span>}
+            {product.label && <span className="label">{product.label}</span>}
+          </div>
+          {multi && (
+            <div className="card-dots" aria-hidden="true">
+              {images.map((src, i) => (
+                <span key={src} className={i === active ? "is-active" : ""} />
               ))}
             </div>
-            <span className="card-count" aria-hidden="true">
-              {active + 1}/{images.length}
-            </span>
-          </>
+          )}
+        </Link>
+        {/* Miniaturas que sobem no hover: passar o mouse troca a foto principal */}
+        {multi && warm && (
+          <div className="card-thumbs" aria-hidden="true">
+            {images.map((src, i) => (
+              <button
+                key={src}
+                type="button"
+                tabIndex={-1}
+                className={i === active ? "is-active" : ""}
+                onMouseEnter={() => setActive(i)}
+                onClick={() => setActive(i)}
+              >
+                <img src={src} alt="" loading="lazy" />
+              </button>
+            ))}
+          </div>
         )}
-        <div className="labels">
-          {soldOut && <span className="label label-muted">Esgotado</span>}
-          {discount && <span className="label">{discount}% OFF</span>}
-          {product.label && <span className="label">{product.label}</span>}
-        </div>
-      </Link>
+      </div>
       <div className="product-card-body">
         <Link to={`/produtos/${product.slug}`} className="product-card-name">
           {product.name}
