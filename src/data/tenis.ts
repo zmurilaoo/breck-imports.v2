@@ -5,7 +5,7 @@ export const tenis: Product[] = [
   {
     "slug": "air-max-tn-plus-barcelona-k14mu",
     "name": "Air Max TN Barcelona",
-    "price": 230.0,
+    "price": 250,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -58,12 +58,12 @@ export const tenis: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 27.06
   },
   {
     "slug": "air-max-tn-plus-blue-z7vhy",
     "name": "Air Max TN Photo Blue Black",
-    "price": 230.0,
+    "price": 250,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -116,12 +116,12 @@ export const tenis: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 27.06
   },
   {
     "slug": "tn-orange-q07u1",
     "name": "Air Max TN Sunset",
-    "price": 230.0,
+    "price": 250,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -175,12 +175,12 @@ export const tenis: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 27.06
   },
   {
     "slug": "air-max-tn-plus-barcelona-orange-nkewm",
     "name": "Air Max TN Barcelona Orange",
-    "price": 230.0,
+    "price": 250,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -233,12 +233,12 @@ export const tenis: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 27.06
   },
   {
     "slug": "air-max-tn-plus-silver-white-11ecb",
     "name": "Air Max TN Black Metallic Silver",
-    "price": 230.0,
+    "price": 250,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -291,12 +291,12 @@ export const tenis: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 27.06
   },
   {
     "slug": "air-max-tn-plus-silver-xddo3",
     "name": "Air Max TN Seafoam",
-    "price": 230.0,
+    "price": 250,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -349,12 +349,12 @@ export const tenis: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 27.06
   },
   {
     "slug": "air-max-tn-plus-venom-1rpf5",
     "name": "Air Max TN Venom",
-    "price": 230.0,
+    "price": 250,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -395,12 +395,12 @@ export const tenis: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 27.06
   },
   {
     "slug": "air-max-tn-plus-black-pink-1b0z3",
     "name": "Air Max TN Black Laser Orange Hyper Violet",
-    "price": 230.0,
+    "price": 250,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -449,12 +449,12 @@ export const tenis: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 27.06
   },
   {
     "slug": "air-max-tn-plus-white-blue-r899g",
     "name": "Air Max TN Baltic Blue",
-    "price": 230.0,
+    "price": 250,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -507,12 +507,12 @@ export const tenis: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 27.06
   },
   {
     "slug": "air-max-tn-plus-black-blue-17t6a",
     "name": "Air Max TN Aurora Green",
-    "price": 230.0,
+    "price": 250,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -565,12 +565,12 @@ export const tenis: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 27.06
   },
   {
     "slug": "air-max-tn-plus-branco-e-preto-pd84h",
     "name": "Air Max TN Oreo",
-    "price": 230.0,
+    "price": 250,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -619,12 +619,12 @@ export const tenis: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 27.06
   },
   {
     "slug": "air-max-tn-plus-branco-e-rosa-apiff",
     "name": "Air Max TN Pink Rise",
-    "price": 230.0,
+    "price": 250,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -677,12 +677,12 @@ export const tenis: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 27.06
   },
   {
     "slug": "tn-branco-rosa-zjuwu",
     "name": "Air Max TN Reverse Grape",
-    "price": 230.0,
+    "price": 250,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -731,12 +731,12 @@ export const tenis: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 27.06
   },
   {
     "slug": "tn-white-lcst-k01lf",
     "name": "Air Max TN Lcst",
-    "price": 230.0,
+    "price": 250,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -789,12 +789,12 @@ export const tenis: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 27.06
   },
   {
     "slug": "tn-dracula-vm-e7p0p",
     "name": "Air Max TN Deadpool",
-    "price": 230.0,
+    "price": 250,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -847,13 +847,13 @@ export const tenis: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 27.06
   },
   {
     "slug": "wave-prophecy-8-preto-vermelho-155mw",
     "name": "Mizuno Wave Prophecy 9 Azul-Marinho/Vermelho",
-    "price": 150.0,
-    "comparePrice": 200.0,
+    "price": 350,
+    "comparePrice": null,
     "label": null,
     "images": [
       "/images/tenis/wave-prophecy-8-preto-vermelho-155mw/1.webp",
@@ -905,12 +905,12 @@ export const tenis: Product[] = [
       "prophecy-9"
     ],
     "isNew": true,
-    "installment12": 16.23
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-1-prata-azul-uqrrp",
     "name": "Mizuno Wave Prophecy 1 Prata/Azul",
-    "price": 230.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -951,12 +951,12 @@ export const tenis: Product[] = [
       "prophecy-1"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-15-preto-prata-1bvpa",
     "name": "Mizuno Wave Prophecy 15 Preto/Prata",
-    "price": 330.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1001,12 +1001,12 @@ export const tenis: Product[] = [
       "prophecy-15"
     ],
     "isNew": true,
-    "installment12": 35.71
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-8-preto-cinza-gurwx",
     "name": "Mizuno Wave Prophecy 8 Preto/Cinza",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1047,12 +1047,12 @@ export const tenis: Product[] = [
       "prophecy-8"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-8-preto-verde-11vk8",
     "name": "Mizuno Wave Prophecy 8 Preto/Verde",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1093,12 +1093,12 @@ export const tenis: Product[] = [
       "prophecy-8"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-15-branco-vermelho-1ufpc",
     "name": "Mizuno Wave Prophecy 15 Branco/Vermelho",
-    "price": 320.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1151,12 +1151,12 @@ export const tenis: Product[] = [
       "prophecy-15"
     ],
     "isNew": true,
-    "installment12": 34.63
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-6-camaleao-e5a07",
     "name": "Mizuno Wave Prophecy 6 Camaleão",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1205,12 +1205,12 @@ export const tenis: Product[] = [
       "prophecy-6"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-8-preto-azul-1tz6w",
     "name": "Mizuno Wave Prophecy 8 Preto/Azul",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1251,12 +1251,12 @@ export const tenis: Product[] = [
       "prophecy-8"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-14-preto-vermelho-1dil1",
     "name": "Mizuno Wave Prophecy 14 Preto/Vermelho",
-    "price": 300.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1300,12 +1300,12 @@ export const tenis: Product[] = [
       "prophecy-14"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-ls-azul-12704",
     "name": "Mizuno Wave Prophecy LS Navy Blazer",
-    "price": 180.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1345,12 +1345,12 @@ export const tenis: Product[] = [
       "mizuno"
     ],
     "isNew": true,
-    "installment12": 19.48
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-ls-cinza-nz6bh",
     "name": "Mizuno Wave Prophecy LS Nimbus Cloud",
-    "price": 180.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1390,12 +1390,12 @@ export const tenis: Product[] = [
       "mizuno"
     ],
     "isNew": true,
-    "installment12": 19.48
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-ls-areia-m61gz",
     "name": "Mizuno Wave Prophecy LS Wind Chime",
-    "price": 180.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1435,12 +1435,12 @@ export const tenis: Product[] = [
       "mizuno"
     ],
     "isNew": true,
-    "installment12": 19.48
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-beta-1y27d",
     "name": "Mizuno Wave Prophecy Beta 2 Preto/Vermelho",
-    "price": 180.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1480,12 +1480,12 @@ export const tenis: Product[] = [
       "mizuno"
     ],
     "isNew": true,
-    "installment12": 19.48
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-8-silver-blue-yellow-10an9",
     "name": "Mizuno Wave Prophecy 15 Cinza",
-    "price": 320.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1538,12 +1538,12 @@ export const tenis: Product[] = [
       "prophecy-15"
     ],
     "isNew": true,
-    "installment12": 34.63
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-6-preto-roxo-lxs4g",
     "name": "Mizuno Wave Prophecy 6 Preto/Roxo",
-    "price": 295.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1591,12 +1591,12 @@ export const tenis: Product[] = [
       "prophecy-6"
     ],
     "isNew": true,
-    "installment12": 31.93
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-1-prata-roxo-1htur",
     "name": "Mizuno Wave Prophecy 1 Prata/Roxo",
-    "price": 230.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1637,12 +1637,12 @@ export const tenis: Product[] = [
       "prophecy-1"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-1-preto-1wxte",
     "name": "Mizuno Wave Prophecy 1 Preto",
-    "price": 230.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1683,12 +1683,12 @@ export const tenis: Product[] = [
       "prophecy-1"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-8-cinza-laranja-1np3i",
     "name": "Mizuno Wave Prophecy 8 Cinza/Laranja",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1729,12 +1729,12 @@ export const tenis: Product[] = [
       "prophecy-8"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-8-branco-dourado-1vw01",
     "name": "Mizuno Wave Prophecy 8 Branco/Dourado",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1775,12 +1775,12 @@ export const tenis: Product[] = [
       "prophecy-8"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-8-verde-militar-1g79b",
     "name": "Mizuno Wave Prophecy 8 Verde Militar",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1821,12 +1821,12 @@ export const tenis: Product[] = [
       "prophecy-8"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-8-azul-marinho-mny2p",
     "name": "Mizuno Wave Prophecy 8 Azul Marinho",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1867,12 +1867,12 @@ export const tenis: Product[] = [
       "prophecy-8"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-15-branco-1t5sz",
     "name": "Mizuno Wave Prophecy 15 Branco",
-    "price": 320.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1924,12 +1924,12 @@ export const tenis: Product[] = [
       "prophecy-15"
     ],
     "isNew": true,
-    "installment12": 34.63
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-15-preto-prata-118z1",
     "name": "Mizuno Wave Prophecy 15 Preto/Prata",
-    "price": 350.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1986,7 +1986,7 @@ export const tenis: Product[] = [
   {
     "slug": "wave-prophecy-6-azul-rosa-3sho7",
     "name": "Mizuno Wave Prophecy 6 Azul/Rosa",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2034,12 +2034,12 @@ export const tenis: Product[] = [
       "prophecy-6"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-14-silver-green-1owxa",
     "name": "Mizuno Wave Prophecy 14 Silver Green",
-    "price": 295.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2084,12 +2084,12 @@ export const tenis: Product[] = [
       "prophecy-14"
     ],
     "isNew": true,
-    "installment12": 31.93
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-13-black-blue-2u917",
     "name": "Mizuno Wave Prophecy 13 Black Blue",
-    "price": 295.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2130,12 +2130,12 @@ export const tenis: Product[] = [
       "prophecy-13"
     ],
     "isNew": true,
-    "installment12": 31.93
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-14-blue-103x6",
     "name": "Mizuno Wave Prophecy 14 Blue",
-    "price": 295.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2180,12 +2180,12 @@ export const tenis: Product[] = [
       "prophecy-14"
     ],
     "isNew": true,
-    "installment12": 31.93
+    "installment12": 37.88
   },
   {
     "slug": "wave-prohphecy-14-azul-rosa-12ehg",
     "name": "Mizuno Wave Prophecy 14 Azul Rosa",
-    "price": 0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2230,12 +2230,12 @@ export const tenis: Product[] = [
       "prophecy-14"
     ],
     "isNew": true,
-    "installment12": 0.0
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-14-all-black-a52k4",
     "name": "Mizuno Wave Prophecy 14 All Black",
-    "price": 295.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2280,12 +2280,12 @@ export const tenis: Product[] = [
       "prophecy-14"
     ],
     "isNew": true,
-    "installment12": 31.93
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-beta-2-cinza-13sl7",
     "name": "Mizuno Wave Prophecy Beta 2 Moonlight Ocean White",
-    "price": 180.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2325,12 +2325,12 @@ export const tenis: Product[] = [
       "mizuno"
     ],
     "isNew": true,
-    "installment12": 19.48
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-flor-de-lotus-1b6w1",
     "name": "Mizuno Wave Prophecy LS Future Gardens",
-    "price": 180.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2370,12 +2370,12 @@ export const tenis: Product[] = [
       "mizuno"
     ],
     "isNew": true,
-    "installment12": 19.48
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-beta-cinza-azul-a6qw4",
     "name": "Mizuno Wave Prophecy Beta 2 Moonlight Ocean Black",
-    "price": 180.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2415,12 +2415,12 @@ export const tenis: Product[] = [
       "mizuno"
     ],
     "isNew": true,
-    "installment12": 19.48
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-15-branco-dourado-1acdp",
     "name": "Mizuno Wave Prophecy 15 Branco/Dourado",
-    "price": 350.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2478,7 +2478,7 @@ export const tenis: Product[] = [
   {
     "slug": "wave-prophecy-15-grey-pink-copia-1hymt",
     "name": "Mizuno Wave Prophecy 15 Black-Graphite",
-    "price": 320.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2531,12 +2531,12 @@ export const tenis: Product[] = [
       "prophecy-15"
     ],
     "isNew": true,
-    "installment12": 34.63
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-6-preto-dourado-1hy00",
     "name": "Mizuno Wave Prophecy 6 Preto/Dourado",
-    "price": 295.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2584,12 +2584,12 @@ export const tenis: Product[] = [
       "prophecy-6"
     ],
     "isNew": true,
-    "installment12": 31.93
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-6-cinza-verde-5trk0",
     "name": "Mizuno Wave Prophecy 6 Cinza/Verde",
-    "price": 295.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2637,12 +2637,12 @@ export const tenis: Product[] = [
       "prophecy-6"
     ],
     "isNew": true,
-    "installment12": 31.93
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-1-preto-laranja-1sy1a",
     "name": "Mizuno Wave Prophecy 1 Preto/Laranja",
-    "price": 230.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2683,12 +2683,12 @@ export const tenis: Product[] = [
       "prophecy-1"
     ],
     "isNew": true,
-    "installment12": 24.89
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-15-preto-cinza-1bdpm",
     "name": "Mizuno Wave Prophecy 15 Preto/Cinza",
-    "price": 320.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2733,12 +2733,12 @@ export const tenis: Product[] = [
       "prophecy-15"
     ],
     "isNew": true,
-    "installment12": 34.63
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-15-branco-lipox",
     "name": "Mizuno Wave Prophecy 15 Branco",
-    "price": 320.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2791,12 +2791,12 @@ export const tenis: Product[] = [
       "prophecy-15"
     ],
     "isNew": true,
-    "installment12": 34.63
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-15-preto-cinza-1scr1",
     "name": "Mizuno Wave Prophecy 15 Preto/Grafite",
-    "price": 320.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2841,12 +2841,12 @@ export const tenis: Product[] = [
       "prophecy-15"
     ],
     "isNew": true,
-    "installment12": 34.63
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-15-preto-verde-11ysx",
     "name": "Mizuno Wave Prophecy 15 Preto/Verde",
-    "price": 320.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2891,12 +2891,12 @@ export const tenis: Product[] = [
       "prophecy-15"
     ],
     "isNew": true,
-    "installment12": 34.63
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-15-cinza-azul-2k1hj",
     "name": "Mizuno Wave Prophecy 15 Cinza/Azul",
-    "price": 320.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2949,12 +2949,12 @@ export const tenis: Product[] = [
       "prophecy-15"
     ],
     "isNew": true,
-    "installment12": 34.63
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-7-preto-rosa-th7eu",
     "name": "Mizuno Wave Prophecy 7 Preto/Rosa",
-    "price": 270.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2995,12 +2995,12 @@ export const tenis: Product[] = [
       "prophecy-7"
     ],
     "isNew": true,
-    "installment12": 29.22
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-7-azul-bebe-39rxk",
     "name": "Mizuno Wave Prophecy 7 Azul Bebê",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3041,12 +3041,12 @@ export const tenis: Product[] = [
       "prophecy-7"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-7-acai-1l6we",
     "name": "Mizuno Wave Prophecy 7 Açaí",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3087,12 +3087,12 @@ export const tenis: Product[] = [
       "prophecy-7"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-7-grafite-azul-9yxm9",
     "name": "Mizuno Wave Prophecy 7 Grafite/Azul",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3133,12 +3133,12 @@ export const tenis: Product[] = [
       "prophecy-7"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-7-camaleao-ytabz",
     "name": "Mizuno Wave Prophecy 7 Camaleão",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3179,12 +3179,12 @@ export const tenis: Product[] = [
       "prophecy-7"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-7-branco-1k8h8",
     "name": "Mizuno Wave Prophecy 7 Branco",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3225,12 +3225,12 @@ export const tenis: Product[] = [
       "prophecy-7"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-6-branco-153cm",
     "name": "Mizuno Wave Prophecy 6 Branco",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3279,12 +3279,12 @@ export const tenis: Product[] = [
       "prophecy-6"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-6-azul-claro-1bo6z",
     "name": "Mizuno Wave Prophecy 6 Azul Claro",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3333,12 +3333,12 @@ export const tenis: Product[] = [
       "prophecy-6"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-8-azul-rosa-jldke",
     "name": "Mizuno Wave Prophecy 8 Azul/Rosa",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3379,12 +3379,12 @@ export const tenis: Product[] = [
       "prophecy-8"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-8-preto-1mkbm",
     "name": "Mizuno Wave Prophecy 8 Preto",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3425,12 +3425,12 @@ export const tenis: Product[] = [
       "prophecy-8"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-8-preto-dourado-73uqo",
     "name": "Mizuno Wave Prophecy 8 Preto/Dourado",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3471,12 +3471,12 @@ export const tenis: Product[] = [
       "prophecy-8"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-8-azul-claro-1evq6",
     "name": "Mizuno Wave Prophecy 8 Azul Claro",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3517,12 +3517,12 @@ export const tenis: Product[] = [
       "prophecy-8"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-8-azul-bebe-j6r50",
     "name": "Mizuno Wave Prophecy 8 Azul Bebê",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3563,12 +3563,12 @@ export const tenis: Product[] = [
       "prophecy-8"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-15-preto-cinza-1juza",
     "name": "Mizuno Wave Prophecy 15 Preto/Cinza",
-    "price": 320.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3611,12 +3611,12 @@ export const tenis: Product[] = [
       "prophecy-15"
     ],
     "isNew": true,
-    "installment12": 34.63
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-15-roxo-beujn",
     "name": "Mizuno Wave Prophecy 15 Roxo",
-    "price": 320.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3656,12 +3656,12 @@ export const tenis: Product[] = [
       "prophecy-15"
     ],
     "isNew": true,
-    "installment12": 34.63
+    "installment12": 37.88
   },
   {
     "slug": "wave-prophecy-14-preto-vermelho-1vrr1",
     "name": "Mizuno Wave Prophecy 6 Branco",
-    "price": 290.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3713,12 +3713,12 @@ export const tenis: Product[] = [
       "prophecy-6"
     ],
     "isNew": true,
-    "installment12": 31.39
+    "installment12": 37.88
   },
   {
     "slug": "sla-kskbc",
     "name": "Mizuno Wave Prophecy 15 Preto/Verde",
-    "price": 320.0,
+    "price": 350,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -3770,6 +3770,6 @@ export const tenis: Product[] = [
       "prophecy-15"
     ],
     "isNew": true,
-    "installment12": 34.63
+    "installment12": 37.88
   }
 ];
