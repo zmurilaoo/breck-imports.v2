@@ -11,15 +11,31 @@ export function CartDrawer() {
   const { lines, subtotal, isOpen, close, setQuantity, remove, count } = useCart();
   const [cep, setCep] = useState("");
   const [shipping, setShipping] = useState<string | null>(null);
+  const [quotes, setQuotes] = useState<{ id: number; name: string; price: number; days: number }[]>([]);
+  const [quoting, setQuoting] = useState(false);
   useLockBody(isOpen, close);
 
-  const calcShipping = () => {
+  // Mesma cotação real do checkout (SuperFrete), só pra o cliente ter noção antes de finalizar
+  const calcShipping = async () => {
     const digits = cep.replace(/\D/g, "");
-    if (digits.length !== 8) {
-      setShipping("Digite um CEP válido com 8 dígitos.");
-      return;
+    setQuotes([]);
+    if (digits.length !== 8) return setShipping("Digite um CEP válido com 8 dígitos.");
+    setShipping(null);
+    setQuoting(true);
+    try {
+      const r = await fetch("/api/frete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cep: digits, items: lines.map((l) => ({ slug: l.slug, size: l.size, quantity: l.quantity })) }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok || !data.options?.length) throw new Error(data.error);
+      setQuotes(data.options);
+    } catch (e) {
+      setShipping((e as Error).message || "Não foi possível calcular o frete agora. Tente no checkout.");
+    } finally {
+      setQuoting(false);
     }
-    setShipping("Clique em Finalizar compra: lá aparecem PAC, SEDEX e Mini Envios com o valor certinho pro seu CEP.");
   };
 
   const pixTotal = lines.reduce((sum, l) => sum + productPix(l.product) * l.quantity, 0);
@@ -107,13 +123,23 @@ export function CartDrawer() {
                     placeholder="Seu CEP"
                     maxLength={9}
                     value={cep}
-                    onChange={(e) => setCep(e.target.value)}
+                    onChange={(e) => setCep(e.target.value.replace(/\D/g, "").slice(0, 8).replace(/^(\d{5})(\d)/, "$1-$2"))}
+                    onKeyDown={(e) => e.key === "Enter" && calcShipping()}
                   />
-                  <button type="button" className="btn btn-outline" onClick={calcShipping}>
-                    Calcular
+                  <button type="button" className="btn btn-outline" onClick={calcShipping} disabled={quoting}>
+                    {quoting ? "..." : "Calcular"}
                   </button>
                 </div>
                 {shipping && <p className="cart-shipping-result">{shipping}</p>}
+                {quotes.map((q) => (
+                  <p key={q.id} className="cart-shipping-result cart-shipping-quote">
+                    <span>
+                      <strong>{q.name}</strong>
+                      {q.days > 0 && <> · até {q.days} dias úteis</>}
+                    </span>
+                    <strong>{q.id === 0 ? "a combinar" : formatPrice(q.price)}</strong>
+                  </p>
+                ))}
               </div>
               <div className="cart-total">
                 <span>Subtotal</span>

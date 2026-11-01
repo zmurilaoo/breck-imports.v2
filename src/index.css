@@ -3670,3 +3670,8 @@ li:focus-within > .nav-dropdown {
   font-weight: 700;
   color: var(--accent);
 }
+.cart-shipping-quote {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
