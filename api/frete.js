@@ -9395,14 +9395,39 @@ function getProduct(slug) {
 }
 //#endregion
 //#region server/_lib.ts
+const e = (k) => (process.env[k] ?? "").trim();
+const num = (k, fallback) => {
+	const n = Number(process.env[k]);
+	return Number.isFinite(n) && n > 0 ? n : fallback;
+};
 const env = {
-	mpToken: process.env.MP_ACCESS_TOKEN ?? "",
-	mpWebhookSecret: process.env.MP_WEBHOOK_SECRET ?? "",
-	sfToken: process.env.SUPERFRETE_TOKEN ?? "",
-	sfApi: process.env.SUPERFRETE_SANDBOX === "true" ? "https://sandbox.superfrete.com" : "https://api.superfrete.com",
-	originCep: (process.env.SUPERFRETE_CEP_ORIGEM ?? "").replace(/\D/g, ""),
-	siteUrl: (process.env.SITE_URL ?? "https://breck-importsv2.vercel.app").replace(/\/$/, ""),
-	storeEmail: process.env.LOJA_EMAIL ?? "contato@breckimports.com.br"
+	mpToken: e("MP_ACCESS_TOKEN"),
+	mpWebhookSecret: e("MP_WEBHOOK_SECRET"),
+	sfToken: e("SUPERFRETE_TOKEN"),
+	sfApi: e("SUPERFRETE_SANDBOX") === "true" ? "https://sandbox.superfrete.com" : "https://api.superfrete.com",
+	originCep: e("SUPERFRETE_CEP_ORIGEM").replace(/\D/g, ""),
+	siteUrl: (e("SITE_URL") || "https://breck-importsv2.vercel.app").replace(/\/$/, ""),
+	storeEmail: e("LOJA_EMAIL") || "contato@breckimports.com.br",
+	/** Peso de um par já na caixa, em kg. SUPOSIÇÃO: 1 kg até o dono pesar a caixa */
+	kgPerPair: num("SUPERFRETE_PESO_PAR_KG", 1),
+	/** Pagar a etiqueta com o saldo da SuperFrete logo depois de criar o envio (desligado por padrão) */
+	sfAutoPay: e("SUPERFRETE_AUTO_PAY") === "true",
+	/** Freio de mão: acima disso a etiqueta fica no carrinho para o dono pagar no painel */
+	sfAutoPayMax: num("SUPERFRETE_AUTO_PAY_MAX", 80),
+	/** true = declaração de conteúdo; false exigiria nota fiscal, que a loja ainda não emite pela API */
+	sfNonCommercial: e("SUPERFRETE_NAO_COMERCIAL") !== "false",
+	sender: {
+		name: e("SUPERFRETE_REMETENTE_NOME"),
+		address: e("SUPERFRETE_REMETENTE_ENDERECO"),
+		number: e("SUPERFRETE_REMETENTE_NUMERO"),
+		complement: e("SUPERFRETE_REMETENTE_COMPLEMENTO"),
+		district: e("SUPERFRETE_REMETENTE_BAIRRO"),
+		city: e("SUPERFRETE_REMETENTE_CIDADE"),
+		state_abbr: e("SUPERFRETE_REMETENTE_UF").toUpperCase(),
+		document: e("SUPERFRETE_REMETENTE_DOCUMENTO").replace(/\D/g, "")
+	},
+	redisUrl: (e("KV_REST_API_URL") || e("UPSTASH_REDIS_REST_URL")).replace(/\/$/, ""),
+	redisToken: e("KV_REST_API_TOKEN") || e("UPSTASH_REDIS_REST_TOKEN")
 };
 /** Remonta o carrinho com os preços do catálogo: o preço nunca vem do navegador */
 function priceItems(items) {
@@ -9417,17 +9442,25 @@ function priceItems(items) {
 		};
 	});
 }
-/** Caixa de uma chuteira; cada par a mais empilha na altura */
+/** Caixa de um par: 15 (altura) x 20 (largura) x 30 (comprimento) cm. Pares a mais empilham na altura. */
+const BOX = {
+	height: 15,
+	width: 20,
+	length: 30
+};
+/** Correios (PAC/SEDEX): cada lado até 150 cm e soma dos lados até 200 cm → no máximo 10 pares por volume */
+const MAX_PAIRS = Math.floor((200 - BOX.width - BOX.length) / BOX.height);
 function packageFor(pairs) {
+	const n = Math.max(1, Math.floor(pairs));
+	if (n > MAX_PAIRS) throw new Error(`Máximo de ${MAX_PAIRS} pares por envio`);
 	return {
-		height: 12 * pairs,
-		width: 22,
-		length: 33,
-		weight: 1 * pairs
+		height: BOX.height * n,
+		width: BOX.width,
+		length: BOX.length,
+		weight: Math.round(env.kgPerPair * n * 1e3) / 1e3
 	};
 }
-const SF_SERVICES = "1,2,17";
-/** Enquanto a SuperFrete não está ligada: frete combinado com a loja depois da compra */
+/** Sem SuperFrete configurada: frete combinado com a loja depois da compra */
 const MANUAL_SHIPPING = {
 	id: 0,
 	name: "Frete a combinar pelo WhatsApp",
@@ -9436,18 +9469,43 @@ const MANUAL_SHIPPING = {
 };
 async function superfrete(path, body) {
 	const res = await fetch(`${env.sfApi}${path}`, {
-		method: "POST",
+		method: body === void 0 ? "GET" : "POST",
 		headers: {
 			Authorization: `Bearer ${env.sfToken}`,
 			"Content-Type": "application/json",
 			Accept: "application/json",
 			"User-Agent": `Breck Imports (${env.storeEmail})`
 		},
-		body: JSON.stringify(body)
+		body: body === void 0 ? void 0 : JSON.stringify(body)
 	});
 	const data = await res.json().catch(() => null);
 	if (!res.ok) throw new Error(`SuperFrete ${res.status}: ${JSON.stringify(data)}`);
 	return data;
+}
+const shippingReady = () => Boolean(env.sfToken && env.originCep);
+/** Cotação PAC/SEDEX para um carrinho; sem SuperFrete configurada devolve só o frete a combinar */
+async function quoteShipping(cep, lines) {
+	if (!shippingReady()) return [MANUAL_SHIPPING];
+	const pairs = lines.reduce((n, l) => n + l.quantity, 0) || 1;
+	const value = lines.reduce((n, l) => n + l.quantity * l.product.price, 0);
+	const quotes = await superfrete("/api/v0/calculator", {
+		from: { postal_code: env.originCep },
+		to: { postal_code: cep.replace(/\D/g, "") },
+		services: "1,2",
+		options: {
+			own_hand: false,
+			receipt: false,
+			insurance_value: value,
+			use_insurance_value: false
+		},
+		package: packageFor(pairs)
+	});
+	return (Array.isArray(quotes) ? quotes : []).filter((q) => !q.has_error && !q.error && Number(q.price) > 0).map((q) => ({
+		id: q.id,
+		name: q.name,
+		price: Number(q.price),
+		days: q.delivery_time
+	})).sort((a, b) => a.price - b.price);
 }
 const json = (data, status = 200) => new Response(JSON.stringify(data), {
 	status,
@@ -9460,27 +9518,8 @@ async function POST(req) {
 		const { cep, items } = await req.json();
 		const to = String(cep ?? "").replace(/\D/g, "");
 		if (to.length !== 8) return json({ error: "CEP inválido" }, 400);
-		if (!env.sfToken || !env.originCep) return json({ options: [MANUAL_SHIPPING] });
-		const lines = priceItems(items ?? []);
-		const pairs = lines.reduce((n, l) => n + l.quantity, 0) || 1;
-		const value = lines.reduce((n, l) => n + l.quantity * l.product.price, 0);
-		const options = (await superfrete("/api/v0/calculator", {
-			from: { postal_code: env.originCep },
-			to: { postal_code: to },
-			services: SF_SERVICES,
-			options: {
-				own_hand: false,
-				receipt: false,
-				insurance_value: value,
-				use_insurance_value: false
-			},
-			package: packageFor(pairs)
-		})).filter((q) => !q.has_error && !q.error && q.price > 0).map((q) => ({
-			id: q.id,
-			name: q.name,
-			price: Number(q.price),
-			days: q.delivery_time
-		})).sort((a, b) => a.price - b.price);
+		const options = await quoteShipping(to, priceItems(items ?? []));
+		if (!options.length) return json({ error: "Nenhuma opção de entrega para esse CEP" }, 422);
 		return json({ options });
 	} catch (e) {
 		console.error(e);

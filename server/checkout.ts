@@ -1,5 +1,20 @@
-// POST /api/checkout { items, customer, shippingId } → cria o pagamento no Mercado Pago e devolve o link
-import { env, json, MANUAL_SHIPPING, mercadoPago, packageFor, priceItems, SF_SERVICES, superfrete, type CartInput, type Customer } from "./_lib";
+// POST /api/checkout { items, customer, shippingId } → cria o pagamento no Mercado Pago, grava o pedido e devolve o link
+import {
+  dbReady,
+  env,
+  json,
+  MANUAL_SHIPPING,
+  mercadoPago,
+  ORDER_TTL,
+  orderKey,
+  packageFor,
+  priceItems,
+  quoteShipping,
+  redis,
+  type CartInput,
+  type Customer,
+  type StoredOrder,
+} from "./_lib";
 
 /** A API de Orders recebe valores como texto com 2 casas: "299.00" */
 const money = (n: number) => n.toFixed(2);
@@ -16,20 +31,10 @@ export async function POST(req: Request) {
     if (!lines.length) return json({ error: "Carrinho vazio" }, 400);
     for (const k of ["name", "email", "phone", "cpf", "cep", "street", "number", "district", "city", "state"] as const)
       if (!String(customer?.[k] ?? "").trim()) return json({ error: `Preencha o campo ${k}` }, 400);
+    if (customer.cpf.replace(/\D/g, "").length !== 11) return json({ error: "CPF inválido" }, 400);
 
     // O frete é recalculado aqui, pra ninguém mudar o valor pelo navegador
-    const pairs = lines.reduce((n, l) => n + l.quantity, 0);
-    const value = lines.reduce((n, l) => n + l.quantity * l.product.price, 0);
-    const sfReady = Boolean(env.sfToken && env.originCep);
-    const quotes = sfReady
-      ? ((await superfrete("/api/v0/calculator", {
-          from: { postal_code: env.originCep },
-          to: { postal_code: customer.cep.replace(/\D/g, "") },
-          services: SF_SERVICES,
-          options: { own_hand: false, receipt: false, insurance_value: value, use_insurance_value: false },
-          package: packageFor(pairs),
-        })) as { id: number; name: string; price: number }[])
-      : [MANUAL_SHIPPING];
+    const quotes = await quoteShipping(customer.cep, lines);
     const ship = quotes.find((q) => q.id === shippingId && (q.price > 0 || q.id === MANUAL_SHIPPING.id));
     if (!ship) return json({ error: "Escolha uma opção de frete válida" }, 400);
 
@@ -43,7 +48,7 @@ export async function POST(req: Request) {
       ...(ship.price > 0 ? [{ title: `Frete ${ship.name}`, unit_price: money(ship.price), quantity: 1 }] : []),
     ];
     const total = orderItems.reduce((n, i) => n + Number(i.unit_price) * i.quantity, 0);
-    const reference = `BRK-${Date.now().toString(36).toUpperCase()}`;
+    const reference = `BRK-${Date.now().toString(36).toUpperCase()}-${crypto.randomUUID().slice(0, 4).toUpperCase()}`;
 
     const order = await mercadoPago("/v1/orders", {
       method: "POST",
@@ -66,8 +71,33 @@ export async function POST(req: Request) {
         },
       }),
     });
-    // Os dados de entrega ficam no log da Vercel com a referência, até termos um banco de pedidos
-    console.log("Pedido criado", reference, order.id, JSON.stringify({ customer, shipping: ship, items }));
+
+    const pairs = lines.reduce((n, l) => n + l.quantity, 0);
+    const stored: StoredOrder = {
+      reference,
+      mpOrderId: String(order.id),
+      createdAt: new Date().toISOString(),
+      customer,
+      items: lines.map((l) => ({ slug: l.product.slug, name: l.product.name, size: l.size, quantity: l.quantity, unitPrice: l.product.price })),
+      shipping: ship,
+      package: ship.id === MANUAL_SHIPPING.id ? null : packageFor(pairs),
+      subtotal: lines.reduce((n, l) => n + l.quantity * l.product.price, 0),
+      total,
+    };
+    // A order do Mercado Pago não guarda o endereço: ele fica no Redis para a etiqueta automática.
+    // Se o banco falhar, a venda segue e os dados ficam no log da Vercel para o envio manual.
+    let saved = false;
+    if (dbReady()) {
+      try {
+        await redis("SET", orderKey(reference), JSON.stringify(stored), "EX", ORDER_TTL);
+        saved = true;
+      } catch (err) {
+        console.error("Falha ao gravar pedido no Redis", reference, err);
+      }
+    } else console.warn("Banco de pedidos não configurado (KV_REST_API_URL/TOKEN)");
+    if (!saved) console.log("Pedido sem banco", reference, JSON.stringify(stored));
+    else console.log("Pedido criado", reference, order.id);
+
     return json({ url: order.checkout_url, id: order.id, reference });
   } catch (e) {
     console.error(e);

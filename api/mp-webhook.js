@@ -9391,15 +9391,63 @@ slugsOf("chuteira-campo"), slugsOf("chuteira-society"), slugsOf("chuteira-futsal
 new Map(products.map((p) => [p.slug, p]));
 //#endregion
 //#region server/_lib.ts
-const env = {
-	mpToken: process.env.MP_ACCESS_TOKEN ?? "",
-	mpWebhookSecret: process.env.MP_WEBHOOK_SECRET ?? "",
-	sfToken: process.env.SUPERFRETE_TOKEN ?? "",
-	sfApi: process.env.SUPERFRETE_SANDBOX === "true" ? "https://sandbox.superfrete.com" : "https://api.superfrete.com",
-	originCep: (process.env.SUPERFRETE_CEP_ORIGEM ?? "").replace(/\D/g, ""),
-	siteUrl: (process.env.SITE_URL ?? "https://breck-importsv2.vercel.app").replace(/\/$/, ""),
-	storeEmail: process.env.LOJA_EMAIL ?? "contato@breckimports.com.br"
+const e = (k) => (process.env[k] ?? "").trim();
+const num = (k, fallback) => {
+	const n = Number(process.env[k]);
+	return Number.isFinite(n) && n > 0 ? n : fallback;
 };
+const env = {
+	mpToken: e("MP_ACCESS_TOKEN"),
+	mpWebhookSecret: e("MP_WEBHOOK_SECRET"),
+	sfToken: e("SUPERFRETE_TOKEN"),
+	sfApi: e("SUPERFRETE_SANDBOX") === "true" ? "https://sandbox.superfrete.com" : "https://api.superfrete.com",
+	originCep: e("SUPERFRETE_CEP_ORIGEM").replace(/\D/g, ""),
+	siteUrl: (e("SITE_URL") || "https://breck-importsv2.vercel.app").replace(/\/$/, ""),
+	storeEmail: e("LOJA_EMAIL") || "contato@breckimports.com.br",
+	/** Peso de um par já na caixa, em kg. SUPOSIÇÃO: 1 kg até o dono pesar a caixa */
+	kgPerPair: num("SUPERFRETE_PESO_PAR_KG", 1),
+	/** Pagar a etiqueta com o saldo da SuperFrete logo depois de criar o envio (desligado por padrão) */
+	sfAutoPay: e("SUPERFRETE_AUTO_PAY") === "true",
+	/** Freio de mão: acima disso a etiqueta fica no carrinho para o dono pagar no painel */
+	sfAutoPayMax: num("SUPERFRETE_AUTO_PAY_MAX", 80),
+	/** true = declaração de conteúdo; false exigiria nota fiscal, que a loja ainda não emite pela API */
+	sfNonCommercial: e("SUPERFRETE_NAO_COMERCIAL") !== "false",
+	sender: {
+		name: e("SUPERFRETE_REMETENTE_NOME"),
+		address: e("SUPERFRETE_REMETENTE_ENDERECO"),
+		number: e("SUPERFRETE_REMETENTE_NUMERO"),
+		complement: e("SUPERFRETE_REMETENTE_COMPLEMENTO"),
+		district: e("SUPERFRETE_REMETENTE_BAIRRO"),
+		city: e("SUPERFRETE_REMETENTE_CIDADE"),
+		state_abbr: e("SUPERFRETE_REMETENTE_UF").toUpperCase(),
+		document: e("SUPERFRETE_REMETENTE_DOCUMENTO").replace(/\D/g, "")
+	},
+	redisUrl: (e("KV_REST_API_URL") || e("UPSTASH_REDIS_REST_URL")).replace(/\/$/, ""),
+	redisToken: e("KV_REST_API_TOKEN") || e("UPSTASH_REDIS_REST_TOKEN")
+};
+/** Caixa de um par: 15 (altura) x 20 (largura) x 30 (comprimento) cm. Pares a mais empilham na altura. */
+const BOX = {
+	height: 15,
+	width: 20,
+	length: 30
+};
+Math.floor((200 - BOX.width - BOX.length) / BOX.height);
+async function superfrete(path, body) {
+	const res = await fetch(`${env.sfApi}${path}`, {
+		method: body === void 0 ? "GET" : "POST",
+		headers: {
+			Authorization: `Bearer ${env.sfToken}`,
+			"Content-Type": "application/json",
+			Accept: "application/json",
+			"User-Agent": `Breck Imports (${env.storeEmail})`
+		},
+		body: body === void 0 ? void 0 : JSON.stringify(body)
+	});
+	const data = await res.json().catch(() => null);
+	if (!res.ok) throw new Error(`SuperFrete ${res.status}: ${JSON.stringify(data)}`);
+	return data;
+}
+const shippingReady = () => Boolean(env.sfToken && env.originCep);
 async function mercadoPago(path, init = {}) {
 	const res = await fetch(`https://api.mercadopago.com${path}`, {
 		...init,
@@ -9413,6 +9461,24 @@ async function mercadoPago(path, init = {}) {
 	if (!res.ok) throw new Error(`Mercado Pago ${res.status}: ${JSON.stringify(data)}`);
 	return data;
 }
+const dbReady = () => Boolean(env.redisUrl && env.redisToken);
+async function redis(...command) {
+	const res = await fetch(env.redisUrl, {
+		method: "POST",
+		headers: {
+			Authorization: `Bearer ${env.redisToken}`,
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(command)
+	});
+	const data = await res.json().catch(() => null);
+	if (!res.ok || !data || data.error) throw new Error(`Redis ${res.status}: ${data?.error ?? "resposta inválida"}`);
+	return data.result;
+}
+const ORDER_TTL = 15552e3;
+const orderKey = (ref) => `brk:pedido:${ref}`;
+const shipmentKey = (ref) => `brk:envio:${ref}`;
+const lockKey = (ref) => `brk:envio-lock:${ref}`;
 const json = (data, status = 200) => new Response(JSON.stringify(data), {
 	status,
 	headers: { "Content-Type": "application/json" }
@@ -9434,6 +9500,123 @@ function validSignature(req, dataId) {
 	const a = Buffer.from(expected), b = Buffer.from(parts.v1);
 	return a.length === b.length && timingSafeEqual(a, b);
 }
+const LOCK_TTL = 120;
+const missingSender = () => [
+	"name",
+	"address",
+	"district",
+	"city",
+	"state_abbr"
+].filter((k) => !env.sender[k]);
+/** Corpo do POST /api/v0/cart da SuperFrete a partir do pedido gravado */
+function cartBody(o) {
+	const c = o.customer;
+	const s = env.sender;
+	return {
+		from: {
+			name: s.name,
+			address: s.address,
+			...s.number && { number: s.number },
+			...s.complement && { complement: s.complement },
+			district: s.district,
+			city: s.city,
+			state_abbr: s.state_abbr,
+			postal_code: env.originCep,
+			...s.document && { document: s.document }
+		},
+		to: {
+			name: c.name,
+			address: c.street,
+			number: c.number,
+			...c.complement && { complement: c.complement },
+			district: c.district,
+			city: c.city,
+			state_abbr: c.state.toUpperCase(),
+			postal_code: c.cep.replace(/\D/g, ""),
+			document: c.cpf.replace(/\D/g, ""),
+			email: c.email,
+			...c.phone.replace(/\D/g, "").length === 11 && { phone: c.phone.replace(/\D/g, "") }
+		},
+		service: o.shipping.id,
+		products: o.items.map((i) => ({
+			name: `${i.name} - Tam. ${i.size}`,
+			quantity: String(i.quantity),
+			unitary_value: i.unitPrice.toFixed(2)
+		})),
+		volumes: o.package,
+		options: {
+			insurance_value: o.subtotal,
+			receipt: false,
+			own_hand: false,
+			non_commercial: env.sfNonCommercial,
+			tags: [{
+				tag: o.reference,
+				url: env.siteUrl
+			}]
+		},
+		platform: "Breck Imports"
+	};
+}
+/** Cria (uma vez) e, se permitido, paga a etiqueta. Lança erro quando vale o Mercado Pago tentar de novo. */
+async function ensureShipment(reference) {
+	if (!dbReady()) return { skipped: "banco de pedidos não configurado" };
+	if (!shippingReady()) return { skipped: "SuperFrete não configurada" };
+	const raw = await redis("GET", orderKey(reference));
+	if (!raw) return { skipped: "pedido não encontrado no banco" };
+	const order = JSON.parse(raw);
+	if (!order.package || order.shipping.id === 0) return { skipped: "frete a combinar" };
+	const missing = missingSender();
+	if (missing.length) return { skipped: `remetente incompleto: ${missing.join(", ")}` };
+	let shipment = JSON.parse(await redis("GET", shipmentKey(reference)) ?? "null");
+	if (!shipment) {
+		if (await redis("SET", lockKey(reference), "1", "NX", "EX", LOCK_TTL) !== "OK") throw new Error(`Envio de ${reference} já está sendo criado por outra execução`);
+		try {
+			const again = await redis("GET", shipmentKey(reference));
+			if (again) shipment = JSON.parse(again);
+			else {
+				const cart = await superfrete("/api/v0/cart", cartBody(order));
+				if (!cart?.id) throw new Error(`SuperFrete não devolveu id do envio: ${JSON.stringify(cart)}`);
+				shipment = {
+					sfOrderId: cart.id,
+					price: Number(cart.price),
+					status: cart.status ?? "pending",
+					createdAt: (/* @__PURE__ */ new Date()).toISOString()
+				};
+				await redis("SET", shipmentKey(reference), JSON.stringify(shipment), "EX", ORDER_TTL);
+				console.log("Envio criado na SuperFrete", reference, cart.id, cart.price);
+			}
+		} finally {
+			await redis("DEL", lockKey(reference)).catch(() => {});
+		}
+	}
+	if (shipment && shipment.status === "pending" && env.sfAutoPay) {
+		if (shipment.price > env.sfAutoPayMax) {
+			if (!shipment.note) {
+				shipment.note = `Etiqueta de R$ ${shipment.price} acima do limite automático (R$ ${env.sfAutoPayMax}): pagar no painel`;
+				await redis("SET", shipmentKey(reference), JSON.stringify(shipment), "EX", ORDER_TTL);
+				console.warn(reference, shipment.note);
+			}
+		} else {
+			if (await redis("SET", `${lockKey(reference)}:pagar`, "1", "NX", "EX", LOCK_TTL) !== "OK") throw new Error(`Pagamento da etiqueta de ${reference} em andamento`);
+			try {
+				const res = await superfrete("/api/v0/checkout", { orders: [shipment.sfOrderId] });
+				if (!res?.success) throw new Error(`SuperFrete não confirmou o pagamento: ${JSON.stringify(res)}`);
+				const paid = res.purchase?.orders?.find((o) => o.id === shipment.sfOrderId);
+				shipment = {
+					...shipment,
+					status: "released",
+					tracking: paid?.tracking ?? null,
+					paidAt: (/* @__PURE__ */ new Date()).toISOString()
+				};
+				await redis("SET", shipmentKey(reference), JSON.stringify(shipment), "EX", ORDER_TTL);
+				console.log("Etiqueta paga", reference, shipment.sfOrderId, shipment.tracking);
+			} finally {
+				await redis("DEL", `${lockKey(reference)}:pagar`).catch(() => {});
+			}
+		}
+	}
+	return { shipment: shipment ?? void 0 };
+}
 async function POST(req) {
 	const url = new URL(req.url);
 	const body = await req.json().catch(() => ({}));
@@ -9445,9 +9628,17 @@ async function POST(req) {
 		const order = await mercadoPago(`/v1/orders/${encodeURIComponent(id)}`);
 		const paid = order.status === "processed" && order.status_detail === "accredited";
 		console.log("Order", order.id, order.external_reference, order.status, order.status_detail, paid ? "PAGO" : "");
-		return json({
+		if (!paid || !order.external_reference) return json({
 			ok: true,
 			paid
+		});
+		const result = await ensureShipment(String(order.external_reference));
+		if (result.skipped) console.warn("Envio não criado automaticamente", order.external_reference, "-", result.skipped);
+		return json({
+			ok: true,
+			paid,
+			shipment: result.shipment?.sfOrderId ?? null,
+			skipped: result.skipped ?? null
 		});
 	} catch (e) {
 		console.error(e);
