@@ -13,6 +13,20 @@ interface ShippingOption {
   days: number;
 }
 
+const digits = (v: string, max: number) => v.replace(/\D/g, "").slice(0, max);
+const maskCep = (v: string) => digits(v, 8).replace(/^(\d{5})(\d)/, "$1-$2");
+const maskCpf = (v: string) =>
+  digits(v, 11)
+    .replace(/^(\d{3})(\d)/, "$1.$2")
+    .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d{1,2})$/, ".$1-$2");
+const maskPhone = (v: string) => {
+  const d = digits(v, 11);
+  if (d.length <= 2) return d.replace(/^(\d+)/, "($1");
+  if (d.length <= 6) return d.replace(/^(\d{2})(\d+)/, "($1) $2");
+  return d.length <= 10 ? d.replace(/^(\d{2})(\d{4})(\d+)/, "($1) $2-$3") : d.replace(/^(\d{2})(\d{5})(\d+)/, "($1) $2-$3");
+};
+
 const emptyCustomer = {
   name: "",
   email: "",
@@ -37,13 +51,22 @@ export function CheckoutPage() {
 
   const items = lines.map((l) => ({ slug: l.slug, size: l.size, quantity: l.quantity }));
   const ship = options.find((o) => o.id === shippingId);
-  const set = (k: keyof typeof emptyCustomer) => (e: { target: { value: string } }) =>
-    setCustomer((c) => ({ ...c, [k]: e.target.value }));
+  const set = (k: keyof typeof emptyCustomer, mask?: (v: string) => string) => (e: { target: { value: string } }) =>
+    setCustomer((c) => ({ ...c, [k]: mask ? mask(e.target.value) : e.target.value }));
+  const numberRef = useRef<HTMLInputElement>(null);
+  // "found" = CEP achado: cidade e UF vêm prontos e o cliente só completa número e complemento
+  const [cepState, setCepState] = useState<"idle" | "found" | "notfound">("idle");
+
+  // Endereço achado: o cursor já vai para o número (o campo só existe depois do CEP)
+  useEffect(() => {
+    if (cepState === "found") numberRef.current?.focus();
+  }, [cepState]);
 
   // CEP completo: preenche o endereço (ViaCEP) e busca o frete na SuperFrete
   const cepDigits = customer.cep.replace(/\D/g, "");
   useEffect(() => {
-    if (cepDigits.length !== 8 || !items.length) return;
+    if (cepDigits.length !== 8) return setCepState("idle");
+    if (!items.length) return;
     let alive = true;
     setStatus({ loading: "frete" });
     setOptions([]);
@@ -51,10 +74,12 @@ export function CheckoutPage() {
     fetch(`https://viacep.com.br/ws/${cepDigits}/json/`)
       .then((r) => r.json())
       .then((a) => {
-        if (alive && !a.erro)
-          setCustomer((c) => ({ ...c, street: a.logradouro || c.street, district: a.bairro || c.district, city: a.localidade, state: a.uf }));
+        if (!alive) return;
+        if (a.erro) return setCepState("notfound");
+        setCustomer((c) => ({ ...c, street: a.logradouro || "", district: a.bairro || "", city: a.localidade, state: a.uf }));
+        setCepState("found");
       })
-      .catch(() => {});
+      .catch(() => alive && setCepState("notfound"));
     fetch("/api/frete", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ cep: cepDigits, items }) })
       .then(async (r) => {
         const data = await r.json().catch(() => ({ error: "Não foi possível calcular o frete agora" }));
@@ -109,23 +134,30 @@ export function CheckoutPage() {
             <input required placeholder="Nome completo" autoComplete="name" value={customer.name} onChange={set("name")} />
             <input required type="email" placeholder="E-mail" autoComplete="email" value={customer.email} onChange={set("email")} />
             <div className="checkout-row">
-              <input required placeholder="WhatsApp" inputMode="tel" autoComplete="tel" value={customer.phone} onChange={set("phone")} />
-              <input required placeholder="CPF" inputMode="numeric" value={customer.cpf} onChange={set("cpf")} />
+              <input required placeholder="WhatsApp" inputMode="tel" autoComplete="tel" value={customer.phone} onChange={set("phone", maskPhone)} />
+              <input required placeholder="CPF" inputMode="numeric" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" title="CPF com 11 números" value={customer.cpf} onChange={set("cpf", maskCpf)} />
             </div>
           </fieldset>
           <fieldset>
             <legend>Entrega</legend>
-            <input required placeholder="CEP" inputMode="numeric" maxLength={9} autoComplete="postal-code" value={customer.cep} onChange={set("cep")} />
-            <input required placeholder="Rua" value={customer.street} onChange={set("street")} />
-            <div className="checkout-row">
-              <input required placeholder="Número" value={customer.number} onChange={set("number")} />
-              <input placeholder="Complemento" value={customer.complement} onChange={set("complement")} />
-            </div>
-            <input required placeholder="Bairro" value={customer.district} onChange={set("district")} />
-            <div className="checkout-row">
-              <input required placeholder="Cidade" value={customer.city} onChange={set("city")} />
-              <input required placeholder="UF" maxLength={2} value={customer.state} onChange={set("state")} />
-            </div>
+            <input required placeholder="CEP" inputMode="numeric" autoComplete="postal-code" value={customer.cep} onChange={set("cep", maskCep)} />
+            {cepState === "found" && (
+              <p className="checkout-address">
+                📍 {customer.city} - {customer.state}
+              </p>
+            )}
+            {cepState === "notfound" && <p className="checkout-error">CEP não encontrado. Confira os números.</p>}
+            {cepState === "found" && (
+              <>
+                {/* CEP de rua: endereço vem pronto; CEP geral da cidade: o cliente digita rua e bairro */}
+                <input required placeholder="Rua" autoComplete="address-line1" value={customer.street} onChange={set("street")} />
+                <div className="checkout-row">
+                  <input ref={numberRef} required placeholder="Número" inputMode="numeric" value={customer.number} onChange={set("number")} />
+                  <input placeholder="Complemento" value={customer.complement} onChange={set("complement")} />
+                </div>
+                <input required placeholder="Bairro" value={customer.district} onChange={set("district")} />
+              </>
+            )}
           </fieldset>
           <fieldset>
             <legend>Frete</legend>

@@ -3665,3 +3665,8 @@ li:focus-within > .nav-dropdown {
 .pay-methods-compact { margin-top: 10px; padding: 0; border: 0; background: none; text-align: center; font-size: 0.75rem; color: var(--muted); }
 .pay-methods-compact .pay-logos-row { justify-content: center; margin-top: 6px; }
 .pay-methods-compact .pay-logos-row img { height: 16px; }
+.checkout-address {
+  margin: 0;
+  font-weight: 700;
+  color: var(--accent);
+}
