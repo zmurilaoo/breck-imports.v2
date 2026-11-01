@@ -14,6 +14,11 @@ export function pixPrice(price: number): number {
   return Math.round(price * (1 - PIX_DISCOUNT) * 100) / 100;
 }
 
+/** Preço no Pix do produto: fixo quando definido, senão o desconto padrão */
+export function productPix(product: Product): number {
+  return product.pix ?? pixPrice(product.price);
+}
+
 export function discountPercent(product: Product): number | null {
   if (!product.comparePrice || product.comparePrice <= product.price) return null;
   return Math.round((1 - product.price / product.comparePrice) * 100);

@@ -1,5 +1,5 @@
 // POST /api/frete { cep, items } → opções de entrega da SuperFrete (PAC, SEDEX, Mini Envios)
-import { env, json, packageFor, priceItems, SF_SERVICES, superfrete, type CartInput } from "./_lib";
+import { env, json, MANUAL_SHIPPING, packageFor, priceItems, SF_SERVICES, superfrete, type CartInput } from "./_lib";
 
 interface SfQuote {
   id: number;
@@ -15,7 +15,8 @@ export async function POST(req: Request) {
     const { cep, items } = (await req.json()) as { cep: string; items: CartInput[] };
     const to = String(cep ?? "").replace(/\D/g, "");
     if (to.length !== 8) return json({ error: "CEP inválido" }, 400);
-    if (!env.sfToken || !env.originCep) return json({ error: "Frete ainda não configurado" }, 503);
+    // Sem SuperFrete configurada, a venda segue e o frete é combinado depois
+    if (!env.sfToken || !env.originCep) return json({ options: [MANUAL_SHIPPING] });
 
     const lines = priceItems(items ?? []);
     const pairs = lines.reduce((n, l) => n + l.quantity, 0) || 1;

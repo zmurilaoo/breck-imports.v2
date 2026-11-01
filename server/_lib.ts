@@ -3,6 +3,7 @@ import { getProduct } from "../src/data/catalog";
 
 export const env = {
   mpToken: process.env.MP_ACCESS_TOKEN ?? "",
+  mpWebhookSecret: process.env.MP_WEBHOOK_SECRET ?? "",
   sfToken: process.env.SUPERFRETE_TOKEN ?? "",
   sfApi: process.env.SUPERFRETE_SANDBOX === "true" ? "https://sandbox.superfrete.com" : "https://api.superfrete.com",
   originCep: (process.env.SUPERFRETE_CEP_ORIGEM ?? "").replace(/\D/g, ""),
@@ -46,6 +47,9 @@ export function packageFor(pairs: number) {
 }
 
 export const SF_SERVICES = "1,2,17"; // PAC, SEDEX e Mini Envios
+
+/** Enquanto a SuperFrete não está ligada: frete combinado com a loja depois da compra */
+export const MANUAL_SHIPPING = { id: 0, name: "Frete a combinar pelo WhatsApp", price: 0, days: 0 };
 
 export async function superfrete(path: string, body: unknown) {
   const res = await fetch(`${env.sfApi}${path}`, {

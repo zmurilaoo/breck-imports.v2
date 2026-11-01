@@ -5,7 +5,7 @@ export const chuteiras: Product[] = [
   {
     "slug": "f50-elite-campo-rx-1qkag",
     "name": "Chuteira Campo Adidas F50 Elite FG Lamine Yamal Rosa/Roxo",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -55,12 +55,13 @@ export const chuteiras: Product[] = [
       "adidas"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "ad-f50-vd-society-8c1lk",
     "name": "Chuteira Society Adidas F50 Pro Born for Goals Amarelo/Branco",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -109,12 +110,13 @@ export const chuteiras: Product[] = [
       "adidas"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "ad-f50-elite-pt-campo-1bu1j",
     "name": "Chuteira Campo Adidas F50 Elite FG Electric Stealth Preto/Amarelo",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -163,12 +165,13 @@ export const chuteiras: Product[] = [
       "adidas"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "chuteira-joma-futsal-top-flex-1gr8s",
     "name": "Chuteira Futsal Air Zoom Mercurial Superfly 9 Elite Azul/Branco",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -218,12 +221,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "slaaaaaaaaaaaaaaaaa-zwwn7",
     "name": "Chuteira Campo Air Zoom Mercurial Vapor 16 Elite FG Verde/Preto",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -273,12 +277,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "phantom-gx-6-elite-1ji1c",
     "name": "Chuteira Society Phantom ReactX 6 Elite Verde/Preto",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -327,12 +332,13 @@ export const chuteiras: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "ad-f50-elite-vd-campo-nh2i9",
     "name": "Chuteira Campo Adidas F50 Elite LL FG Born for Goals Amarelo/Laranja",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -381,12 +387,13 @@ export const chuteiras: Product[] = [
       "adidas"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "ad-f50-elite-lr-5otm0",
     "name": "Chuteira Society Adidas F50 Pro Coral Blaze Laranja",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -435,12 +442,13 @@ export const chuteiras: Product[] = [
       "adidas"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "sla-7awob",
     "name": "Chuteira Society Air Zoom Mercurial Superfly 9 Elite Cinza/Preto",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -490,12 +498,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "chuteira-jfrhk",
     "name": "Chuteira Campo Air Zoom Superfly 10 Elite SG-PRO Mbappe Amarelo/Laranja",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -545,12 +554,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "phantom-6-elite-pto-vde-1xm6c",
     "name": "Chuteira Campo Phantom 6 Elite Low SG-PRO Verde/Preto",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -597,12 +607,13 @@ export const chuteiras: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "mercurial-vapor-1ra6u",
     "name": "Chuteira Campo Mercurial Vapor 17 Elite FG Azul/Branco",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -652,12 +663,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "phantom-gx-6-elite-rose-xgmb3",
     "name": "Chuteira Campo Phantom 6 Elite Low FG Azul/Laranja",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -706,12 +718,13 @@ export const chuteiras: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "ad-f50-elite-pt-39fs3",
     "name": "Chuteira Campo Adidas F50 Elite FG Electric Stealth Preto/Amarelo",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -760,12 +773,13 @@ export const chuteiras: Product[] = [
       "adidas"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "sla-n7sli",
     "name": "Chuteira Society Air Zoom Mercurial Superfly 9 Elite Rising Gem Cinza/Preto",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -815,12 +829,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "chuteira-futsal-cu3iw",
     "name": "Chuteira Futsal Air Zoom Mercurial Vapor 15 Elite FG United Pack Laranja",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -870,12 +885,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "phantom-gx-elite-1nhzd",
     "name": "Chuteira Campo Phantom 6 Elite Low AG United 02 Azul/Branco",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -925,12 +941,13 @@ export const chuteiras: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "sla-1to2o",
     "name": "Chuteira Campo Air Zoom Mercurial Vapor 16 Elite FG Verde/Dourado",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -980,12 +997,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "chuteira-campo-ovre8",
     "name": "Chuteira Campo Puma Future Ultimate MG Supercharge Azul/Laranja",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1034,12 +1052,13 @@ export const chuteiras: Product[] = [
       "puma"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "phantom-gx-elite-3win0",
     "name": "Chuteira Campo Phantom 6 Elite Low AG EA SPORTS Preto",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1088,12 +1107,13 @@ export const chuteiras: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "sla-verxg",
     "name": "Chuteira Society Air Zoom Mercurial Superfly 9 Elite TN Laranja/Preto",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1143,12 +1163,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "sla-1r5tl",
     "name": "Chuteira Futsal Air Zoom Mercurial Vapor 15 Elite Lucent Amarelo'",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1198,12 +1219,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "airzoom-superfly-elite-azul-2louw",
     "name": "Chuteira Campo Air Zoom Superfly Elite Azul",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1254,12 +1276,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "airzoom-mercurial-vapor-elite-preta-laranja-ade3x",
     "name": "Chuteira Campo Air Zoom Mercurial Vapor Elite Preta Laranja",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1310,12 +1333,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "airzoom-superfly-elite-campo-verde-qgc1e",
     "name": "Chuteira Campo Air Zoom Superfly Elite Campo Verde",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1366,12 +1390,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "airzoom-mercurial-vapor-elite-branco-xa4ya",
     "name": "Chuteira Campo Air Zoom Mercurial Vapor Elite Branco",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1422,12 +1447,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "airzoom-mercurial-vapor-17-elite-preto-amarelo-1389z",
     "name": "Chuteira Campo Air Zoom Mercurial Vapor 17 Elite Preto Amarelo",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1478,12 +1504,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "airzoom-mercurial-vapor-17-elite-verde-1h6gg",
     "name": "Chuteira Campo Air Zoom Mercurial Vapor 17 Elite Verde",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1534,12 +1561,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "airzoom-superfly-hbwel",
     "name": "Chuteira Campo Air Zoom Superfly",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1590,12 +1618,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "pm-chuteira-future-elite-preto-verde-1rx0c",
     "name": "Chuteira Campo Puma Chuteira Future Elite Preto Verde",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1645,12 +1674,13 @@ export const chuteiras: Product[] = [
       "puma"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "pm-campo-future-elite-y5m48",
     "name": "Chuteira Campo Puma Campo Future Elite",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1699,12 +1729,13 @@ export const chuteiras: Product[] = [
       "puma"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "pm-future-elite-campo-bifbh",
     "name": "Chuteira Campo Puma Future Elite Campo",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1754,12 +1785,13 @@ export const chuteiras: Product[] = [
       "puma"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "pm-trava-mg-verde-v18li",
     "name": "Chuteira Campo Puma Trava MG Verde",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1809,12 +1841,13 @@ export const chuteiras: Product[] = [
       "puma"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "pm-trava-mg-rosa-e-branco-1o1uj",
     "name": "Chuteira Campo Puma Trava MG Rosa E Branco",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1863,12 +1896,13 @@ export const chuteiras: Product[] = [
       "puma"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "air-zoom-mercurial-vapor-17-elite-green-yivja",
     "name": "Chuteira Campo Air Zoom Mercurial Vapor 17 Elite Green",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1919,12 +1953,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "f50-elite-campo-1eehw",
     "name": "Chuteira Campo F50 Elite Campo",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -1974,12 +2009,13 @@ export const chuteiras: Product[] = [
       "adidas"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "phantom-gx-6-elite-yqa05",
     "name": "Chuteira Campo Phantom GX 6 Elite",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2029,12 +2065,13 @@ export const chuteiras: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "f50-elite-campo-6qdfo",
     "name": "Chuteira Campo F50 Elite Campo",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2085,12 +2122,13 @@ export const chuteiras: Product[] = [
       "adidas"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "f50-elite-society-1abr8",
     "name": "Chuteira Society F50 Elite Society",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2140,12 +2178,13 @@ export const chuteiras: Product[] = [
       "adidas"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "phantom-gx-6-elite-1193i",
     "name": "Chuteira Society Phantom GX 6 Elite",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2196,12 +2235,13 @@ export const chuteiras: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "phantom-gx-6-elite-hk2fc",
     "name": "Chuteira Campo Phantom GX 6 Elite",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2251,12 +2291,13 @@ export const chuteiras: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "f50-elite-society-7ghod",
     "name": "Chuteira Society Phantom GX 6 Elite",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2306,12 +2347,13 @@ export const chuteiras: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "phantom-gx-6-elite-18xas",
     "name": "Chuteira Campo Phantom GX 6 Elite",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2362,12 +2404,13 @@ export const chuteiras: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "f50-campo-elite-1ps9h",
     "name": "Chuteira Campo F50 Elite Campo",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2417,12 +2460,13 @@ export const chuteiras: Product[] = [
       "adidas"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "f50-campo-elite-xwkkd",
     "name": "Chuteira Campo F50 Campo Elite",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2472,12 +2516,13 @@ export const chuteiras: Product[] = [
       "adidas"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "phantom-gx6-elite-vinho-j8pkc",
     "name": "Chuteira Society Phantom GX6 Elite Vinho",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2527,12 +2572,13 @@ export const chuteiras: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "phantom-gx6-elite-rose-y7ym2",
     "name": "Chuteira Society Phantom GX6 Elite Rose",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2582,12 +2628,13 @@ export const chuteiras: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "phantom-gx6-elite-roxo-1cu28",
     "name": "Chuteira Society Phantom GX6 Elite Roxo",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2637,12 +2684,13 @@ export const chuteiras: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "phantom-gx6-elite-17v3n",
     "name": "Chuteira Society Phantom GX6 Elite",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2692,12 +2740,13 @@ export const chuteiras: Product[] = [
       "nike"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "chuteira-de-futebol-de-campo-trava-alta-verde-fluorescente-neon-1rnlm",
     "name": "Chuteira Campo Air Zoom Mercurial Vapor 16 Elite FG Verde/Preto",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2745,12 +2794,13 @@ export const chuteiras: Product[] = [
       "mercurial"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   },
   {
     "slug": "sla-1v7tl",
     "name": "Chuteira Futsal Joma Top Flex Rebound Mundial 2024 Indoor",
-    "price": 300,
+    "price": 299,
     "comparePrice": null,
     "label": null,
     "images": [
@@ -2799,6 +2849,7 @@ export const chuteiras: Product[] = [
       "joma"
     ],
     "isNew": true,
-    "installment12": 32.47
+    "installment12": 32.36,
+    "pix": 295
   }
 ];

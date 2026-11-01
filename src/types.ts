@@ -14,6 +14,8 @@ export interface Product {
   categories: string[];
   isNew: boolean;
   installment12: number;
+  /** Preço fixo no Pix; sem ele vale o desconto padrão */
+  pix?: number;
 }
 
 export interface CartItem {

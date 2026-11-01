@@ -72,7 +72,7 @@ export function CheckoutPage() {
 
   const pay = async (e: FormEvent) => {
     e.preventDefault();
-    if (!shippingId) return setStatus({ error: "Escolha uma opção de frete" });
+    if (shippingId === null) return setStatus({ error: "Escolha uma opção de frete" });
     setStatus({ loading: "pagar" });
     try {
       const r = await fetch("/api/checkout", {
@@ -134,9 +134,10 @@ export function CheckoutPage() {
               <label key={o.id} className={`checkout-ship${o.id === shippingId ? " is-active" : ""}`}>
                 <input type="radio" name="frete" checked={o.id === shippingId} onChange={() => setShippingId(o.id)} />
                 <span>
-                  <strong>{o.name}</strong> · até {o.days} dias úteis
+                  <strong>{o.name}</strong>
+                  {o.days > 0 && <> · até {o.days} dias úteis</>}
                 </span>
-                <strong>{formatPrice(o.price)}</strong>
+                <strong>{o.id === 0 ? "a combinar" : formatPrice(o.price)}</strong>
               </label>
             ))}
           </fieldset>

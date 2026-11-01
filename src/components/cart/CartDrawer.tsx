@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useCart } from "../../context/cart-context";
 import { contact } from "../../data/site";
 import { useLockBody } from "../../hooks/useLockBody";
-import { formatPrice, MAX_INSTALLMENTS, pixPrice } from "../../utils/format";
+import { formatPrice, MAX_INSTALLMENTS, productPix } from "../../utils/format";
 import { CartIcon, CloseIcon, MinusIcon, PlusIcon, TrashIcon } from "../Icons";
 
 export function CartDrawer() {
@@ -21,11 +21,13 @@ export function CartDrawer() {
     setShipping("Clique em Finalizar compra: lá aparecem PAC, SEDEX e Mini Envios com o valor certinho pro seu CEP.");
   };
 
+  const pixTotal = lines.reduce((sum, l) => sum + productPix(l.product) * l.quantity, 0);
+
   const checkoutMessage = encodeURIComponent(
     [
       "Olá! Quero finalizar meu pedido:",
       ...lines.map((l) => `• ${l.quantity}x ${l.product.name} — Tam. ${l.size} — ${formatPrice(l.product.price * l.quantity)}`),
-      `Total: ${formatPrice(subtotal)} (${formatPrice(pixPrice(subtotal))} no Pix)`,
+      `Total: ${formatPrice(subtotal)} (${formatPrice(pixTotal)} no Pix)`,
     ].join("\n"),
   );
 
@@ -117,7 +119,7 @@ export function CartDrawer() {
                 <strong>{formatPrice(subtotal)}</strong>
               </div>
               <p className="cart-total-pix">
-                ou <strong>{formatPrice(pixPrice(subtotal))}</strong> com Pix · até {MAX_INSTALLMENTS}x no cartão
+                ou <strong>{formatPrice(pixTotal)}</strong> com Pix · até {MAX_INSTALLMENTS}x no cartão
               </p>
               <Link to="/checkout" className="btn btn-primary btn-block" onClick={close}>
                 Finalizar compra
