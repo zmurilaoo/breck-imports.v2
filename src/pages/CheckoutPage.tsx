@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
+import { PaymentMethods } from "../components/product/PaymentMethods";
 import { useCart } from "../context/cart-context";
 import { contact } from "../data/site";
 import { usePageTitle } from "../hooks/usePageTitle";
@@ -167,7 +168,7 @@ export function CheckoutPage() {
           <button type="submit" className="btn btn-primary btn-block" disabled={status.loading === "pagar" || !ship}>
             {status.loading === "pagar" ? "Abrindo Mercado Pago…" : "Pagar com Mercado Pago"}
           </button>
-          <p className="checkout-hint">Pix, cartão em até 12x ou boleto, no ambiente seguro do Mercado Pago.</p>
+          <PaymentMethods secureSeal />
         </aside>
       </form>
     </section>

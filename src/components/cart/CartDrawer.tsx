@@ -4,6 +4,7 @@ import { useCart } from "../../context/cart-context";
 import { contact } from "../../data/site";
 import { useLockBody } from "../../hooks/useLockBody";
 import { formatPrice, MAX_INSTALLMENTS, productPix } from "../../utils/format";
+import { PaymentMethods } from "../product/PaymentMethods";
 import { CartIcon, CloseIcon, MinusIcon, PlusIcon, TrashIcon } from "../Icons";
 
 export function CartDrawer() {
@@ -124,6 +125,7 @@ export function CartDrawer() {
               <Link to="/checkout" className="btn btn-primary btn-block" onClick={close}>
                 Finalizar compra
               </Link>
+              <PaymentMethods variant="compact" />
               <a className="btn-link" href={`${contact.whatsappUrl}?text=${checkoutMessage}`} target="_blank" rel="noreferrer">
                 Prefere comprar pelo WhatsApp?
               </a>

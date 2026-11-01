@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { CreditCardIcon, TruckIcon, WhatsAppIcon } from "../components/Icons";
+import { PaymentMethods } from "../components/product/PaymentMethods";
 import { PriceBlock } from "../components/product/PriceBlock";
 import { ProductCard } from "../components/product/ProductCard";
 import { SizeSelector } from "../components/product/SizeSelector";
@@ -110,6 +111,8 @@ function ProductDetail({ product }: { product: Product }) {
             <button type="button" className="btn btn-dark btn-block" disabled={soldOut} onClick={() => addToCart(true)}>
               Comprar agora
             </button>
+
+            <PaymentMethods />
 
             <ul className="product-perks">
               <li>
