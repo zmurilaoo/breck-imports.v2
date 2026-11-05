@@ -22,6 +22,24 @@ import { fingerprint, money, sha256Hex } from "./checkout";
 const IDEMPOTENCY_WINDOW_MS = 10 * 60 * 1000;
 const payIdemKey = (hash: string) => `brk:pay-idem:${hash}`;
 const PIX_MINUTES = 30;
+// Anti card testing: tentativas de cartão por IP numa janela (Upstash INCR). Falha do Redis não bloqueia a venda.
+const CARD_LIMIT = 8;
+const CARD_WINDOW_S = 15 * 60;
+const clientIp = (req: Request) =>
+  (req.headers.get("x-real-ip") ?? req.headers.get("x-forwarded-for")?.split(",")[0] ?? "").trim() || "sem-ip";
+
+async function cardAttemptsExceeded(req: Request): Promise<boolean> {
+  if (!dbReady()) return false;
+  try {
+    const key = `brk:rl:pay:${await sha256Hex(clientIp(req))}`;
+    const count = await redis<number>("INCR", key);
+    if (count === 1) await redis("EXPIRE", key, CARD_WINDOW_S);
+    return count > CARD_LIMIT;
+  } catch (err) {
+    console.error("Falha no limite de tentativas", err);
+    return false;
+  }
+}
 
 /** Campos do formData do Brick que aceitamos (allowlist). Qualquer outro é ignorado. */
 interface BrickFormData {
@@ -117,6 +135,8 @@ export async function POST(req: Request) {
     const isBoleto = method === "bolbradesco" || method === "pec";
     const token = String(formData.token ?? "");
     if (!isPix && !isBoleto && !token) return json({ error: "Dados do cartão incompletos" }, 400);
+    if (!isPix && !isBoleto && (await cardAttemptsExceeded(req)))
+      return json({ error: "Muitas tentativas com cartão. Aguarde alguns minutos ou pague com Pix." }, 429);
 
     // Frete e total recalculados aqui: ninguém muda valor pelo navegador
     const quotes = await quoteShipping(customer.cep, lines);

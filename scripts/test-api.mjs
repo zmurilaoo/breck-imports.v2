@@ -33,6 +33,8 @@ function redisCmd([cmd, key, ...rest]) {
     db.set(key, rest[0]);
     return "OK";
   }
+  if (cmd === "INCR") { const v = Number(db.get(key) ?? 0) + 1; db.set(key, String(v)); return v; }
+  if (cmd === "EXPIRE") return 1;
   throw new Error("cmd " + cmd);
 }
 
@@ -146,7 +148,8 @@ const sign = (id) => {
 await test("webhook payment aprovado: etiqueta + e-mail confirmado + e-mail enviado, uma vez só", async () => {
   // Pagamento Pix 222 aprovado (o pedido foi gravado no teste do Pix)
   const ref = (await (await pay(req({ payment_method_id: "pix" }))).json()).reference;
-  mpPayments.set("222", { id: 222, status: "approved", status_detail: "accredited", external_reference: ref });
+  const total = JSON.parse(db.get(`brk:pedido:${ref}`) ?? "{}").total;
+  mpPayments.set("222", { id: 222, status: "approved", status_detail: "accredited", external_reference: ref, transaction_amount: total });
   const hook = () => webhook(new Request("http://x/api/mp-webhook?data.id=222&type=payment", {
     method: "POST", headers: sign("222"), body: JSON.stringify({ type: "payment", action: "payment.updated", data: { id: "222" } }),
   }));
@@ -178,6 +181,32 @@ await test("webhook payment pendente não gera etiqueta nem e-mail", async () =>
     method: "POST", headers: sign("555"), body: JSON.stringify({ type: "payment", data: { id: "555" } }),
   }))).json();
   assert.equal(r.paid, false);
+});
+
+await test("webhook: pagamento aprovado com valor menor que o pedido não libera etiqueta", async () => {
+  mpPayment = (b) => ({ id: 666, status: "pending", status_detail: "pending_waiting_transfer", payment_method_id: "pix", payment_type_id: "bank_transfer", external_reference: b.external_reference });
+  for (const k of [...db.keys()]) if (k.startsWith("brk:pay-idem:") || k.startsWith("brk:envio") || k.startsWith("brk:email")) db.delete(k);
+  const ref = (await (await pay(req({ payment_method_id: "pix" }))).json()).reference;
+  mpPayments.set("666", { id: 666, status: "approved", status_detail: "accredited", external_reference: ref, transaction_amount: 1 });
+  const before = calls.filter((c) => c.url.endsWith("/api/v0/cart")).length;
+  const r = await (await webhook(new Request("http://x/api/mp-webhook?data.id=666&type=payment", {
+    method: "POST", headers: sign("666"), body: JSON.stringify({ type: "payment", data: { id: "666" } }),
+  }))).json();
+  assert.equal(r.skipped, "valor pago diverge do pedido");
+  assert.equal(calls.filter((c) => c.url.endsWith("/api/v0/cart")).length, before);
+});
+
+await test("cartão: limite de tentativas por IP devolve 429 (anti card testing)", async () => {
+  mpPayment = (b) => ({ id: 777, status: "rejected", status_detail: "cc_rejected_other_reason", payment_method_id: "visa", payment_type_id: "credit_card", external_reference: b.external_reference });
+  const r = (i) => new Request("http://x/api/pay", { method: "POST", headers: { "x-real-ip": "203.0.113.9" },
+    body: JSON.stringify({ formData: { payment_method_id: "visa", token: "rl" + i }, items, customer, shippingId: 1 }) });
+  const codes = [];
+  for (let i = 0; i < 10; i++) codes.push((await pay(r(i))).status);
+  assert.deepEqual(codes.slice(0, 8), Array(8).fill(200));
+  assert.equal(codes[8], 429);
+  const pix = await pay(new Request("http://x/api/pay", { method: "POST", headers: { "x-real-ip": "203.0.113.9" },
+    body: JSON.stringify({ formData: { payment_method_id: "pix" }, items, customer, shippingId: 1 }) }));
+  assert.notEqual(pix.status, 429, "Pix não entra no limite de cartão");
 });
 
 console.log(`\n${n} testes passaram`);

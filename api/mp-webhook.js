@@ -9696,7 +9696,19 @@ async function ensureShipment(reference) {
 	return { shipment: shipment ?? void 0 };
 }
 /** Pagamento confirmado: etiqueta (idempotente) + e-mails (idempotentes). Lança se valer o MP tentar de novo. */
-async function afterPaid(reference) {
+async function afterPaid(reference, paidAmount) {
+	if (paidAmount !== void 0 && dbReady()) {
+		const raw = await redis("GET", orderKey(reference));
+		const total = raw ? JSON.parse(raw).total : void 0;
+		if (total !== void 0 && !(paidAmount + .01 >= total)) {
+			console.warn("Valor pago menor que o total do pedido: conferir manualmente", reference, paidAmount, total);
+			return {
+				shipment: null,
+				skipped: "valor pago diverge do pedido",
+				emails: {}
+			};
+		}
+	}
 	const result = await ensureShipment(reference);
 	if (result.skipped) console.warn("Envio não criado automaticamente", reference, "-", result.skipped);
 	let emails = {};
@@ -9722,12 +9734,13 @@ async function POST(req) {
 	if (type !== "order" && type !== "payment" || !id) return json({ ok: true });
 	if (!validSignature(req, String(id))) return json({ error: "assinatura inválida" }, 401);
 	try {
-		let paid, reference;
+		let paid, reference, paidAmount;
 		if (type === "payment") {
 			if (!/^\d{1,20}$/.test(String(id))) return json({ ok: true });
 			const p = await mercadoPago(`/v1/payments/${id}`);
 			paid = p.status === "approved";
 			reference = String(p.external_reference ?? "");
+			paidAmount = Number(p.transaction_amount);
 			console.log("Payment", p.id, reference, p.status, p.status_detail, paid ? "PAGO" : "");
 		} else {
 			const order = await mercadoPago(`/v1/orders/${encodeURIComponent(String(id))}`);
@@ -9742,7 +9755,7 @@ async function POST(req) {
 		return json({
 			ok: true,
 			paid,
-			...await afterPaid(reference)
+			...await afterPaid(reference, paidAmount)
 		});
 	} catch (e) {
 		console.error(e);

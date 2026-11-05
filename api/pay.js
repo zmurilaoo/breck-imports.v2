@@ -9585,6 +9585,21 @@ function fingerprint(lines, customer, ship, windowStart) {
 //#region server/pay.ts
 const IDEMPOTENCY_WINDOW_MS = 6e5;
 const payIdemKey = (hash) => `brk:pay-idem:${hash}`;
+const CARD_LIMIT = 8;
+const CARD_WINDOW_S = 900;
+const clientIp = (req) => (req.headers.get("x-real-ip") ?? req.headers.get("x-forwarded-for")?.split(",")[0] ?? "").trim() || "sem-ip";
+async function cardAttemptsExceeded(req) {
+	if (!dbReady()) return false;
+	try {
+		const key = `brk:rl:pay:${await sha256Hex(clientIp(req))}`;
+		const count = await redis("INCR", key);
+		if (count === 1) await redis("EXPIRE", key, CARD_WINDOW_S);
+		return count > CARD_LIMIT;
+	} catch (err) {
+		console.error("Falha no limite de tentativas", err);
+		return false;
+	}
+}
 const REJECT_MESSAGES = {
 	cc_rejected_bad_filled_card_number: "Confira o número do cartão.",
 	cc_rejected_bad_filled_date: "Confira a data de validade do cartão.",
@@ -9663,6 +9678,7 @@ async function POST(req) {
 		const isBoleto = method === "bolbradesco" || method === "pec";
 		const token = String(formData.token ?? "");
 		if (!isPix && !isBoleto && !token) return json({ error: "Dados do cartão incompletos" }, 400);
+		if (!isPix && !isBoleto && await cardAttemptsExceeded(req)) return json({ error: "Muitas tentativas com cartão. Aguarde alguns minutos ou pague com Pix." }, 429);
 		const ship = (await quoteShipping(customer.cep, lines)).find((q) => q.id === shippingId && (q.price > 0 || q.id === MANUAL_SHIPPING.id));
 		if (!ship) return json({ error: "Escolha uma opção de frete válida" }, 400);
 		const subtotal = lines.reduce((n, l) => n + l.quantity * l.product.price, 0);

@@ -149,7 +149,16 @@ async function ensureShipment(reference: string): Promise<ShipResult> {
 }
 
 /** Pagamento confirmado: etiqueta (idempotente) + e-mails (idempotentes). Lança se valer o MP tentar de novo. */
-async function afterPaid(reference: string) {
+async function afterPaid(reference: string, paidAmount?: number) {
+  // Defesa em profundidade: pagamento menor que o total gravado não libera etiqueta nem e-mail
+  if (paidAmount !== undefined && dbReady()) {
+    const raw = await redis<string | null>("GET", orderKey(reference));
+    const total = raw ? (JSON.parse(raw) as StoredOrder).total : undefined;
+    if (total !== undefined && !(paidAmount + 0.01 >= total)) {
+      console.warn("Valor pago menor que o total do pedido: conferir manualmente", reference, paidAmount, total);
+      return { shipment: null, skipped: "valor pago diverge do pedido", emails: {} };
+    }
+  }
   const result = await ensureShipment(reference);
   if (result.skipped) console.warn("Envio não criado automaticamente", reference, "-", result.skipped);
   let emails: Record<string, string> = {};
@@ -173,13 +182,14 @@ export async function POST(req: Request) {
   if (!validSignature(req, String(id))) return json({ error: "assinatura inválida" }, 401);
 
   try {
-    let paid: boolean, reference: string;
+    let paid: boolean, reference: string, paidAmount: number | undefined;
     if (type === "payment") {
       // Pagamento transparente (Payment Brick → /v1/payments): o estado real vem de GET /v1/payments/{id}
       if (!/^\d{1,20}$/.test(String(id))) return json({ ok: true });
       const p = await mercadoPago(`/v1/payments/${id}`);
       paid = p.status === "approved";
       reference = String(p.external_reference ?? "");
+      paidAmount = Number(p.transaction_amount);
       console.log("Payment", p.id, reference, p.status, p.status_detail, paid ? "PAGO" : "");
     } else {
       const order = await mercadoPago(`/v1/orders/${encodeURIComponent(String(id))}`);
@@ -188,7 +198,7 @@ export async function POST(req: Request) {
       console.log("Order", order.id, reference, order.status, order.status_detail, paid ? "PAGO" : "");
     }
     if (!paid || !reference) return json({ ok: true, paid });
-    return json({ ok: true, paid, ...(await afterPaid(reference)) });
+    return json({ ok: true, paid, ...(await afterPaid(reference, paidAmount)) });
   } catch (e) {
     console.error(e);
     // 500 faz o Mercado Pago tentar de novo mais tarde; as travas no Redis impedem envio e e-mail duplicados
