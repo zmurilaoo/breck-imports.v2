@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BrowserRouter, Outlet, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { CartDrawer } from "./components/cart/CartDrawer";
 import { AddedToCartToast, CookieBanner, WhatsAppButton } from "./components/layout/FloatingUI";
 import { Footer } from "./components/layout/Footer";
@@ -11,7 +11,7 @@ import { CartProvider } from "./context/CartContext";
 import { UIProvider } from "./context/UIContext";
 import { useUI } from "./context/ui-context";
 import { useScrollReveal } from "./hooks/useScrollReveal";
-import { AccountPage } from "./pages/AccountPage";
+// AccountPage (login/cadastro) desligada: não havia autenticação real. Ver docs/parecer-login.md.
 import { CheckoutPage, OrderResultPage } from "./pages/CheckoutPage";
 import { HomePage } from "./pages/HomePage";
 import { InfoPage } from "./pages/InfoPage";
@@ -66,8 +66,8 @@ export default function App() {
               <Route path="pagina/:slug" element={<InfoPage />} />
               <Route path="checkout" element={<CheckoutPage />} />
               <Route path="pedido/:status" element={<OrderResultPage />} />
-              <Route path="conta/login" element={<AccountPage mode="login" />} />
-              <Route path="conta/cadastro" element={<AccountPage mode="register" />} />
+              <Route path="conta/login" element={<Navigate to="/" replace />} />
+              <Route path="conta/cadastro" element={<Navigate to="/" replace />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>

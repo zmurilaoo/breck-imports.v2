@@ -116,10 +116,10 @@ function ProductDetail({ product }: { product: Product }) {
 
             <ul className="product-perks">
               <li>
-                <TruckIcon size={18} /> Frete grátis para o Sudeste
+                <TruckIcon size={18} /> Enviamos para todo o Brasil
               </li>
               <li>
-                <CreditCardIcon size={18} /> 5% OFF pagando no Pix ou em até 12x no cartão
+                <CreditCardIcon size={18} /> Pix ou em até 12x no cartão
               </li>
               <li>
                 <WhatsAppIcon size={18} />

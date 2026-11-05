@@ -95,7 +95,6 @@ const pages: Record<string, { title: string; content: ReactNode }> = {
       <>
         <p>Enviamos para todo o Brasil. O pedido é postado após a confirmação do pagamento — no Pix a aprovação é imediata.</p>
         <ul>
-          <li>Frete grátis para a região Sudeste.</li>
           <li>O prazo de entrega é calculado no carrinho a partir do seu CEP.</li>
           <li>Você recebe o código de rastreio por e-mail assim que o pedido for postado.</li>
         </ul>
@@ -135,7 +134,7 @@ const pages: Record<string, { title: string; content: ReactNode }> = {
         <li>Escolha o modelo e clique em “Comprar”.</li>
         <li>Selecione o tamanho e adicione ao carrinho.</li>
         <li>No carrinho, confira os itens e calcule o frete pelo seu CEP.</li>
-        <li>Clique em “Finalizar compra” e escolha a forma de pagamento: Pix (5% OFF), cartão em até 12x ou boleto.</li>
+        <li>Clique em “Finalizar compra” e escolha a forma de pagamento: Pix, cartão em até 12x ou boleto.</li>
         <li>Pronto! Você receberá a confirmação e, após a postagem, o código de rastreio.</li>
       </ol>
     ),

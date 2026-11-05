@@ -9544,6 +9544,46 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), {
 //#region server/checkout.ts
 /** A API de Orders recebe valores como texto com 2 casas: "299.00" */
 const money = (n) => n.toFixed(2);
+/** Janela em que um reenvio do mesmo pedido (duplo clique, retry, F5) reaproveita a mesma order */
+const IDEMPOTENCY_WINDOW_MS = 6e5;
+const idemKey = (hash) => `brk:checkout-idem:${hash}`;
+async function sha256Hex(text) {
+	const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+	return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+/**
+* Hash estável do conteúdo do pedido. Mesmo carrinho + mesmo cliente + mesmo frete na mesma janela
+* gera a mesma chave, então o Mercado Pago (X-Idempotency-Key) e o nosso cache não criam duas orders.
+*/
+function fingerprint(lines, customer, ship, windowStart) {
+	const norm = (v) => String(v ?? "").trim().toLowerCase();
+	const items = lines.map((l) => [
+		l.product.slug,
+		String(l.size),
+		l.quantity,
+		money(l.product.price)
+	]).sort((a, b) => a.join("|") < b.join("|") ? -1 : a.join("|") > b.join("|") ? 1 : 0);
+	const who = [
+		"name",
+		"email",
+		"phone",
+		"cpf",
+		"cep",
+		"street",
+		"number",
+		"complement",
+		"district",
+		"city",
+		"state"
+	].map((k) => k === "cpf" || k === "cep" || k === "phone" ? String(customer[k] ?? "").replace(/D/g, "") : norm(customer[k]));
+	return JSON.stringify({
+		v: 1,
+		items,
+		who,
+		ship: [ship.id, money(ship.price)],
+		w: windowStart
+	});
+}
 async function POST(req) {
 	try {
 		const { items, customer, shippingId } = await req.json();
@@ -9575,10 +9615,22 @@ async function POST(req) {
 			quantity: 1
 		}] : []];
 		const total = orderItems.reduce((n, i) => n + Number(i.unit_price) * i.quantity, 0);
-		const reference = `BRK-${Date.now().toString(36).toUpperCase()}-${crypto.randomUUID().slice(0, 4).toUpperCase()}`;
+		const windowStart = Math.floor(Date.now() / IDEMPOTENCY_WINDOW_MS) * IDEMPOTENCY_WINDOW_MS;
+		const hash = await sha256Hex(fingerprint(lines, customer, ship, windowStart));
+		const reference = `BRK-${windowStart.toString(36).toUpperCase()}-${hash.slice(0, 6).toUpperCase()}`;
+		if (dbReady()) try {
+			const cached = await redis("GET", idemKey(hash));
+			if (cached) {
+				const hit = JSON.parse(cached);
+				console.log("Checkout repetido, reaproveitando order", hit.reference, hit.id);
+				return json(hit);
+			}
+		} catch (err) {
+			console.error("Falha ao ler idempotência no Redis", reference, err);
+		}
 		const order = await mercadoPago("/v1/orders", {
 			method: "POST",
-			headers: { "X-Idempotency-Key": crypto.randomUUID() },
+			headers: { "X-Idempotency-Key": hash },
 			body: JSON.stringify({
 				type: "online",
 				processing_mode: "manual",
@@ -9623,11 +9675,17 @@ async function POST(req) {
 		else console.warn("Banco de pedidos não configurado (KV_REST_API_URL/TOKEN)");
 		if (!saved) console.log("Pedido sem banco", reference, JSON.stringify(stored));
 		else console.log("Pedido criado", reference, order.id);
-		return json({
-			url: order.checkout_url,
-			id: order.id,
+		const result = {
+			url: String(order.checkout_url),
+			id: String(order.id),
 			reference
-		});
+		};
+		if (dbReady()) try {
+			await redis("SET", idemKey(hash), JSON.stringify(result), "PX", IDEMPOTENCY_WINDOW_MS * 2);
+		} catch (err) {
+			console.error("Falha ao gravar idempotência no Redis", reference, err);
+		}
+		return json(result);
 	} catch (e) {
 		console.error(e);
 		return json({ error: "Não foi possível iniciar o pagamento" }, 500);

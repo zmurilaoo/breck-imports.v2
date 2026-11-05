@@ -4,7 +4,7 @@ import { useUI } from "../../context/ui-context";
 import { contact, mobileNav } from "../../data/site";
 import { useLockBody } from "../../hooks/useLockBody";
 import type { NavLink } from "../../types";
-import { ChevronDown, CloseIcon, InstagramIcon, GlobeIcon, PhoneIcon, UserIcon, WhatsAppIcon } from "../Icons";
+import { ChevronDown, CloseIcon, InstagramIcon, GlobeIcon, PhoneIcon, WhatsAppIcon } from "../Icons";
 
 function MenuItems({ items, onNavigate, depth = 0 }: { items: NavLink[]; onNavigate: () => void; depth?: number }) {
   const [openLabel, setOpenLabel] = useState<string | null>(null);
@@ -55,16 +55,6 @@ export function MobileMenu() {
         </div>
         <div className="drawer-body">
           {menuOpen && <MenuItems items={mobileNav} onNavigate={close} />}
-          <div className="mobile-account">
-            <UserIcon size={18} />
-            <Link to="/conta/cadastro" onClick={close}>
-              Cadastre-se
-            </Link>
-            <span>|</span>
-            <Link to="/conta/login" onClick={close}>
-              Fazer login
-            </Link>
-          </div>
           <div className="mobile-contacts">
             <a href={contact.whatsappUrl} target="_blank" rel="noreferrer">
               <WhatsAppIcon size={16} /> WhatsApp

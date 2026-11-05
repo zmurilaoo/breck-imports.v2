@@ -19,6 +19,43 @@ import {
 /** A API de Orders recebe valores como texto com 2 casas: "299.00" */
 const money = (n: number) => n.toFixed(2);
 
+/** Janela em que um reenvio do mesmo pedido (duplo clique, retry, F5) reaproveita a mesma order */
+const IDEMPOTENCY_WINDOW_MS = 10 * 60 * 1000;
+const idemKey = (hash: string) => `brk:checkout-idem:${hash}`;
+
+interface CachedCheckout {
+  url: string;
+  id: string;
+  reference: string;
+}
+
+async function sha256Hex(text: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * Hash estável do conteúdo do pedido. Mesmo carrinho + mesmo cliente + mesmo frete na mesma janela
+ * gera a mesma chave, então o Mercado Pago (X-Idempotency-Key) e o nosso cache não criam duas orders.
+ */
+function fingerprint(
+  lines: ReturnType<typeof priceItems>,
+  customer: Customer,
+  ship: { id: number; price: number },
+  windowStart: number,
+): string {
+  const norm = (v: unknown) => String(v ?? "").trim().toLowerCase();
+  const items = lines
+    .map((l) => [l.product.slug, String(l.size), l.quantity, money(l.product.price)] as const)
+    .sort((a, b) => (a.join("|") < b.join("|") ? -1 : a.join("|") > b.join("|") ? 1 : 0));
+  const who = (["name", "email", "phone", "cpf", "cep", "street", "number", "complement", "district", "city", "state"] as const).map((k) =>
+    k === "cpf" || k === "cep" || k === "phone"
+      ? String((customer as unknown as Record<string, unknown>)[k] ?? "").replace(/D/g, "")
+      : norm((customer as unknown as Record<string, unknown>)[k]),
+  );
+  return JSON.stringify({ v: 1, items, who, ship: [ship.id, money(ship.price)], w: windowStart });
+}
+
 export async function POST(req: Request) {
   try {
     const { items, customer, shippingId } = (await req.json()) as {
@@ -48,11 +85,28 @@ export async function POST(req: Request) {
       ...(ship.price > 0 ? [{ title: `Frete ${ship.name}`, unit_price: money(ship.price), quantity: 1 }] : []),
     ];
     const total = orderItems.reduce((n, i) => n + Number(i.unit_price) * i.quantity, 0);
-    const reference = `BRK-${Date.now().toString(36).toUpperCase()}-${crypto.randomUUID().slice(0, 4).toUpperCase()}`;
+    const windowStart = Math.floor(Date.now() / IDEMPOTENCY_WINDOW_MS) * IDEMPOTENCY_WINDOW_MS;
+    const hash = await sha256Hex(fingerprint(lines, customer, ship, windowStart));
+    // A referência também deriva do hash: o reenvio manda exatamente o mesmo corpo com a mesma chave.
+    const reference = `BRK-${windowStart.toString(36).toUpperCase()}-${hash.slice(0, 6).toUpperCase()}`;
+
+    if (dbReady()) {
+      try {
+        const cached = await redis<string | null>("GET", idemKey(hash));
+        if (cached) {
+          const hit = JSON.parse(cached) as CachedCheckout;
+          console.log("Checkout repetido, reaproveitando order", hit.reference, hit.id);
+          return json(hit);
+        }
+      } catch (err) {
+        // Sem cache, a X-Idempotency-Key derivada ainda protege contra order duplicada no Mercado Pago.
+        console.error("Falha ao ler idempotência no Redis", reference, err);
+      }
+    }
 
     const order = await mercadoPago("/v1/orders", {
       method: "POST",
-      headers: { "X-Idempotency-Key": crypto.randomUUID() },
+      headers: { "X-Idempotency-Key": hash },
       body: JSON.stringify({
         type: "online",
         processing_mode: "manual",
@@ -98,7 +152,15 @@ export async function POST(req: Request) {
     if (!saved) console.log("Pedido sem banco", reference, JSON.stringify(stored));
     else console.log("Pedido criado", reference, order.id);
 
-    return json({ url: order.checkout_url, id: order.id, reference });
+    const result: CachedCheckout = { url: String(order.checkout_url), id: String(order.id), reference };
+    if (dbReady()) {
+      try {
+        await redis("SET", idemKey(hash), JSON.stringify(result), "PX", IDEMPOTENCY_WINDOW_MS * 2);
+      } catch (err) {
+        console.error("Falha ao gravar idempotência no Redis", reference, err);
+      }
+    }
+    return json(result);
   } catch (e) {
     console.error(e);
     return json({ error: "Não foi possível iniciar o pagamento" }, 500);

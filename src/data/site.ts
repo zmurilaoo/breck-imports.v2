@@ -16,7 +16,7 @@ export const contact = {
   instagramHandle: "@breck_importss",
 };
 
-export const announcements = ["5% OFF PAGANDO NO PIX", "FRETE GRÁTIS PARA O SUDESTE"];
+export const announcements = ["ENVIAMOS PARA TODO O BRASIL", "PARCELE EM ATÉ 12X NO CARTÃO"];
 
 const promoLinks: NavLink[] = [
   { label: "2 PARES POR R$350 (TN)", to: "/categoria/2-pares-350" },
@@ -223,7 +223,7 @@ export const faq = [
   },
   {
     q: "COMO SÃO REALIZADAS AS ENTREGAS?",
-    a: "Enviamos para todo o Brasil via Correios e transportadoras parceiras, com embalagem reforçada. Para a região Sudeste o frete é grátis.",
+    a: "Enviamos para todo o Brasil via Correios e transportadoras parceiras, com embalagem reforçada.",
   },
   {
     q: "POSSO TROCAR CASO NÃO SERVIR?",

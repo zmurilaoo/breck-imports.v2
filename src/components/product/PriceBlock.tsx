@@ -1,5 +1,5 @@
 import type { Product } from "../../types";
-import { formatPrice, MAX_INSTALLMENTS, productPix } from "../../utils/format";
+import { formatPrice, MAX_INSTALLMENTS } from "../../utils/format";
 import { CreditCardIcon } from "../Icons";
 
 export function PriceBlock({ product, large }: { product: Product; large?: boolean }) {
@@ -10,9 +10,6 @@ export function PriceBlock({ product, large }: { product: Product; large?: boole
           <span className="price-compare">{formatPrice(product.comparePrice)}</span>
         )}
         <span className="price">{formatPrice(product.price)}</span>
-      </div>
-      <div className="price-pix">
-        <strong>{formatPrice(productPix(product))}</strong> com Pix
       </div>
       <div className="price-installments">
         <CreditCardIcon size={14} />

@@ -13,7 +13,6 @@ import {
   MenuIcon,
   PhoneIcon,
   SearchIcon,
-  UserIcon,
   WhatsAppIcon,
 } from "../Icons";
 import { SearchForm } from "./SearchForm";
@@ -107,12 +106,6 @@ export function Header() {
             <button type="button" className="icon-btn only-mobile" aria-label="Buscar" onClick={() => setSearchOpen(true)}>
               <SearchIcon size={22} />
             </button>
-            <div className="account-links only-desktop">
-              <UserIcon size={20} />
-              <Link to="/conta/cadastro">Cadastre-se</Link>
-              <span aria-hidden>|</span>
-              <Link to="/conta/login">Fazer login</Link>
-            </div>
             <button type="button" className="icon-btn cart-btn" aria-label={`Carrinho com ${count} itens`} onClick={openCart}>
               <CartIcon size={24} />
               <span className="cart-badge">{count}</span>
