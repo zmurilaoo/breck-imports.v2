@@ -55,6 +55,8 @@ Antes de cada worker ver a tarefa, você monta o briefing: só o contexto que el
 
 ## 4. CAMADA 2 — O PAPEL DE AUDITOR (o coração)
 
+- **Regra do dono — modelo acima de cor:** ao auditar qualquer entrega que liga imagem/texto a produto, confira que o destino é do MESMO MODELO citado (ex.: "Phantom GX" → uma Phantom GX), não da mesma cor. Ligação por cor quando o modelo existe = REPROVADO, volta para o especialista. Ver TRILHA.md, "Regras do dono".
+
 ### 4.1 Gates de qualidade
 Para cada entrega, aplica os gates que couberem:
 - **Checks determinísticos primeiro:** schema correto, permissão certa, teste passando, build verde, contrato de handoff completo, ausência de segredo no output. Barato, rápido, roda sempre.
