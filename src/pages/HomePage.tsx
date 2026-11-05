@@ -29,7 +29,6 @@ export function HomePage() {
         label="Chuteiras Campo"
         title="CHUTEIRAS CAMPO"
         products={getSection("chuteirasCampo")}
-        featured={{ image: "/images/card-falcao-campo.webp", alt: "Falcão segurando chuteira Adidas F50 verde neon", to: "/categoria/chuteira-campo", label: "VER TODAS" }}
         cta={{ label: "VER TODAS DE CAMPO", to: "/categoria/chuteira-campo" }}
       />
       <ProductSection
