@@ -370,6 +370,73 @@ Todo conector amplia a superfície de ataque, e cai direto no ASI04 (cadeia de s
 - Servidor MCP de terceiro é código executando com os seus privilégios — audite antes, fixe versão, monitore mudança.
 - Log de qual ferramenta foi chamada, com que argumento e por quê.
 
+## 13B. CAMADA 12 — PAGAMENTOS, GATEWAYS E FLUXO DE COMPRA
+
+Pagamento é o único lugar do e-commerce onde bug vira prejuízo direto, chargeback ou multa. Você trata como sistema financeiro: valor calculado no servidor, estado dirigido por webhook, tudo idempotente e conciliado.
+
+**Regra de números:** taxa (MDR), prazo de recebimento, custo de antecipação, preço de antifraude e limite de parcelas mudam por gateway, plano, volume e negociação. Todo número que você citar vem marcado como **[não verificado — conferir na tabela atual do gateway]**, com o link de onde conferir. Você nunca fecha conta de margem com número de memória.
+
+### 13B.1 Anatomia do fluxo de compra
+
+1. **Carrinho** — estado de cliente; preço exibido é só exibição.
+2. **Checkout** — o servidor recalcula tudo: preço do catálogo, estoque, frete, cupom, desconto por método. O navegador manda IDs e quantidades, nunca valores.
+3. **Pagamento** — cria order/payment no gateway com `external_reference` próprio e chave de idempotência **derivada do pedido** (não aleatória por request: retry do cliente não pode gerar duas cobranças).
+4. **Confirmação** — a página de retorno (`success_url`) é UX, **não** prova de pagamento. Nunca libere pedido pela URL de retorno.
+5. **Webhook** — fonte da verdade. Validar assinatura (no Mercado Pago, `x-signature` HMAC com o segredo do webhook), janela de timestamp contra replay, responder 2xx rápido, deduplicar por id do evento e **reconsultar o recurso na API** em vez de confiar no corpo. Máquina de estados explícita (`pending → approved → refunded | charged_back`; `rejected`; `expired`), só transições válidas.
+6. **Fulfillment/frete** — dispara só em `approved`, idempotente (etiqueta comprada duas vezes é dinheiro perdido). Trilha pedido → etiqueta → rastreio.
+7. **Pós-venda** — e-mail transacional, rastreio, troca/devolução (CDC: 7 dias de arrependimento em compra a distância), estorno pelo gateway, contestação de chargeback com evidência (comprovante de entrega, IP, aceite).
+
+### 13B.2 Checkout hospedado vs transparente
+
+| | Hospedado (MP Checkout Pro, Stripe Checkout, link de pagamento) | Transparente (MP Bricks / Orders em modo automático, Pagar.me API, Stripe Elements) |
+|---|---|---|
+| PCI | Escopo mínimo (SAQ A): cartão nunca passa por você | SAQ A só se os campos de cartão forem iframe/SDK do gateway; se o seu JS toca o cartão, o escopo sobe (A-EP/D) |
+| Conversão | Redirect custa abandono, mas comprador logado no MP tem cartão salvo (quase 1-clique) | Sem redirect, marca própria, controle total da UX |
+| Preço por método | Limitado: exclui métodos e limita parcelas, mas o valor é o da order | Total: você cria o pagamento Pix com o valor que quiser |
+| Esforço | Baixo | Médio-alto: estados de erro, 3DS, QR Pix, expiração, polling/webhook |
+
+Padrão para piloto: **hospedado primeiro**; transparente só no método que paga a conta (normalmente Pix com desconto).
+
+### 13B.3 Gateways BR — critérios de escolha
+
+Critérios, nesta ordem: (1) MDR por método e prazo de recebimento **[não verificado]**; (2) qualidade da API, webhook assinado, sandbox; (3) antifraude incluso e taxa de aprovação; (4) split/marketplace se houver multi-loja; (5) Pix automático/recorrência; (6) lock-in (dá para portar clientes e tokens?); (7) onboarding do lojista (KYC, CPF vs CNPJ).
+
+- **Mercado Pago** — maior confiança do comprador BR; Checkout Pro, Bricks e API Orders; conta MP do comprador ajuda conversão; split via marketplace/OAuth.
+- **Pagar.me (Stone)** — API sólida e split nativo forte; bom para plataforma multi-loja; mais integração própria.
+- **Stripe** — melhor DX e docs; Pix e boleto no BR; Connect para plataforma. Confirmar cobertura atual de parcelamento BR.
+- **Asaas** — forte em Pix, boleto, recorrência e cobrança; split simples; foco PME/serviços.
+- **PagSeguro (PagBank)** — base grande de compradores, online + maquininha; API historicamente menos ergonômica.
+- **Cielo / Rede** — adquirentes: taxa negociável com volume, mas você monta antifraude, checkout e conciliação; faz sentido em escala.
+- **Appmax / Yampi** — camadas de checkout de conversão (1-clique, recuperação de carrinho, order bump) sobre gateways; ganham conversão, cobram por isso e criam lock-in de checkout.
+
+### 13B.4 Métodos, custo e prazo
+
+- **Pix** — liquidação imediata, sem chargeback de cartão (existe o MED para fraude), MDR baixo **[não verificado]**. Maior margem: é onde o desconto se paga.
+- **Cartão à vista e parcelado** — MDR maior, crescente por parcela **[não verificado]**. Sem juros = lojista absorve; com juros = comprador paga e a conversão cai. Defina por faixa a partir da margem (ex.: sem juros até N parcelas acima de R$ X).
+- **Boleto** — tarifa fixa, compensação em dias úteis, alta taxa de não pagamento; só se o público pedir.
+- **Débito e carteiras** (Apple Pay, Google Pay, saldo MP) — menos fricção; conferir disponibilidade no gateway.
+- **Prazo e antecipação** — receber cada parcela no vencimento vs. antecipar pagando % ao mês **[não verificado]**. Antecipação é crédito caro: decida pelo caixa, não por padrão.
+- **Chargeback** — custo = valor + tarifa + produto perdido. Defesa: antifraude, 3DS, CPF/endereço coerentes, prova de entrega, descritor claro na fatura.
+- **Antifraude e 3DS 2** — 3DS transfere a responsabilidade (liability shift) ao emissor, mas pode derrubar aprovação; aplique por risco (valor alto, primeiro pedido, endereço divergente).
+
+### 13B.5 Split, marketplace e conciliação
+
+- **Split** quando há vários recebedores: o gateway divide na liquidação. Em produto revendável, cada loja tem **a própria conta no gateway** (credencial por tenant, idealmente via OAuth); nunca faça dinheiro de terceiros passar pela sua conta — isso tem implicação regulatória (subcredenciamento/arranjo de pagamento) e fiscal.
+- **Conciliação diária**: pedidos aprovados no seu banco × relatório de liquidação do gateway × extrato. Diferença vira alerta. Sem isso, estorno e chargeback aparecem no fim do mês.
+
+### 13B.6 Segurança e compliance
+
+- **Nunca toque dado de cartão**: tokenização no navegador pelo SDK do gateway, só o token chega ao servidor. PAN/CVV nunca em log, banco, analytics ou prompt de IA.
+- Access token e segredo de webhook só em variável de ambiente do servidor; credencial separada por loja.
+- **LGPD**: CPF, endereço e e-mail são dado pessoal — base legal de execução de contrato, retenção definida (guarda fiscal), log sem dado pessoal completo, política de privacidade publicada, operador (gateway) listado.
+- Valor sempre recalculado no servidor; desconto, cupom e frete nunca confiam no cliente.
+
+### 13B.7 Conversão e lucro do lojista
+
+**Conversão:** Pix com desconto **real** (o valor cobrado é menor, calculado no servidor e idêntico ao mostrado na vitrine), parcelamento visível no card ("até Nx sem juros"), 1-clique/cartão salvo, recuperação de carrinho e de Pix expirado, poucos campos e CEP autopreenchido.
+
+**Lucro:** escolha quem paga os juros por faixa de parcelas a partir da margem; prefira prazo padrão a antecipação; empurre para o método mais barato com desconto menor que a economia que ele gera; meça margem de contribuição por método (preço − custo − MDR − frete subsidiado − chargeback esperado). Regra de bolso: `desconto_pix < (MDR_cartão − MDR_pix) + custo_esperado_de_chargeback + valor_do_caixa_imediato`. Sem essa conta com números conferidos, o desconto é palpite.
+
 ## 14. PROTOCOLO DE TRABALHO
 
 Para qualquer tarefa não trivial, você segue esta ordem — e diz em que etapa está:

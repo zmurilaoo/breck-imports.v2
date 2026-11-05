@@ -2,6 +2,38 @@
 
 Versão 1.0 · 2026-11-04 · mantido pelo Orchestrator. Mudança neste arquivo = mudança de pipeline (registrar no changelog no fim).
 
+## Missão e dor do dono (Murilo)
+
+- A Breck Imports (https://breckimports.com.br) é o **piloto que o dono vai revender para outras lojas**. Precisa ser "fora da curva": design atual (animação, modernidade), conversão, pagamento e frete impecáveis.
+- Partes vieram de um template remodelado; ainda há trechos "crus, com cara de IA" (ex.: checkout). Caçar e eliminar isso é prioridade de design.
+- Quer os agentes conversando numa esteira correta, o máximo automatizado, e o orquestrador acionando o agente certo em cada passo.
+- Quer login no site (dúvida: Google ou não). O yellow é o especialista em pagamento/gateways e fluxo de compra: melhor para o cliente e para a margem do dono.
+- **Limite de uso:** se a sessão chegar perto de ~97% do limite, parar o que estiver fazendo e atualizar `PROGRESSO.md` (feito / em andamento / falta). Nada fica pela metade sem registro.
+
+## Produto piloto revendável (o que precisa virar parâmetro)
+
+Tudo que é "da Breck" deve sair do código e ir para dado/config, para clonar a loja trocando só isso:
+- **Marca:** `DESIGN.md` + tokens CSS por loja (cores, fontes, logo); nada de cor/texto da marca hardcoded em componente.
+- **Catálogo por dados:** produtos, categorias, banners e links (pelo modelo) em arquivo/fonte de dados, não em JSX. Robô de catálogo (importação/atualização) como ferramenta reutilizável.
+- **Chaves por variável de ambiente:** Mercado Pago, SuperFrete, Upstash, WhatsApp, domínio, CEP de origem. Um `.env.example` documentado; segredo nunca no repo.
+- **Regras comerciais configuráveis:** desconto Pix, parcelamento, frete grátis, textos legais (CDC, trocas, privacidade/LGPD).
+- **Esteira replicável:** CI + e2e smoke + checklist de deploy valem para qualquer loja clonada.
+- Dívida que impede revenda (algo específico da Breck preso no código) entra no backlog como item de "templatização".
+
+## Fluxo de conversa entre agentes (quem chama quem)
+
+O orquestrador abre o briefing (G0), passa o contrato de handoff de um agente ao próximo e fecha com o dono. Agente não chama agente direto fora dessa ordem.
+
+| Pedido | Esteira |
+|---|---|
+| **Tela nova / redesenho** | design (tela + `check.cjs`) → yellow (se precisa back/dados) → qa (G2) → dono (deploy) |
+| **Pagamento / frete** | growth (se muda oferta/preço) → yellow (impl., gateway, cálculo no servidor) → automation (idempotência, webhook, teste) → **security (G4)** → qa → dono |
+| **Login / auth** | yellow (decisão + ADR: provedor, sessão, LGPD) → design (telas de auth) → yellow (integração) → **security (G4)** → qa → dono |
+| **Catálogo** | yellow/automation (dados, robô) → design (se muda card/vitrine) → qa (inclui regra do dono: link pelo modelo) → dono |
+| **Deploy** | automation (CI verde: build + e2e smoke) → security se o diff toca pagamento/auth/dados → dono aprova (G5) → automation observa pós-deploy |
+
+Regra geral: **design → yellow → security (quando toca pagamento, auth ou dado pessoal) → qa → dono para produção.**
+
 ## Regras do dono (valem para todo o time)
 
 1. **Produto se liga pelo MODELO, nunca pela cor.** Quando um banner, bolinha, foto ou texto cita um modelo (ex.: "Vapor 15", "Phantom GX"), o link vai para um produto daquele modelo (ou da linha mais próxima, ex.: Vapor 15 → qualquer Mercurial Vapor). A cor da foto não importa. Só troque de modelo se o modelo não existir no catálogo, e diga qual usou. (Correção do dono em 04/11/2026: a bolinha "Phantom GX" foi ligada a uma Mercurial verde por causa da cor — errado.)
@@ -13,11 +45,12 @@ Versão 1.0 · 2026-11-04 · mantido pelo Orchestrator. Mudança neste arquivo =
 | 01 | **yellow** | Engenharia e arquitetura full-stack, IA | Construir/alterar feature, decisão de arquitetura, análise de sistema antes de mexer | Sobre decisões técnicas de arquitetura (com ADR) | Não aceita a própria entrega (QA aceita), não faz pentest |
 | 02 | **qa** | Aceitação com Playwright, desktop + celular | Depois de toda entrega visível ao cliente | **Sim**: REPROVADO/BLOQUEADO barra promoção | Só altera `e2e/` e `playwright.config.ts`; não conserta produção |
 | 03 | **automation** | Automação e confiabilidade (suíte, CI, idempotência, jobs, webhooks) | Algo precisa rodar sozinho e repetido; flakiness; efeito colateral (etiqueta, webhook) | Sobre efeito colateral não idempotente em fluxo automatizado (sinaliza bloqueio) | Não decide arquitetura de app (Yellow) |
-| 06* | **security** | Pentest autorizado e dev seguro | Antes de produção em fluxo de pagamento/dados; revisão adversarial; incidente de segredo | **Sim**: crítico aberto e validado bloqueia produção | Nada ofensivo sem escopo e autorização escrita do dono; não decide arquitetura |
+| 06 | **design** | Telas, UI, conversão visual, DESIGN.md, 5 skills de design | Toda tela nova/alterada; caçar "cara de template/IA" | Não (qa aceita) | Não faz back/deploy (yellow) |
+| 07* | **security** | Pentest autorizado e dev seguro | Antes de produção em fluxo de pagamento/dados; revisão adversarial; incidente de segredo | **Sim**: crítico aberto e validado bloqueia produção | Nada ofensivo sem escopo e autorização escrita do dono; não decide arquitetura |
 | 04 | **growth** | Vendas, oferta, copy, funil orgânico | Oferta, preço promocional, copy, conversão | Não (recomenda; dono decide) | Especifica requisito de negócio; técnica vai para Yellow/Automation |
 | 05 | **orchestrator** | Maestro-auditor: decompõe, roteia, gateia, costura | Objetivo que envolve mais de um agente ou precisa de auditoria | **Sim**: barra entrega que não passa nos gates | Não executa domínio; não aprova irreversível |
 
-\* Ver seção 7 (numeração).
+\* Número 07 proposto, pendente de ok do dono (o arquivo `security.md` ainda diz "Agente 03"). Ver seções 7 e 9.
 
 ## 2. Contrato de handoff (obrigatório em toda entrega)
 
@@ -95,6 +128,8 @@ Proposta (não aplicada; aguarda aprovação do dono):
 ## 8. Changelog
 
 - 1.0 (2026-11-04) — trilha criada no kickoff; backlog Breck inicial.
+- 1.1 (2026-11-04) — design entra como 06; security proposto 07; skills de design e Playwright (seções 9 e 10).
+- 1.2 (2026-11-05) — missão/dor do dono, produto piloto revendável, fluxo de conversa entre agentes por tipo de pedido, regra do limite de uso (~97% → atualizar `PROGRESSO.md`); roster com design 06 / security 07*.
 
 ## 9. Atualização 04/11/2026: agente design (06)
 
