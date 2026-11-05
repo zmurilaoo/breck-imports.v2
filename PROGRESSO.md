@@ -39,3 +39,17 @@ Quando cada um fechar: registrar aqui o resultado, o gate em que parou e o próx
 ## Próximo passo sugerido
 
 Fechar os 3 relatórios da rodada → dono decide Pix (A/B) e login → aplicar pela esteira (design → yellow → security → qa → dono).
+
+## Atualização 05/11/2026 (noite) — pagamento transparente
+
+Commits LOCAIS (não publicados, sem push): e075ad0 (promessas honestas + idempotência), 003126a (checkout 3 passos, rodapé, cookies, animações), 672e141/4b94c2a (QA: 41 testes ok), cf5a536 (Payment Brick: Pix/cartão/boleto no site, sem conta MP; e-mails via Resend), a73bb4f (security: limite anti card testing + webhook confere valor pago).
+Gates: QA aprovado (checkout); Security G4 = LIBERA COM RESSALVAS (pagamento).
+
+Falta do dono (Vercel):
+- VITE_MP_PUBLIC_KEY (teste em Preview, produção em Production) e marcar evento "Pagamentos" no webhook do MP.
+- Resend: conta, domínio verificado no DNS, RESEND_API_KEY e LOJA_EMAIL_REMETENTE.
+- CNPJ para o rodapé.
+Depois: deploy em Preview → teste com cartão APRO, Pix e boleto → QA → "sobe" do dono para produção.
+
+Ressalvas do security para o Yellow: recusar webhook sem segredo em produção; mascarar CPF nos logs; /api/pay-status exigir reference; limite de tamanho/e-mail nos campos; CSP; aviso de pagamento duplicado.
+Pendência: e-mail "pedido enviado" só sai com etiqueta paga automaticamente.
