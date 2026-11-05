@@ -31,5 +31,7 @@ export default defineConfig({
         url: baseURL,
         reuseExistingServer: !isCI,
         timeout: 180_000,
+        // Public key fictícia: liga o Payment Brick no build de teste (o SDK é sempre mockado ou bloqueado)
+        env: { VITE_MP_PUBLIC_KEY: process.env.VITE_MP_PUBLIC_KEY ?? "TEST-e2e-public-key" },
       },
 });

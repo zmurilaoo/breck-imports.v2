@@ -37,6 +37,8 @@ async function seedCart(page: Page, items: unknown[] = CART) {
 
 async function mockNetwork(page: Page, opts: { freteFail?: boolean } = {}) {
   await page.route(/mercadopago|mercadolibre|mlstatic/, (r) => r.abort());
+  // SDK do Payment Brick vazio: estes testes cobrem o fallback (Checkout Pro); o Brick tem spec própria
+  await page.route("https://sdk.mercadopago.com/js/v2", (r) => r.fulfill({ contentType: "application/javascript", body: "/* sem SDK no e2e */" }));
   await page.route("https://viacep.com.br/**", (r) =>
     r.fulfill({ json: { cep: "01310-100", logradouro: "Avenida Paulista", bairro: "Bela Vista", localidade: "São Paulo", uf: "SP" } }),
   );

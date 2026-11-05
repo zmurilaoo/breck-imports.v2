@@ -4499,3 +4499,14 @@ body.is-checkout .skip-link {
   border-color: var(--accent);
   color: var(--accent);
 }
+
+/* Pagamento transparente (Payment Brick, Pix e boleto) */
+.co-brick { min-height: 120px; }
+.co-brick-loading { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 0.85rem; color: var(--muted); }
+.co-pix { display: grid; gap: 12px; }
+.co-pix-title { margin: 0; font-weight: 800; font-size: 1.05rem; color: var(--accent); }
+.co-pix-steps { margin: 0; padding-left: 1.2em; font-size: 0.85rem; color: var(--muted); display: grid; gap: 4px; }
+.co-pix-qr { justify-self: center; width: 220px; height: 220px; background: #fff; padding: 8px; border-radius: 12px; }
+.co-pix-code { display: grid; gap: 4px; font-size: 0.8rem; color: var(--muted); }
+.co-pix-code input { width: 100%; min-height: 44px; padding: 0 12px; border-radius: 10px; border: 1px solid #333; background: var(--surface-2); color: var(--fg); font-family: monospace; font-size: 0.8rem; }
+.co-pix-wait { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; font-size: 0.85rem; }

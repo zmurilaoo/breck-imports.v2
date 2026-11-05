@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { AnimatedPrice } from "../components/checkout/AnimatedNumber";
 import { Field } from "../components/checkout/Field";
+import { loadSdk, MP_PUBLIC_KEY, PaymentBrick, type BrickFormData } from "../components/checkout/PaymentBrick";
+import { BoletoPending, PixPending, type PayResult } from "../components/checkout/PaymentPending";
 import {
   daysLabel,
   emptyCustomer,
@@ -75,6 +77,15 @@ export function CheckoutPage() {
   const [payError, setPayError] = useState("");
   const [shipMissing, setShipMissing] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(false);
+  // Pagamento transparente (Payment Brick). Se o Brick não carregar, cai no Checkout Pro (redirect).
+  const [brickFailed, setBrickFailed] = useState(!MP_PUBLIC_KEY);
+  const [payResult, setPayResult] = useState<PayResult | null>(null);
+  const [brickRound, setBrickRound] = useState(0);
+  const navigate = useNavigate();
+  // Pré-carrega o SDK ao abrir o checkout: o Brick abre rápido no passo 3 e, se o SDK estiver bloqueado, o fallback já aparece
+  useEffect(() => {
+    if (MP_PUBLIC_KEY) loadSdk().catch(() => setBrickFailed(true));
+  }, []);
   const formRef = useRef<HTMLFormElement>(null);
   const numberRef = useRef<HTMLInputElement>(null);
 
@@ -186,6 +197,36 @@ export function CheckoutPage() {
     if (next) goTo(next.id);
   };
 
+  const cpfOk = !fieldError("cpf", customer);
+  const useBrick = !brickFailed;
+  const goResult = (status: "sucesso" | "pendente", reference: string) =>
+    navigate(`/pedido/${status}?external_reference=${encodeURIComponent(reference)}`);
+
+  /** Recebe o formData do Brick, cria o pagamento no nosso servidor e mostra o resultado */
+  const payWithBrick = async (formData: BrickFormData) => {
+    setPayError("");
+    try {
+      const r = await fetch("/api/pay", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ formData, items, customer, shippingId }),
+      });
+      const data = (await r.json().catch(() => ({}))) as PayResult & { error?: string };
+      if (!r.ok || !data.status) throw new Error(data.error || "Não foi possível processar o pagamento. Tente de novo.");
+      if (data.status === "approved") return goResult("sucesso", data.reference);
+      if (data.status === "rejected") {
+        setPayError(data.message || "O pagamento não foi aprovado. Tente outro cartão ou o Pix.");
+        setBrickRound((n) => n + 1); // recria o Brick para uma nova tentativa limpa
+        return;
+      }
+      if (data.pix || data.boleto) setPayResult(data);
+      else goResult("pendente", data.reference);
+    } catch (error) {
+      setPayError((error as Error).message);
+      setBrickRound((n) => n + 1);
+    }
+  };
+
   const pay = async (e?: FormEvent) => {
     e?.preventDefault();
     if (paying) return;
@@ -195,6 +236,12 @@ export function CheckoutPage() {
         setStep(s.id);
         return;
       }
+    }
+    if (useBrick) {
+      // Com o Brick, o pagamento acontece no próprio passo 3: o botão só leva até ele
+      setDone((d) => ({ ...d, contato: true, entrega: true }));
+      requestAnimationFrame(() => document.getElementById("co-brick")?.scrollIntoView({ block: "center", behavior: "smooth" }));
+      return;
     }
     setDone({ contato: true, entrega: true, pagamento: true });
     setPayError("");
@@ -244,7 +291,7 @@ export function CheckoutPage() {
         {ship && <> · {ship.name}</>}
       </>
     ),
-    pagamento: <>Mercado Pago</>,
+    pagamento: <>{useBrick ? "Pix, cartão ou boleto" : "Mercado Pago"}</>,
   };
 
   const renderStep = (id: StepId, title: string, n: number, body: ReactNode) => {
@@ -430,21 +477,47 @@ export function CheckoutPage() {
                   inputMode="numeric"
                   autoComplete="off"
                   placeholder="000.000.000-00"
-                  hint="O Mercado Pago pede o CPF de quem paga."
+                  hint={useBrick ? "Necessário para o Pix, o boleto e a nota do pedido." : "O Mercado Pago pede o CPF de quem paga."}
                   value={customer.cpf}
                   onChange={set("cpf", maskCpf)}
                   onBlur={blur("cpf")}
                   error={err("cpf")}
                 />
-                <p className="checkout-hint">
-                  Você escolhe Pix, cartão em até 12x, débito ou boleto na próxima tela, já no ambiente seguro do Mercado Pago.
-                </p>
+                {!useBrick && (
+                  <p className="checkout-hint">
+                    Você escolhe Pix, cartão em até 12x, débito ou boleto na próxima tela, já no ambiente seguro do Mercado Pago.
+                  </p>
+                )}
                 {payError && (
                   <p className="co-pay-error" role="alert">
                     {payError}
                   </p>
                 )}
-                <PayButton total={total} paying={paying} className="co-pay-main" />
+                {!useBrick ? (
+                  <PayButton total={total} paying={paying} className="co-pay-main" />
+                ) : payResult?.pix ? (
+                  <PixPending
+                    result={payResult}
+                    total={total}
+                    onApproved={() => goResult("sucesso", payResult.reference)}
+                    onRetry={() => {
+                      setPayResult(null);
+                      setBrickRound((n) => n + 1);
+                    }}
+                  />
+                ) : payResult?.boleto ? (
+                  <BoletoPending result={payResult} total={total} onDone={() => goResult("pendente", payResult.reference)} />
+                ) : cpfOk && ship ? (
+                  <PaymentBrick
+                    key={brickRound}
+                    amount={Math.round(total * 100) / 100}
+                    payer={customer}
+                    onSubmit={payWithBrick}
+                    onFail={() => setBrickFailed(true)}
+                  />
+                ) : (
+                  <p className="checkout-hint">Informe o CPF para escolher Pix, cartão em até 12x ou boleto.</p>
+                )}
               </>,
             )}
             <p className="co-help">
@@ -477,10 +550,10 @@ export function CheckoutPage() {
                 <AnimatedPrice value={total} />
               </dd>
             </dl>
-            <PayButton total={total} paying={paying} className="co-pay-aside" />
+            <PayButton total={total} paying={paying} className="co-pay-aside" transparent={useBrick} />
             <PaymentMethods variant="compact" />
             <p className="co-trust">
-              <LockIcon /> Pagamento processado pelo Mercado Pago. A Breck não vê os dados do seu cartão.
+              <LockIcon /> Pagamento processado pelo Mercado Pago, sem precisar de conta. A Breck não vê os dados do seu cartão.
             </p>
             <p className="co-trust">
               Troca em até 7 dias. <Link to="/pagina/politica-de-reembolso">Ver política de trocas</Link>
@@ -496,7 +569,7 @@ export function CheckoutPage() {
         </span>
         <button type="button" className="btn btn-primary" onClick={primary} disabled={paying} aria-busy={paying || undefined}>
           {paying ? <Spinner /> : null}
-          {paying ? "Abrindo…" : step === "pagamento" ? "Pagar no Mercado Pago" : "Continuar"}
+          {paying ? "Abrindo…" : step === "pagamento" ? (useBrick ? "Ir para o pagamento" : "Pagar no Mercado Pago") : "Continuar"}
         </button>
       </div>
 
@@ -523,7 +596,7 @@ function Spinner() {
   return <span className="spinner" aria-hidden="true" />;
 }
 
-function PayButton({ total, paying, className }: { total: number; paying: boolean; className: string }) {
+function PayButton({ total, paying, className, transparent = false }: { total: number; paying: boolean; className: string; transparent?: boolean }) {
   return (
     <button type="submit" className={`btn btn-primary btn-block co-pay ${className}`} aria-busy={paying || undefined} data-state={paying ? "loading" : "idle"}>
       {paying ? (
@@ -532,7 +605,8 @@ function PayButton({ total, paying, className }: { total: number; paying: boolea
         </>
       ) : (
         <>
-          <LockIcon /> Pagar {formatPrice(total)} no Mercado Pago
+          <LockIcon /> Pagar {formatPrice(total)}
+          {transparent ? "" : " no Mercado Pago"}
         </>
       )}
     </button>

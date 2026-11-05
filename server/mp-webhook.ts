@@ -1,4 +1,4 @@
-// Mercado Pago avisa aqui quando uma order muda (evento "Order (Mercado Pago)" configurado no painel).
+// Mercado Pago avisa aqui quando uma order (Checkout Pro) ou um payment (Payment Brick) muda. Eventos no painel: "Order (Mercado Pago)" e "Pagamentos".
 // A notificação só serve de gatilho: o estado real vem de GET /v1/orders/{id}.
 // Order paga → cria o envio na SuperFrete uma única vez por pedido (trava SET NX no Redis).
 import { createHmac, timingSafeEqual } from "node:crypto";
@@ -17,6 +17,7 @@ import {
   type StoredOrder,
   type StoredShipment,
 } from "./_lib";
+import { sendOrderEmail } from "./_email";
 
 /**
  * Confere o header x-signature ("ts=...,v1=...") com a chave secreta do webhook.
@@ -147,26 +148,50 @@ async function ensureShipment(reference: string): Promise<ShipResult> {
   return { shipment: shipment ?? undefined };
 }
 
+/** Pagamento confirmado: etiqueta (idempotente) + e-mails (idempotentes). Lança se valer o MP tentar de novo. */
+async function afterPaid(reference: string) {
+  const result = await ensureShipment(reference);
+  if (result.skipped) console.warn("Envio não criado automaticamente", reference, "-", result.skipped);
+  let emails: Record<string, string> = {};
+  if (dbReady()) {
+    const raw = await redis<string | null>("GET", orderKey(reference));
+    if (raw) {
+      const order = JSON.parse(raw) as StoredOrder;
+      emails.confirmado = await sendOrderEmail("confirmado", order);
+      if (result.shipment?.tracking) emails.enviado = await sendOrderEmail("enviado", order, result.shipment.tracking);
+    } else emails = { confirmado: "pedido não encontrado" };
+  }
+  return { shipment: result.shipment?.sfOrderId ?? null, skipped: result.skipped ?? null, emails };
+}
+
 export async function POST(req: Request) {
   const url = new URL(req.url);
-  const body = (await req.json().catch(() => ({}))) as { type?: string; action?: string; data?: { id?: string } };
-  const type = body.type ?? url.searchParams.get("type");
-  const id = url.searchParams.get("data.id") ?? body.data?.id;
-  if (type !== "order" || !id) return json({ ok: true });
-  if (!validSignature(req, id)) return json({ error: "assinatura inválida" }, 401);
+  const body = (await req.json().catch(() => ({}))) as { type?: string; topic?: string; action?: string; data?: { id?: string } };
+  const type = body.type ?? url.searchParams.get("type") ?? url.searchParams.get("topic");
+  const id = url.searchParams.get("data.id") ?? body.data?.id ?? url.searchParams.get("id");
+  if ((type !== "order" && type !== "payment") || !id) return json({ ok: true });
+  if (!validSignature(req, String(id))) return json({ error: "assinatura inválida" }, 401);
 
   try {
-    const order = await mercadoPago(`/v1/orders/${encodeURIComponent(id)}`);
-    const paid = order.status === "processed" && order.status_detail === "accredited";
-    console.log("Order", order.id, order.external_reference, order.status, order.status_detail, paid ? "PAGO" : "");
-    if (!paid || !order.external_reference) return json({ ok: true, paid });
-
-    const result = await ensureShipment(String(order.external_reference));
-    if (result.skipped) console.warn("Envio não criado automaticamente", order.external_reference, "-", result.skipped);
-    return json({ ok: true, paid, shipment: result.shipment?.sfOrderId ?? null, skipped: result.skipped ?? null });
+    let paid: boolean, reference: string;
+    if (type === "payment") {
+      // Pagamento transparente (Payment Brick → /v1/payments): o estado real vem de GET /v1/payments/{id}
+      if (!/^\d{1,20}$/.test(String(id))) return json({ ok: true });
+      const p = await mercadoPago(`/v1/payments/${id}`);
+      paid = p.status === "approved";
+      reference = String(p.external_reference ?? "");
+      console.log("Payment", p.id, reference, p.status, p.status_detail, paid ? "PAGO" : "");
+    } else {
+      const order = await mercadoPago(`/v1/orders/${encodeURIComponent(String(id))}`);
+      paid = order.status === "processed" && order.status_detail === "accredited";
+      reference = String(order.external_reference ?? "");
+      console.log("Order", order.id, reference, order.status, order.status_detail, paid ? "PAGO" : "");
+    }
+    if (!paid || !reference) return json({ ok: true, paid });
+    return json({ ok: true, paid, ...(await afterPaid(reference)) });
   } catch (e) {
     console.error(e);
-    // 500 faz o Mercado Pago tentar de novo mais tarde; a trava no Redis impede envio duplicado
+    // 500 faz o Mercado Pago tentar de novo mais tarde; as travas no Redis impedem envio e e-mail duplicados
     return json({ error: "falha ao processar" }, 500);
   }
 }

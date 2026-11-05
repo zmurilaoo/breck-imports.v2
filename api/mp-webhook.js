@@ -9484,6 +9484,84 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), {
 	headers: { "Content-Type": "application/json" }
 });
 //#endregion
+//#region server/_email.ts
+const resendKey = () => (process.env.RESEND_API_KEY ?? "").trim();
+const sender = () => (process.env.LOJA_EMAIL_REMETENTE ?? "").trim() || `Breck Imports <${env.storeEmail}>`;
+const emailKey = (ref, kind) => `brk:email:${kind}:${ref}`;
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
+	"&": "&amp;",
+	"<": "&lt;",
+	">": "&gt;",
+	"\"": "&quot;",
+	"'": "&#39;"
+})[c]);
+const brl = (n) => `R$ ${n.toFixed(2).replace(".", ",")}`;
+function layout(title, intro, order, extra = "") {
+	const rows = order.items.map((i) => `<tr><td style="padding:6px 0">${esc(i.name)} · Tam. ${esc(i.size)} × ${i.quantity}</td><td align="right">${brl(i.unitPrice * i.quantity)}</td></tr>`).join("");
+	const c = order.customer;
+	return `<!doctype html><html lang="pt-BR"><body style="margin:0;background:#0b0b0b;font-family:Arial,sans-serif;color:#f5f5f5">
+<table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px">
+<table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#141414;border-radius:12px;overflow:hidden">
+<tr><td style="background:#ffd400;color:#0b0b0b;padding:16px 24px;font-weight:bold;font-size:18px">BRECK IMPORTS</td></tr>
+<tr><td style="padding:24px"><h1 style="margin:0 0 12px;font-size:22px;color:#ffd400">${esc(title)}</h1>
+<p style="margin:0 0 16px;line-height:1.5">${intro}</p>
+<p style="margin:0 0 16px">Pedido <strong>${esc(order.reference)}</strong></p>${extra}
+<table width="100%" style="border-top:1px solid #333;border-bottom:1px solid #333;margin:8px 0;color:#f5f5f5">${rows}
+<tr><td style="padding:6px 0">Frete (${esc(order.shipping.name)})</td><td align="right">${order.shipping.price ? brl(order.shipping.price) : "a combinar"}</td></tr>
+<tr><td style="padding:6px 0"><strong>Total</strong></td><td align="right"><strong>${brl(order.total)}</strong></td></tr></table>
+<p style="margin:16px 0 0;color:#bbb;font-size:13px;line-height:1.5">Entrega: ${esc(c.street)}, ${esc(c.number)}${c.complement ? " " + esc(c.complement) : ""} · ${esc(c.district)} · ${esc(c.city)}/${esc(c.state)} · CEP ${esc(c.cep)}</p>
+<p style="margin:16px 0 0;color:#bbb;font-size:13px">Dúvidas? Responda este e-mail ou fale com a gente pelo WhatsApp: ${esc(env.siteUrl)}</p>
+</td></tr></table></td></tr></table></body></html>`;
+}
+function renderEmail(kind, order, tracking) {
+	const first = esc(order.customer.name.split(" ")[0]);
+	if (kind === "confirmado") return {
+		subject: `Pedido ${order.reference} confirmado`,
+		html: layout("Pagamento aprovado!", `Oi, ${first}! Recebemos seu pagamento e já estamos separando seu pedido. Avisamos por aqui quando ele for enviado.`, order)
+	};
+	const link = tracking ? `https://www.linkcorreios.com.br/?id=${encodeURIComponent(tracking)}` : "";
+	return {
+		subject: `Seu pedido ${order.reference} foi enviado`,
+		html: layout("Seu pedido foi enviado", `Oi, ${first}! Seu pedido saiu para entrega.`, order, tracking ? `<p style="margin:0 0 16px">Código de rastreio: <strong style="color:#ffd400">${esc(tracking)}</strong><br><a href="${link}" style="color:#ffd400">Acompanhar entrega</a></p>` : "")
+	};
+}
+/** Envia no máximo uma vez por pedido+tipo. Nunca lança: e-mail não pode derrubar o webhook. */
+async function sendOrderEmail(kind, order, tracking) {
+	const key = emailKey(order.reference, kind);
+	try {
+		if (dbReady()) {
+			if (await redis("SET", key, (/* @__PURE__ */ new Date()).toISOString(), "NX", "EX", 15552e3) !== "OK") return "duplicate";
+		}
+		const { subject, html } = renderEmail(kind, order, tracking);
+		if (!resendKey()) {
+			console.log("E-mail não enviado (RESEND_API_KEY ausente)", kind, order.reference);
+			return "skipped";
+		}
+		const res = await fetch("https://api.resend.com/emails", {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${resendKey()}`,
+				"Content-Type": "application/json",
+				"Idempotency-Key": key
+			},
+			body: JSON.stringify({
+				from: sender(),
+				to: [order.customer.email],
+				reply_to: env.storeEmail,
+				subject,
+				html
+			})
+		});
+		if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text().catch(() => "")}`);
+		console.log("E-mail enviado", kind, order.reference);
+		return "sent";
+	} catch (err) {
+		console.error("Falha ao enviar e-mail", kind, order.reference, err);
+		if (dbReady()) await redis("DEL", key).catch(() => {});
+		return "failed";
+	}
+}
+//#endregion
 //#region server/mp-webhook.ts
 /**
 * Confere o header x-signature ("ts=...,v1=...") com a chave secreta do webhook.
@@ -9617,28 +9695,54 @@ async function ensureShipment(reference) {
 	}
 	return { shipment: shipment ?? void 0 };
 }
+/** Pagamento confirmado: etiqueta (idempotente) + e-mails (idempotentes). Lança se valer o MP tentar de novo. */
+async function afterPaid(reference) {
+	const result = await ensureShipment(reference);
+	if (result.skipped) console.warn("Envio não criado automaticamente", reference, "-", result.skipped);
+	let emails = {};
+	if (dbReady()) {
+		const raw = await redis("GET", orderKey(reference));
+		if (raw) {
+			const order = JSON.parse(raw);
+			emails.confirmado = await sendOrderEmail("confirmado", order);
+			if (result.shipment?.tracking) emails.enviado = await sendOrderEmail("enviado", order, result.shipment.tracking);
+		} else emails = { confirmado: "pedido não encontrado" };
+	}
+	return {
+		shipment: result.shipment?.sfOrderId ?? null,
+		skipped: result.skipped ?? null,
+		emails
+	};
+}
 async function POST(req) {
 	const url = new URL(req.url);
 	const body = await req.json().catch(() => ({}));
-	const type = body.type ?? url.searchParams.get("type");
-	const id = url.searchParams.get("data.id") ?? body.data?.id;
-	if (type !== "order" || !id) return json({ ok: true });
-	if (!validSignature(req, id)) return json({ error: "assinatura inválida" }, 401);
+	const type = body.type ?? url.searchParams.get("type") ?? url.searchParams.get("topic");
+	const id = url.searchParams.get("data.id") ?? body.data?.id ?? url.searchParams.get("id");
+	if (type !== "order" && type !== "payment" || !id) return json({ ok: true });
+	if (!validSignature(req, String(id))) return json({ error: "assinatura inválida" }, 401);
 	try {
-		const order = await mercadoPago(`/v1/orders/${encodeURIComponent(id)}`);
-		const paid = order.status === "processed" && order.status_detail === "accredited";
-		console.log("Order", order.id, order.external_reference, order.status, order.status_detail, paid ? "PAGO" : "");
-		if (!paid || !order.external_reference) return json({
+		let paid, reference;
+		if (type === "payment") {
+			if (!/^\d{1,20}$/.test(String(id))) return json({ ok: true });
+			const p = await mercadoPago(`/v1/payments/${id}`);
+			paid = p.status === "approved";
+			reference = String(p.external_reference ?? "");
+			console.log("Payment", p.id, reference, p.status, p.status_detail, paid ? "PAGO" : "");
+		} else {
+			const order = await mercadoPago(`/v1/orders/${encodeURIComponent(String(id))}`);
+			paid = order.status === "processed" && order.status_detail === "accredited";
+			reference = String(order.external_reference ?? "");
+			console.log("Order", order.id, reference, order.status, order.status_detail, paid ? "PAGO" : "");
+		}
+		if (!paid || !reference) return json({
 			ok: true,
 			paid
 		});
-		const result = await ensureShipment(String(order.external_reference));
-		if (result.skipped) console.warn("Envio não criado automaticamente", order.external_reference, "-", result.skipped);
 		return json({
 			ok: true,
 			paid,
-			shipment: result.shipment?.sfOrderId ?? null,
-			skipped: result.skipped ?? null
+			...await afterPaid(reference)
 		});
 	} catch (e) {
 		console.error(e);

@@ -9575,7 +9575,7 @@ function fingerprint(lines, customer, ship, windowStart) {
 		"district",
 		"city",
 		"state"
-	].map((k) => k === "cpf" || k === "cep" || k === "phone" ? String(customer[k] ?? "").replace(/D/g, "") : norm(customer[k]));
+	].map((k) => k === "cpf" || k === "cep" || k === "phone" ? String(customer[k] ?? "").replace(/\D/g, "") : norm(customer[k]));
 	return JSON.stringify({
 		v: 1,
 		items,
@@ -9692,4 +9692,4 @@ async function POST(req) {
 	}
 }
 //#endregion
-export { POST };
+export { POST, fingerprint, money, sha256Hex };

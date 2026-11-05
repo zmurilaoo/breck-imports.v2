@@ -17,7 +17,7 @@ import {
 } from "./_lib";
 
 /** A API de Orders recebe valores como texto com 2 casas: "299.00" */
-const money = (n: number) => n.toFixed(2);
+export const money = (n: number) => n.toFixed(2);
 
 /** Janela em que um reenvio do mesmo pedido (duplo clique, retry, F5) reaproveita a mesma order */
 const IDEMPOTENCY_WINDOW_MS = 10 * 60 * 1000;
@@ -29,7 +29,7 @@ interface CachedCheckout {
   reference: string;
 }
 
-async function sha256Hex(text: string): Promise<string> {
+export async function sha256Hex(text: string): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
   return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
 }
@@ -38,7 +38,7 @@ async function sha256Hex(text: string): Promise<string> {
  * Hash estável do conteúdo do pedido. Mesmo carrinho + mesmo cliente + mesmo frete na mesma janela
  * gera a mesma chave, então o Mercado Pago (X-Idempotency-Key) e o nosso cache não criam duas orders.
  */
-function fingerprint(
+export function fingerprint(
   lines: ReturnType<typeof priceItems>,
   customer: Customer,
   ship: { id: number; price: number },
@@ -50,7 +50,7 @@ function fingerprint(
     .sort((a, b) => (a.join("|") < b.join("|") ? -1 : a.join("|") > b.join("|") ? 1 : 0));
   const who = (["name", "email", "phone", "cpf", "cep", "street", "number", "complement", "district", "city", "state"] as const).map((k) =>
     k === "cpf" || k === "cep" || k === "phone"
-      ? String((customer as unknown as Record<string, unknown>)[k] ?? "").replace(/D/g, "")
+      ? String((customer as unknown as Record<string, unknown>)[k] ?? "").replace(/\D/g, "")
       : norm((customer as unknown as Record<string, unknown>)[k]),
   );
   return JSON.stringify({ v: 1, items, who, ship: [ship.id, money(ship.price)], w: windowStart });
