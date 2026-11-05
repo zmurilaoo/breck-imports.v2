@@ -111,9 +111,11 @@ interface ProductSectionProps {
   /** Um ou mais banners empilhados acima dos produtos */
   banner?: Banner | Banner[];
   cta?: { label: string; to: string };
+  /** Card vertical com foto à esquerda do carrossel (vira topo no celular) */
+  featured?: { image: string; alt: string; to: string; label: string };
 }
 
-export function ProductSection({ products, label, title, subtitle, banner, cta }: ProductSectionProps) {
+export function ProductSection({ products, label, title, subtitle, banner, cta, featured }: ProductSectionProps) {
   const bannerList = banner ? ([] as Banner[]).concat(banner) : [];
   return (
     <section className="section product-section" aria-label={label}>
@@ -127,11 +129,27 @@ export function ProductSection({ products, label, title, subtitle, banner, cta }
             {subtitle && <p>{subtitle}</p>}
           </div>
         )}
-        <Carousel label={label}>
-          {products.map((p) => (
-            <ProductCard key={p.slug} product={p} />
-          ))}
-        </Carousel>
+        {featured ? (
+          <div className="featured-row">
+            <Link to={featured.to} className="featured-card">
+              <img src={featured.image} alt={featured.alt} loading="lazy" decoding="async" width={700} height={876} />
+              <span className="featured-card-btn">{featured.label} →</span>
+            </Link>
+            <div className="featured-products">
+              <Carousel label={label}>
+                {products.map((p) => (
+                  <ProductCard key={p.slug} product={p} />
+                ))}
+              </Carousel>
+            </div>
+          </div>
+        ) : (
+          <Carousel label={label}>
+            {products.map((p) => (
+              <ProductCard key={p.slug} product={p} />
+            ))}
+          </Carousel>
+        )}
         {cta && (
           <div className="section-cta">
             <Link to={cta.to} className="btn btn-primary">

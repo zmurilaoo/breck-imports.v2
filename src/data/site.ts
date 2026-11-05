@@ -201,11 +201,11 @@ export const services = [
 ];
 
 export const homeCategories = [
-  { name: "Vapor 15", image: "/images/categorias/breck-chuteira1.png", to: "/categoria/mercurial" },
-  { name: "X Speedportal", image: "/images/categorias/breck-chuteira2.png", to: "/categoria/chuteiras" },
-  { name: "Phantom GX", image: "/images/categorias/chuteira-phantom.png", to: "/categoria/chuteiras" },
-  { name: "Vapor 15 Ready", image: "/images/categorias/breck-chuteira4.png", to: "/categoria/chuteiras" },
-  { name: "Joma Top Flex", image: "/images/categorias/breck-chuteira5.png", to: "/categoria/chuteiras" },
+  { name: "Vapor 15", image: "/images/categorias/breck-chuteira1.png", to: "/produtos/mercurial-vapor-1ra6u" },
+  { name: "X Speedportal", image: "/images/categorias/breck-chuteira2.png", to: "/produtos/f50-elite-campo-1eehw" },
+  { name: "Phantom GX", image: "/images/categorias/chuteira-phantom.png", to: "/produtos/airzoom-mercurial-vapor-17-elite-verde-1h6gg" },
+  { name: "Vapor 15 Ready", image: "/images/categorias/breck-chuteira4.png", to: "/produtos/chuteira-futsal-cu3iw" },
+  { name: "Joma Top Flex", image: "/images/categorias/breck-chuteira5.png", to: "/produtos/sla-1v7tl" },
 ];
 
 export const faq = [

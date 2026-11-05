@@ -3231,16 +3231,16 @@ const slugsOf = (tipo: string, limit = 12) =>
 
 export const homeSections = {
   "promo500": [
-    "f50-elite-campo-rx-1qkag",
-    "phantom-gx-6-elite-rose-xgmb3",
-    "chuteira-campo-ovre8",
-    "airzoom-superfly-elite-campo-verde-qgc1e",
-    "ad-f50-elite-vd-campo-nh2i9",
+    "f50-campo-elite-1ps9h",
+    "pm-trava-mg-rosa-e-branco-1o1uj",
     "phantom-gx6-elite-17v3n",
-    "pm-campo-future-elite-y5m48",
-    "phantom-gx-6-elite-18xas",
-    "sla-1v7tl",
-    "mercurial-vapor-1ra6u"
+    "airzoom-mercurial-vapor-17-elite-preto-amarelo-1389z",
+    "phantom-gx-6-elite-hk2fc",
+    "pm-trava-mg-verde-v18li",
+    "f50-campo-elite-xwkkd",
+    "phantom-gx-6-elite-yqa05",
+    "pm-future-elite-campo-bifbh",
+    "airzoom-mercurial-vapor-17-elite-verde-1h6gg"
   ],
   "tn350": [
     "air-max-tn-voltage-purple",
