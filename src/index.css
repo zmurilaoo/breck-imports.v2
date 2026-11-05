@@ -3509,8 +3509,9 @@ li:focus-within > .nav-dropdown {
   display: block;
   overflow: hidden;
   border-radius: 18px;
-  aspect-ratio: 4 / 5;
-  max-height: 60vh;
+  /* No celular vira um banner baixo, para os produtos aparecerem logo abaixo */
+  aspect-ratio: 16 / 10;
+  max-height: 240px;
   width: 100%;
   margin-top: 10px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
