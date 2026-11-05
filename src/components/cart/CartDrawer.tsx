@@ -5,6 +5,7 @@ import { contact } from "../../data/site";
 import { useLockBody } from "../../hooks/useLockBody";
 import { useBadgeBounce } from "../../hooks/useBadgeBounce";
 import { formatPrice, MAX_INSTALLMENTS } from "../../utils/format";
+import { AnimatedPrice } from "../checkout/AnimatedNumber";
 import { PaymentMethods } from "../product/PaymentMethods";
 import { CartIcon, CloseIcon, MinusIcon, PlusIcon, TrashIcon } from "../Icons";
 
@@ -149,7 +150,7 @@ export function CartDrawer() {
               </div>
               <div className="cart-total">
                 <span>Subtotal</span>
-                <strong>{formatPrice(subtotal)}</strong>
+                <strong><AnimatedPrice value={subtotal} /></strong>
               </div>
               <p className="cart-total-pix">
                 Frete calculado no checkout · até {MAX_INSTALLMENTS}x no cartão

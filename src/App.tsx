@@ -28,6 +28,15 @@ function Layout() {
     window.scrollTo(0, 0);
     setMenuOpen(false);
     setSearchOpen(false);
+    // Transição de página: o conteúdo novo entra com um fade curto (só opacity/transform)
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
+      document.getElementById("conteudo")?.animate(
+        [
+          { opacity: 0, transform: "translateY(8px)" },
+          { opacity: 1, transform: "none" },
+        ],
+        { duration: 280, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+      );
   }, [pathname, search, setMenuOpen, setSearchOpen]);
 
   return (

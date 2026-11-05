@@ -5,6 +5,7 @@ import { useUI } from "../../context/ui-context";
 import { getProduct } from "../../data/catalog";
 import { useLockBody } from "../../hooks/useLockBody";
 import type { Product } from "../../types";
+import { flyToCart } from "../../utils/flyToCart";
 import { CloseIcon } from "../Icons";
 import { PriceBlock } from "./PriceBlock";
 import { SizeSelector } from "./SizeSelector";
@@ -19,6 +20,7 @@ function QuickShopContent({ product, onClose }: { product: Product; onClose: () 
       setError(true);
       return;
     }
+    flyToCart(document.querySelector(".quickshop-image img"));
     add(product.slug, size);
     onClose();
   };

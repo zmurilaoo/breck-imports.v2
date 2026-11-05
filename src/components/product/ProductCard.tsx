@@ -72,6 +72,8 @@ export function ProductCard({ product }: { product: Product }) {
             alt={i === 0 ? product.name : ""}
             aria-hidden={i !== 0 || undefined}
             loading="lazy"
+            // Primeira foto pronta: desliga o brilho de carregamento do card
+            onLoad={i === 0 ? (e) => e.currentTarget.parentElement?.classList.add("is-loaded") : undefined}
             className={`card-slide${i === active ? " is-active" : ""}`}
           />
         ))}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { CreditCardIcon, TruckIcon, WhatsAppIcon } from "../components/Icons";
 import { PaymentMethods } from "../components/product/PaymentMethods";
@@ -12,6 +12,7 @@ import { categoryNames, contact } from "../data/site";
 import { usePageTitle } from "../hooks/usePageTitle";
 import type { Product } from "../types";
 import { discountPercent } from "../utils/format";
+import { flyToCart } from "../utils/flyToCart";
 import { NotFoundPage } from "./NotFoundPage";
 
 function ProductDetail({ product }: { product: Product }) {
@@ -20,6 +21,10 @@ function ProductDetail({ product }: { product: Product }) {
   const [size, setSize] = useState<string | null>(null);
   const [error, setError] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  // Feedback no próprio botão depois de adicionar (o toast confirma também)
+  const [added, setAdded] = useState(false);
+  const addedTimer = useRef<number>(undefined);
+  useEffect(() => () => window.clearTimeout(addedTimer.current), []);
   usePageTitle(product.name);
 
   const soldOut = product.sizes.length > 0 && product.sizes.every((s) => !s.available);
@@ -33,7 +38,11 @@ function ProductDetail({ product }: { product: Product }) {
       return;
     }
     add(product.slug, size, quantity);
-    if (buyNow) open();
+    if (buyNow) return open();
+    flyToCart(document.querySelector(".product-gallery-main img"));
+    setAdded(true);
+    window.clearTimeout(addedTimer.current);
+    addedTimer.current = window.setTimeout(() => setAdded(false), 1800);
   };
 
   return (
@@ -54,7 +63,7 @@ function ProductDetail({ product }: { product: Product }) {
         <div className="product-detail">
           <div className="product-gallery">
             <div className="product-gallery-main">
-              <img src={product.images[image]} alt={product.name} />
+              <img key={product.images[image]} className="gallery-img-in" src={product.images[image]} alt={product.name} />
               <div className="labels">
                 {discount && <span className="label">{discount}% OFF</span>}
                 {product.label && <span className="label">{product.label}</span>}
@@ -104,8 +113,24 @@ function ProductDetail({ product }: { product: Product }) {
                   +
                 </button>
               </div>
-              <button type="button" className="btn btn-primary btn-grow" disabled={soldOut} onClick={() => addToCart(false)}>
-                {soldOut ? "Esgotado" : "Adicionar ao carrinho"}
+              <button
+                type="button"
+                className={`btn btn-primary btn-grow btn-add${added ? " is-added" : ""}`}
+                disabled={soldOut}
+                onClick={() => addToCart(false)}
+              >
+                {soldOut ? (
+                  "Esgotado"
+                ) : added ? (
+                  <>
+                    <svg className="btn-check" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                      <path d="M5 12.5l4.5 4.5L19 7.5" />
+                    </svg>
+                    Adicionado
+                  </>
+                ) : (
+                  "Adicionar ao carrinho"
+                )}
               </button>
             </div>
             <button type="button" className="btn btn-dark btn-block" disabled={soldOut} onClick={() => addToCart(true)}>

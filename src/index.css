@@ -267,7 +267,7 @@ main {
 .adbar {
   background: var(--grad-gold);
   background-size: 200% 100%;
-  animation: gradient-shift 6s linear infinite;
+  /* Sem gradient-shift infinito: repintava a faixa a cada quadro no celular e competia com o letreiro */
   color: var(--on-accent);
   overflow: hidden;
   font-size: 0.75rem;
@@ -4510,3 +4510,228 @@ body.is-checkout .skip-link {
 .co-pix-code { display: grid; gap: 4px; font-size: 0.8rem; color: var(--muted); }
 .co-pix-code input { width: 100%; min-height: 44px; padding: 0 12px; border-radius: 10px; border: 1px solid #333; background: var(--surface-2); color: var(--fg); font-family: monospace; font-size: 0.8rem; }
 .co-pix-wait { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; font-size: 0.85rem; }
+
+/* ==========================================================================
+   Motion — tokens e microinterações (pente fino 2026-11-05)
+   Regra: só transform/opacity; durações e curvas daqui; tudo desliga em
+   prefers-reduced-motion (regra global no fim da seção de reveal).
+   ========================================================================== */
+:root {
+  --dur-instant: 100ms; /* press */
+  --dur-fast: 150ms; /* hover de cor, borda */
+  --dur-base: 250ms; /* overlay, modal, toast */
+  --dur-slow: 400ms; /* troca de foto, gaveta fechando */
+  --dur-reveal: 600ms; /* entrada de seção */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* entrada: rápido e assenta */
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45); /* saída */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* movimento de A a B */
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1); /* confirmação, carimbo */
+  --stagger: 45ms;
+}
+
+/* Botões: press com escala (sensação de clique físico) no lugar do 1px */
+.btn {
+  transition: background-color var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast),
+    box-shadow var(--dur-base), transform var(--dur-instant) var(--ease-out);
+}
+.btn-primary {
+  transition: background-position 0.6s var(--ease-out), box-shadow var(--dur-base), transform var(--dur-instant) var(--ease-out);
+}
+.btn:active:not(:disabled),
+.icon-btn:active,
+.size-option:active:not(:disabled),
+.qty button:active,
+.card-arrow:active {
+  transform: scale(0.96);
+}
+.icon-btn {
+  transition: transform var(--dur-instant) var(--ease-out), background-color var(--dur-fast);
+}
+@media (hover: hover) {
+  .icon-btn:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* Adicionar ao carrinho: estado "Adicionado" com check desenhado */
+.btn-add.is-added,
+.btn-add.is-added:hover:not(:disabled) {
+  background: var(--success);
+  color: #fff;
+  box-shadow: none;
+  animation: added-pop var(--dur-slow) var(--ease-spring);
+}
+.btn-add.is-added::after {
+  display: none;
+}
+.btn-check {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: check-draw var(--dur-slow) 80ms var(--ease-out) forwards;
+}
+@keyframes check-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes added-pop {
+  40% {
+    transform: scale(1.04);
+  }
+}
+
+/* Foto que voa até o carrinho (criada por utils/flyToCart) */
+.fly-ghost {
+  position: fixed;
+  z-index: 200;
+  pointer-events: none;
+  border-radius: 50%;
+  background: var(--surface-2) center / cover no-repeat;
+  box-shadow: var(--glow);
+  will-change: transform, opacity;
+}
+
+/* Seletor de tamanho: escolhido "assenta"; erro chacoalha uma vez */
+.size-option.is-selected {
+  animation: size-pick var(--dur-base) var(--ease-spring);
+}
+@keyframes size-pick {
+  from {
+    transform: scale(0.9);
+  }
+}
+.size-selector.has-error .size-options {
+  animation: shake 360ms var(--ease-in-out);
+}
+@keyframes shake {
+  20%,
+  60% {
+    transform: translateX(-5px);
+  }
+  40%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+/* Galeria do produto: foto nova entra com fade + leve zoom (sem mudar o layout) */
+.gallery-img-in {
+  animation: gallery-in var(--dur-slow) var(--ease-out);
+}
+@keyframes gallery-in {
+  from {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+}
+.product-thumbs button {
+  transition: border-color var(--dur-fast), opacity var(--dur-fast), transform var(--dur-instant);
+}
+
+/* Card: brilho de carregamento só até a 1ª foto chegar (antes ficava repintando para sempre) */
+.product-card-image.is-loaded {
+  animation: none;
+  background: var(--surface-2);
+}
+.product-card-image {
+  animation-iteration-count: 8;
+}
+
+/* Overlay, modal e toast no mesmo ritmo */
+.overlay {
+  transition: opacity var(--dur-base) var(--ease-out), visibility var(--dur-base);
+}
+.modal,
+.toast {
+  animation: sheet-up var(--dur-base) var(--ease-out);
+}
+.toast img {
+  animation: toast-thumb var(--dur-slow) 80ms var(--ease-spring) both;
+}
+@keyframes toast-thumb {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+
+/* Menu mobile: itens entram em cascata quando a gaveta abre */
+.drawer-left.is-open .mobile-nav-list.depth-0 > li {
+  animation: menu-item-in var(--dur-slow) var(--ease-out) both;
+}
+.drawer-left.is-open .mobile-nav-list.depth-0 > li:nth-child(2) { animation-delay: calc(var(--stagger) * 1); }
+.drawer-left.is-open .mobile-nav-list.depth-0 > li:nth-child(3) { animation-delay: calc(var(--stagger) * 2); }
+.drawer-left.is-open .mobile-nav-list.depth-0 > li:nth-child(4) { animation-delay: calc(var(--stagger) * 3); }
+.drawer-left.is-open .mobile-nav-list.depth-0 > li:nth-child(5) { animation-delay: calc(var(--stagger) * 4); }
+.drawer-left.is-open .mobile-nav-list.depth-0 > li:nth-child(6) { animation-delay: calc(var(--stagger) * 5); }
+.drawer-left.is-open .mobile-nav-list.depth-0 > li:nth-child(n + 7) { animation-delay: calc(var(--stagger) * 6); }
+.mobile-nav-list.depth-1 {
+  animation: fade-up var(--dur-base) var(--ease-out);
+}
+@keyframes menu-item-in {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+}
+
+/* Carrinho: linha nova entra; gaveta fecha mais rápido do que abre (saída curta) */
+.cart-line {
+  animation: fade-up var(--dur-base) var(--ease-out);
+}
+.drawer {
+  transition: transform var(--dur-base) var(--ease-in), visibility 0s linear var(--dur-base);
+}
+.drawer-left.is-open {
+  transition: transform var(--dur-slow) var(--ease-out), visibility 0s;
+}
+
+/* Rodapé: links com sublinhado que cresce (transform, sem mexer no layout) */
+@media (hover: hover) {
+  .site-footer a:not(.btn):not([aria-label]) {
+    background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+    background-size: 0 1px;
+    transition: background-size var(--dur-base) var(--ease-out), color var(--dur-fast);
+  }
+  .site-footer a:not(.btn):not([aria-label]):hover {
+    background-size: 100% 1px;
+  }
+  .site-footer .footer-social a {
+    transition: transform var(--dur-fast) var(--ease-out), color var(--dur-fast);
+  }
+  .site-footer .footer-social a:hover {
+    transform: translateY(-2px);
+    color: var(--accent);
+  }
+}
+
+/* Foco visível também anima de leve (não remove o contorno) */
+:focus-visible {
+  transition: outline-offset var(--dur-fast) var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fly-ghost {
+    display: none;
+  }
+  .size-selector.has-error .size-options,
+  .size-option.is-selected,
+  .gallery-img-in,
+  .btn-add.is-added,
+  .drawer-left.is-open .mobile-nav-list.depth-0 > li {
+    animation: none;
+  }
+  .btn-check {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .btn:active:not(:disabled),
+  .icon-btn:active {
+    transform: none;
+  }
+}

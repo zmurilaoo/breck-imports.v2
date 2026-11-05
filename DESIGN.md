@@ -140,3 +140,19 @@ Não faça:
 - Hex fixos fora dos tokens em partes da home.
 - Estados de formulário (erro, ajuda) não documentados aqui; ler `.field`/checkout no CSS antes de criar.
 - Logo/mascote existem só como PNG (`/images/logo-breck.png`); não há SVG.
+
+## 12. Motion (tokens, 2026-11-05)
+
+Definidos no fim do `src/index.css` (seção "Motion"). Toda animação nova usa estes valores.
+
+| Token | Valor | Uso |
+|---|---|---|
+| `--dur-instant` | 100ms | press de botão (`scale(.96)`) |
+| `--dur-fast` | 150ms | hover de cor/borda |
+| `--dur-base` | 250ms | overlay, modal, toast, gaveta fechando |
+| `--dur-slow` | 400ms | troca de foto, gaveta abrindo, confirmação |
+| `--dur-reveal` | 600ms | entrada de seção |
+| `--ease-out` / `--ease-in` / `--ease-in-out` / `--ease-spring` | curvas | entrada / saída / A→B / confirmação |
+| `--stagger` | 45ms | cascata de itens (menu) |
+
+Regras: só `transform`/`opacity` (exceção: sublinhado do rodapé via `background-size`, só em hover); saída mais curta que entrada; nada infinito que repinte (o gradiente animado da faixa foi removido; o shimmer do card para quando a foto carrega); tudo desligado em `prefers-reduced-motion`. Feedback de compra: botão vira "Adicionado" com check desenhado + foto voa até o carrinho (`src/utils/flyToCart.ts`) + contador pula + toast.
