@@ -29,3 +29,8 @@ dist-ssr
 # Netlify CLI (vínculo local com o site)
 .netlify
 .vercel
+
+# Playwright
+test-results
+playwright-report
+blob-report
