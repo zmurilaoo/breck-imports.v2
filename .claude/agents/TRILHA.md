@@ -100,3 +100,14 @@ Proposta (não aplicada; aguarda aprovação do dono):
 
 - Entrou o **design** (Principal Design Engineer, `design.md`) como **Agente 06**: telas que convertem, recriar por print ou descrição, código real com tokens/estados/acessibilidade, sugere componente pronto (21st.dev, shadcn) antes de reinventar. Passa back/deploy para o yellow; toda tela passa pelo qa antes de produção.
 - Como o 06 ficou com o design, a proposta da seção 7 muda: **security passa a ser 07** (aguarda aprovação do dono).
+
+## 10. Skills e Playwright (04/11/2026)
+
+Skills do design em `.claude/skills/`: `awesome-design-md` (DESIGN.md na raiz é o contrato visual; o CSS é a fonte da verdade), `taste-skill`, `web-design-guidelines`, `image-to-code`, `playwright-cli`.
+
+Verificação com Playwright — quem usa o quê:
+- **design**: verificação visual da própria tela antes do handoff. Roda `.claude/skills/playwright-cli/check.cjs <url> <tela> <antes|depois>` contra o dev server (ou a produção, só leitura): screenshots 1366 e 390 (+ 390 com movimento reduzido), overflow horizontal, erros de console e HTTP >= 400. Saída em `.taste-skill/` (no `.gitignore`). É evidência de autoverificação, **não** aceite.
+- **qa**: aceitação formal (G2) em `e2e/` + `playwright.config.ts`, veredito APROVADO/REPROVADO/BLOQUEADO.
+- **automation**: arquitetura da suíte, flakiness, tempo/custo e CI.
+
+Estado do ambiente (2026-11-04): o repo não tem `@playwright/test`, `e2e/` nem pipeline de CI (`.github/workflows` não existe). Playwright 1.64.1 roda de uma pasta temporária fora do repo (caminho na skill `playwright-cli`); se sumir, o automation/qa precisa instalar no projeto (decisão a combinar, sem gasto). Orquestrador: exija o resultado do `check.cjs` (overflowX false nas duas larguras, sem erro novo de console) na evidência do design antes de mandar ao qa.
