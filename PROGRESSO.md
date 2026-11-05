@@ -53,3 +53,7 @@ Depois: deploy em Preview → teste com cartão APRO, Pix e boleto → QA → "s
 
 Ressalvas do security para o Yellow: recusar webhook sem segredo em produção; mascarar CPF nos logs; /api/pay-status exigir reference; limite de tamanho/e-mail nos campos; CSP; aviso de pagamento duplicado.
 Pendência: e-mail "pedido enviado" só sai com etiqueta paga automaticamente.
+
+## 05/11/2026 — EM PRODUÇÃO
+Pagamento dentro do site (Payment Brick: cartão, débito CAIXA, Pix, boleto) NO AR em breckimports.com.br, com animações e checkout novo. VITE_MP_PUBLIC_KEY (produção) cadastrada sem BOM — cuidado: valores enviados via PowerShell entram com BOM; use bash `printf '%s' valor | vercel env add`.
+Falta do dono: marcar evento "Pagamentos" no webhook do MP (senão etiqueta/e-mail não disparam para pagamentos do Brick); conta Resend + domínio no DNS + RESEND_API_KEY/LOJA_EMAIL_REMETENTE (e-mails); CNPJ no rodapé; primeira compra real pequena para validar.
