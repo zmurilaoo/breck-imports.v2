@@ -95,3 +95,8 @@ Proposta (não aplicada; aguarda aprovação do dono):
 ## 8. Changelog
 
 - 1.0 (2026-11-04) — trilha criada no kickoff; backlog Breck inicial.
+
+## 9. Atualização 04/11/2026: agente design (06)
+
+- Entrou o **design** (Principal Design Engineer, `design.md`) como **Agente 06**: telas que convertem, recriar por print ou descrição, código real com tokens/estados/acessibilidade, sugere componente pronto (21st.dev, shadcn) antes de reinventar. Passa back/deploy para o yellow; toda tela passa pelo qa antes de produção.
+- Como o 06 ficou com o design, a proposta da seção 7 muda: **security passa a ser 07** (aguarda aprovação do dono).
