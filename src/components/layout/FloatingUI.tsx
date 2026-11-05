@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useCart } from "../../context/cart-context";
 import { contact } from "../../data/site";
 import { formatPrice } from "../../utils/format";
@@ -7,20 +8,39 @@ import { CloseIcon, WhatsAppIcon } from "../Icons";
 const COOKIE_KEY = "breck-cookies-accepted";
 
 export function CookieBanner() {
-  const [visible, setVisible] = useState(() => localStorage.getItem(COOKIE_KEY) !== "1");
-  if (!visible) return null;
+  const { pathname } = useLocation();
+  const [visible, setVisible] = useState(() => {
+    try {
+      return localStorage.getItem(COOKIE_KEY) !== "1";
+    } catch {
+      return true;
+    }
+  });
+  // Não disputa espaço com formulário de compra
+  const hidden = !visible || pathname.startsWith("/checkout");
+  useEffect(() => {
+    document.body.classList.toggle("has-cookie-bar", !hidden);
+    return () => document.body.classList.remove("has-cookie-bar");
+  }, [hidden]);
+  if (hidden) return null;
   return (
-    <div className="cookie-banner" role="dialog" aria-label="Aviso de cookies">
-      <p>Ao navegar por este site você aceita o uso de cookies para agilizar a sua experiência de compra.</p>
+    <div className="cookie-banner" role="region" aria-label="Aviso de cookies">
+      <p>
+        Usamos cookies para melhorar sua compra. <Link to="/pagina/politica-de-privacidade">Saiba mais</Link>
+      </p>
       <button
         type="button"
         className="btn btn-primary"
         onClick={() => {
-          localStorage.setItem(COOKIE_KEY, "1");
+          try {
+            localStorage.setItem(COOKIE_KEY, "1");
+          } catch {
+            /* sem storage */
+          }
           setVisible(false);
         }}
       >
-        Aceitar e fechar
+        Ok
       </button>
     </div>
   );

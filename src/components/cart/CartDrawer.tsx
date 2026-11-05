@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { useCart } from "../../context/cart-context";
 import { contact } from "../../data/site";
 import { useLockBody } from "../../hooks/useLockBody";
-import { formatPrice, MAX_INSTALLMENTS, productPix } from "../../utils/format";
+import { useBadgeBounce } from "../../hooks/useBadgeBounce";
+import { formatPrice, MAX_INSTALLMENTS } from "../../utils/format";
 import { PaymentMethods } from "../product/PaymentMethods";
 import { CartIcon, CloseIcon, MinusIcon, PlusIcon, TrashIcon } from "../Icons";
 
@@ -14,6 +15,7 @@ export function CartDrawer() {
   const [quotes, setQuotes] = useState<{ id: number; name: string; price: number; days: number }[]>([]);
   const [quoting, setQuoting] = useState(false);
   useLockBody(isOpen, close);
+  useBadgeBounce(count);
 
   // Mesma cotação real do checkout (SuperFrete), só pra o cliente ter noção antes de finalizar
   const calcShipping = async () => {
@@ -38,13 +40,11 @@ export function CartDrawer() {
     }
   };
 
-  const pixTotal = lines.reduce((sum, l) => sum + productPix(l.product) * l.quantity, 0);
-
   const checkoutMessage = encodeURIComponent(
     [
       "Olá! Quero finalizar meu pedido:",
       ...lines.map((l) => `• ${l.quantity}x ${l.product.name} — Tam. ${l.size} — ${formatPrice(l.product.price * l.quantity)}`),
-      `Total: ${formatPrice(subtotal)} (${formatPrice(pixTotal)} no Pix)`,
+      `Total: ${formatPrice(subtotal)} + frete`,
     ].join("\n"),
   );
 
@@ -127,15 +127,21 @@ export function CartDrawer() {
                     onKeyDown={(e) => e.key === "Enter" && calcShipping()}
                   />
                   <button type="button" className="btn btn-outline" onClick={calcShipping} disabled={quoting}>
-                    {quoting ? "..." : "Calcular"}
+                    {quoting ? <span className="spinner" aria-label="Calculando" /> : "Calcular"}
                   </button>
                 </div>
+                {quoting && (
+                  <div role="status" aria-label="Calculando frete">
+                    <div className="skeleton cart-ship-skeleton" />
+                    <div className="skeleton cart-ship-skeleton" />
+                  </div>
+                )}
                 {shipping && <p className="cart-shipping-result">{shipping}</p>}
                 {quotes.map((q) => (
                   <p key={q.id} className="cart-shipping-result cart-shipping-quote">
                     <span>
                       <strong>{q.name}</strong>
-                      {q.days > 0 && <> · até {q.days} dias úteis</>}
+                      {q.days > 0 && <> · {q.days === 1 ? "até 1 dia útil" : `até ${q.days} dias úteis`}</>}
                     </span>
                     <strong>{q.id === 0 ? "a combinar" : formatPrice(q.price)}</strong>
                   </p>
@@ -146,7 +152,7 @@ export function CartDrawer() {
                 <strong>{formatPrice(subtotal)}</strong>
               </div>
               <p className="cart-total-pix">
-                ou <strong>{formatPrice(pixTotal)}</strong> com Pix · até {MAX_INSTALLMENTS}x no cartão
+                Frete calculado no checkout · até {MAX_INSTALLMENTS}x no cartão
               </p>
               <Link to="/checkout" className="btn btn-primary btn-block" onClick={close}>
                 Finalizar compra

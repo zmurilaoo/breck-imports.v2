@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-/** Elementos que entram com animação ao aparecer na tela. */
+/** Elementos que entram com animação ao aparecer na tela (o rodapé fica de fora: sinal de confiança não pode sumir). */
 const SELECTOR = [
   ".section-title",
   ".section-banner",
@@ -16,8 +16,6 @@ const SELECTOR = [
   ".listing-header",
   ".info-content",
   ".account-card",
-  ".footer-brand",
-  ".footer-col",
 ].join(",");
 
 const DURATION = 700;

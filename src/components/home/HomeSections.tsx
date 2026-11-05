@@ -11,6 +11,7 @@ import { useInView } from "../../hooks/useInView";
 export function Hero() {
   return (
     <section className="hero" aria-label="Destaque" style={{ "--hero-img": `url(${hero.image})` } as CSSProperties}>
+      <h1 className="sr-only">Breck Imports: chuteiras e tênis importados com entrega para todo o Brasil</h1>
       <Link to={hero.to} className="hero-banner">
         <img src={hero.image} alt={hero.alt} fetchPriority="high" />
         <span className="hero-shine" aria-hidden="true" />

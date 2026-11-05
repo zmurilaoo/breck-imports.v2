@@ -13,7 +13,8 @@ export function Footer() {
           <div className="footer-social">
             <a href={contact.instagram} target="_blank" rel="noreferrer" aria-label="instagram Breck Imports">
               <InstagramIcon size={20} />
-            </a>
+            </a>
+
           </div>
         </div>
 
@@ -57,6 +58,12 @@ export function Footer() {
               <a href={contact.siteUrl} target="_blank" rel="noreferrer">{contact.site}</a>
             </li>
             <li>
+              <InstagramIcon size={16} />
+              <a href={contact.instagram} target="_blank" rel="noreferrer">
+                {contact.instagramHandle}
+              </a>
+            </li>
+            <li>
               <PinIcon size={16} />
               <span>{contact.address}</span>
             </li>
@@ -85,8 +92,15 @@ export function Footer() {
         <div className="container footer-legal-inner">
           <div>
             <strong>Breck Imports</strong>
+            {/* TODO(dono): informar o CNPJ (obrigatório pelo Decreto 7.962) para exibir aqui: "CNPJ 00.000.000/0000-00" */}
+            <p>{contact.address}</p>
             <p>©{YEAR}. Breck Imports. Todos os direitos reservados.</p>
           </div>
+          <nav className="footer-legal-links" aria-label="Políticas">
+            <Link to="/pagina/politica-de-privacidade">Política de Privacidade</Link>
+            <Link to="/pagina/politica-de-reembolso">Trocas e Devoluções</Link>
+            <Link to="/pagina/termos-e-condicoes-de-uso">Termos de uso</Link>
+          </nav>
         </div>
       </div>
     </footer>

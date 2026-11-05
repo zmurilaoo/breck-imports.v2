@@ -52,6 +52,11 @@ export function ProductCard({ product }: { product: Product }) {
     <article className="product-card" ref={cardRef}>
       <Link
         to={`/produtos/${product.slug}`}
+        viewTransition
+        onClick={(e) => {
+          // Só a foto clicada ganha o nome da transição (o nome precisa ser único na página)
+          (e.currentTarget.querySelector(".card-slide.is-active") as HTMLElement | null)?.style.setProperty("view-transition-name", "product-hero");
+        }}
         className="product-card-image"
         aria-label={product.name}
         onMouseEnter={() => setHover(true)}

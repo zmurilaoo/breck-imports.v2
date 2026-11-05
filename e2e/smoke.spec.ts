@@ -74,10 +74,15 @@ test("checkout: CEP 01310-100 preenche Avenida Paulista e mostra frete (rede moc
 
   await page.goto("/checkout");
   await expect(page.getByRole("heading", { name: "Finalizar compra" })).toBeVisible();
-  await page.getByPlaceholder("CEP", { exact: true }).fill("01310100");
+  // Checkout em passos: Contato antes de Entrega
+  await page.getByRole("textbox", { name: "E-mail", exact: true }).fill("teste@exemplo.com");
+  await page.getByRole("textbox", { name: "Nome completo", exact: true }).fill("Teste Silva");
+  await page.getByRole("textbox", { name: "WhatsApp", exact: true }).fill("11987654321");
+  await page.getByRole("button", { name: "Continuar para entrega" }).click();
+  await page.getByRole("textbox", { name: "CEP", exact: true }).fill("01310100");
 
-  await expect(page.getByPlaceholder("Rua")).toHaveValue("Avenida Paulista");
-  await expect(page.getByPlaceholder("Bairro")).toHaveValue("Bela Vista");
+  await expect(page.getByRole("textbox", { name: "Rua", exact: true })).toHaveValue("Avenida Paulista");
+  await expect(page.getByRole("textbox", { name: "Bairro", exact: true })).toHaveValue("Bela Vista");
   await expect(page.getByText("PAC")).toBeVisible();
 });
 
