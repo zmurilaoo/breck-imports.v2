@@ -23,7 +23,7 @@ export function HomePage() {
         subtitle="As chuteiras que a galera mais tá comprando"
         products={getSection("promo500")}
         banner={[banners.promo500, banners.meia]}
-        featured={{ image: "/images/card-mais-compradas.webp", alt: "Neymar segurando chuteira Puma laranja", to: "/categoria/chuteiras", label: "VER TODAS" }}
+        featured={{ image: "/images/card-mais-compradas.webp", alt: "Neymar segurando chuteira Puma laranja e roxa", to: "/categoria/chuteiras", label: "VER TODAS" }}
       />
       <ProductSection
         label="Chuteiras Campo"

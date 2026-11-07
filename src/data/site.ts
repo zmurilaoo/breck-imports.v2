@@ -153,13 +153,13 @@ export const hero = {
 export const banners = {
   // A arte já traz o personagem e o título: sem camadas por cima
   promo500: {
-    image: "/images/chuteira-chamas-meias-gratis.webp",
+    image: "/images/banner-chuteira-meias-gratis.webp",
     alt: "Chuteira em chamas — leve uma e ganhe meias grátis",
     to: "/categoria/chuteiras",
   },
   meia: {
-    image: "/images/colecao-breck-oficial.webp",
-    alt: "Coleção Breck oficial — ver todas as chuteiras",
+    image: "/images/colecao-chuteiras-meias-gratis.webp",
+    alt: "Coleção de chuteiras com meias grátis em todas as compras",
     to: "/categoria/chuteiras",
   },
   tn350: {
