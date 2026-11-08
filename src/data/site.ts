@@ -141,7 +141,11 @@ export const categoryNames: Record<string, string> = {
 };
 
 export const hero = {
-  image: "/images/hero-breck-teste.png",
+  image: "/images/hero-breck-2172.webp",
+  /** Versão leve para celular (a arte original em PNG pesava 2 MB e atrasava o LCP) */
+  imageSmall: "/images/hero-breck-1200.webp",
+  width: 2172,
+  height: 724,
   alt: "Bem-vindos à Breck Imports — maior variedade de calçados",
   to: "/produtos",
 };

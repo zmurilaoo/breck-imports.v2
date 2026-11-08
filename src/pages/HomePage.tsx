@@ -29,6 +29,7 @@ export function HomePage() {
         label="Chuteiras Campo"
         title="CHUTEIRAS CAMPO"
         products={getSection("chuteirasCampo")}
+        featured={{ image: "/images/card-ronaldinho-campo.webp", alt: "Ronaldinho segurando chuteira Nike Tiempo branca e dourada", to: "/categoria/chuteira-campo", label: "VER TODAS", mobileAspect: "4 / 5", mobilePosition: "center 100%", position: "65% center", mobileBtn: "top-end" }}
         cta={{ label: "VER TODAS DE CAMPO", to: "/categoria/chuteira-campo" }}
       />
       <ProductSection

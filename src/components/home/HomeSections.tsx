@@ -13,7 +13,16 @@ export function Hero() {
     <section className="hero" aria-label="Destaque" style={{ "--hero-img": `url(${hero.image})` } as CSSProperties}>
       <h1 className="sr-only">Breck Imports: chuteiras e tênis importados com entrega para todo o Brasil</h1>
       <Link to={hero.to} className="hero-banner">
-        <img src={hero.image} alt={hero.alt} fetchPriority="high" />
+        <img
+          src={hero.image}
+          srcSet={`${hero.imageSmall} 1200w, ${hero.image} 2172w`}
+          sizes="100vw"
+          width={hero.width}
+          height={hero.height}
+          alt={hero.alt}
+          fetchPriority="high"
+          decoding="async"
+        />
         <span className="hero-shine" aria-hidden="true" />
       </Link>
     </section>
@@ -113,8 +122,25 @@ interface ProductSectionProps {
   banner?: Banner | Banner[];
   cta?: { label: string; to: string };
   /** Card vertical com foto à esquerda do carrossel (vira topo no celular) */
-  featured?: { image: string; alt: string; to: string; label: string };
+  featured?: Featured;
 }
+
+/**
+ * Card de destaque. O enquadramento é por imagem (cada foto tem rosto/produto num lugar):
+ * - position / mobilePosition: object-position no desktop / celular (padrão "center 30%")
+ * - mobileAspect: proporção do card no celular (padrão "16 / 10", banner baixo)
+ * - mobileBtn: "top-end" (só no celular) tira o botão de cima do produto
+ */
+type Featured = {
+  image: string;
+  alt: string;
+  to: string;
+  label: string;
+  position?: string;
+  mobilePosition?: string;
+  mobileAspect?: string;
+  mobileBtn?: "bottom" | "top-end";
+};
 
 export function ProductSection({ products, label, title, subtitle, banner, cta, featured }: ProductSectionProps) {
   const bannerList = banner ? ([] as Banner[]).concat(banner) : [];
@@ -132,7 +158,17 @@ export function ProductSection({ products, label, title, subtitle, banner, cta, 
         )}
         {featured ? (
           <div className="featured-row">
-            <Link to={featured.to} className="featured-card">
+            <Link
+              to={featured.to}
+              className={`featured-card${featured.mobileBtn === "top-end" ? " featured-card--btn-top" : ""}${featured.mobileAspect ? " featured-card--tall" : ""}`}
+              style={
+                {
+                  "--fp": featured.position,
+                  "--fp-m": featured.mobilePosition,
+                  "--fa-m": featured.mobileAspect,
+                } as CSSProperties
+              }
+            >
               <img src={featured.image} alt={featured.alt} loading="lazy" decoding="async" width={700} height={876} />
               <span className="featured-card-btn">{featured.label} →</span>
             </Link>

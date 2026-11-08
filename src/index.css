@@ -4736,3 +4736,129 @@ body.is-checkout .skip-link {
     transform: none;
   }
 }
+
+/* ==========================================================================
+   Acabamento premium (revisão 2026-11-08 — docs/revisao-premium-2026-11-08.md)
+   Camada só de refino visual: mesma identidade (preto + amarelo, mascote,
+   Permanent Marker), menos ruído e mais precisão.
+   ========================================================================== */
+
+/* Dourado mais "sólido": o degradê começava num amarelo-creme (#fff9a8) que
+   deixava o lado esquerdo dos botões lavado. Agora é amarelo do começo ao fim,
+   com só um leve brilho. */
+:root {
+  --grad-gold: linear-gradient(115deg, #fff04d 0%, #ffe600 38%, #ffd400 72%, #ffe600 100%);
+  --hairline: rgba(255, 255, 255, 0.08);
+  --radius-card: 14px;
+}
+
+/* Movimento: quatro faixas douradas repintavam o fundo em loop infinito
+   (cabeçalho, sublinhado de título, anéis de categoria, rodapé). Custava
+   quadro no celular e competia com o conteúdo. Ficam estáticas. */
+.site-header::after,
+.section-title h2::after,
+.home-category-image,
+.site-footer::before {
+  animation: none;
+}
+/* Hero: o feixe passa duas vezes na entrada e para; o brilho de baixo fica fixo */
+.hero-shine {
+  animation-iteration-count: 2;
+}
+.hero-banner::after {
+  animation: none;
+  opacity: 0.7;
+}
+.hero-banner img {
+  display: block;
+  aspect-ratio: 2172 / 724;
+}
+
+/* Tipografia: títulos sem viúva, números alinhados, tracking ajustado */
+.section-title h2 {
+  letter-spacing: 0.03em;
+  text-wrap: balance;
+}
+.section-title p {
+  text-wrap: pretty;
+  line-height: 1.5;
+}
+.product-title {
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+.price,
+.checkout-total-value,
+.price-installments {
+  font-variant-numeric: tabular-nums;
+}
+.price {
+  letter-spacing: -0.01em;
+}
+.product-card-name {
+  color: #e8e8e8;
+}
+
+/* Cards: borda fina (hairline) e o mesmo raio no card de destaque, nos produtos e na galeria */
+.product-card {
+  border-color: var(--hairline);
+  border-radius: var(--radius-card);
+}
+.featured-card,
+.product-gallery-main {
+  border-radius: var(--radius-card);
+}
+@media (hover: hover) {
+  .product-card:hover {
+    border-color: rgba(255, 214, 0, 0.35);
+  }
+}
+
+/* Checkout: "Total" alinhado ao meio do valor grande, não pendurado embaixo */
+.checkout-total-label {
+  align-self: center;
+}
+
+/* Card de destaque: enquadramento por imagem (campos opcionais no `featured`) */
+.featured-card img {
+  object-position: var(--fp-m, var(--fp, center 30%));
+}
+.featured-card--tall {
+  aspect-ratio: var(--fa-m, 16 / 10);
+  max-height: none;
+}
+.featured-card--btn-top .featured-card-btn {
+  top: 12px;
+  right: 12px;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  /* Sobre o fundo dourado o botão amarelo sumia: pílula preta com texto amarelo */
+  background: rgba(10, 10, 10, 0.88);
+  color: #ffd400;
+  font-size: 0.82rem;
+  padding: 7px 13px;
+  right: 10px;
+  top: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+@media (min-width: 768px) {
+  .featured-card img {
+    object-position: var(--fp, center 30%);
+  }
+  .featured-card--tall {
+    aspect-ratio: auto;
+  }
+  .featured-card--btn-top .featured-card-btn {
+    top: auto;
+    right: auto;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffd400;
+    color: #111;
+    font-size: 1.05rem;
+    padding: 10px 22px;
+  }
+}
