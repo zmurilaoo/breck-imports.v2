@@ -3231,16 +3231,18 @@ const slugsOf = (tipo: string, limit = 12) =>
 
 export const homeSections = {
   "promo500": [
-    "f50-campo-elite-1ps9h",
-    "pm-trava-mg-rosa-e-branco-1o1uj",
-    "phantom-gx6-elite-17v3n",
-    "airzoom-mercurial-vapor-17-elite-preto-amarelo-1389z",
-    "phantom-gx-6-elite-hk2fc",
-    "pm-trava-mg-verde-v18li",
-    "f50-campo-elite-xwkkd",
-    "phantom-gx-6-elite-yqa05",
-    "pm-future-elite-campo-bifbh",
-    "airzoom-mercurial-vapor-17-elite-verde-1h6gg"
+    "adidas-f50-elite-roxo-branco-campo-wa02",
+    "adidas-f50-pro-branco-vermelho-society-wa04",
+    "nike-phantom-6-elite-branco-verde-campo-wa09",
+    "nike-phantom-6-elite-azul-claro-rosa-campo-wa10",
+    "nike-phantom-6-elite-branco-azul-rosa-campo-wa11",
+    "nike-phantom-6-elite-cinza-azul-marinho-campo-wa14",
+    "nike-phantom-6-elite-amarelo-neon-rosa-campo-wa15",
+    "nike-phantom-6-elite-vermelho-rosa-campo-wa16",
+    "nike-phantom-6-elite-branco-laranja-campo-wa18",
+    "nike-phantom-6-elite-preto-azul-galaxy-campo-wa19",
+    "nike-phantom-6-elite-verde-agua-limao-campo-wa20",
+    "nike-phantom-6-elite-azul-verde-limao-campo-wa21"
   ],
   "tn350": [
     "air-max-tn-voltage-purple",
