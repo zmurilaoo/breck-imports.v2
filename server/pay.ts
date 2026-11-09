@@ -8,11 +8,13 @@ import {
   MANUAL_SHIPPING,
   mercadoPago,
   ORDER_TTL,
+  orderForLog,
   orderKey,
   packageFor,
   priceItems,
   quoteShipping,
   redis,
+  validateCustomer,
   type CartInput,
   type Customer,
   type StoredOrder,
@@ -124,10 +126,9 @@ export async function POST(req: Request) {
     if (!env.mpToken) return json({ error: "Pagamento ainda não configurado" }, 503);
     const lines = priceItems(items ?? []);
     if (!lines.length) return json({ error: "Carrinho vazio" }, 400);
-    for (const k of ["name", "email", "phone", "cpf", "cep", "street", "number", "district", "city", "state"] as const)
-      if (!String(customer?.[k] ?? "").trim()) return json({ error: `Preencha o campo ${k}` }, 400);
+    const invalid = validateCustomer(customer);
+    if (invalid) return json({ error: invalid }, 400);
     const cpf = customer.cpf.replace(/\D/g, "");
-    if (cpf.length !== 11) return json({ error: "CPF inválido" }, 400);
 
     const method = String(formData?.payment_method_id ?? "").trim();
     if (!/^[a-z0-9_]{2,30}$/.test(method)) return json({ error: "Escolha uma forma de pagamento" }, 400);
@@ -235,7 +236,7 @@ export async function POST(req: Request) {
           console.error("Falha ao gravar pedido no Redis", reference, err);
         }
       }
-      if (!saved) console.log("Pedido sem banco", reference, JSON.stringify(stored));
+      if (!saved) console.log("Pedido sem banco", reference, JSON.stringify(orderForLog(stored)));
     }
     if (dbReady()) {
       try {

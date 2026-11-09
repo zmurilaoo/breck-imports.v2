@@ -6,11 +6,13 @@ import {
   MANUAL_SHIPPING,
   mercadoPago,
   ORDER_TTL,
+  orderForLog,
   orderKey,
   packageFor,
   priceItems,
   quoteShipping,
   redis,
+  validateCustomer,
   type CartInput,
   type Customer,
   type StoredOrder,
@@ -66,9 +68,8 @@ export async function POST(req: Request) {
     if (!env.mpToken) return json({ error: "Pagamento ainda não configurado" }, 503);
     const lines = priceItems(items ?? []);
     if (!lines.length) return json({ error: "Carrinho vazio" }, 400);
-    for (const k of ["name", "email", "phone", "cpf", "cep", "street", "number", "district", "city", "state"] as const)
-      if (!String(customer?.[k] ?? "").trim()) return json({ error: `Preencha o campo ${k}` }, 400);
-    if (customer.cpf.replace(/\D/g, "").length !== 11) return json({ error: "CPF inválido" }, 400);
+    const invalid = validateCustomer(customer);
+    if (invalid) return json({ error: invalid }, 400);
 
     // O frete é recalculado aqui, pra ninguém mudar o valor pelo navegador
     const quotes = await quoteShipping(customer.cep, lines);
@@ -149,7 +150,7 @@ export async function POST(req: Request) {
         console.error("Falha ao gravar pedido no Redis", reference, err);
       }
     } else console.warn("Banco de pedidos não configurado (KV_REST_API_URL/TOKEN)");
-    if (!saved) console.log("Pedido sem banco", reference, JSON.stringify(stored));
+    if (!saved) console.log("Pedido sem banco", reference, JSON.stringify(orderForLog(stored)));
     else console.log("Pedido criado", reference, order.id);
 
     const result: CachedCheckout = { url: String(order.checkout_url), id: String(order.id), reference };

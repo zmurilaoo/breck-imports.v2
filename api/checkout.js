@@ -2848,6 +2848,1206 @@ const chuteiras = [
 		"isNew": true,
 		"installment12": 32.36,
 		"pix": 295
+	},
+	{
+		"slug": "adidas-f50-elite-roxo-branco-campo-wa02",
+		"name": "Chuteira Campo Adidas F50 Elite FG Roxo/Branco",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/adidas-f50-elite-roxo-branco-campo-wa02/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"adidas"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "adidas-f50-pro-branco-vermelho-society-wa04",
+		"name": "Chuteira Society Adidas F50 Pro TF Branco/Vermelho",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/adidas-f50-pro-branco-vermelho-society-wa04/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-society",
+			"chuteiras",
+			"adidas"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-branco-verde-campo-wa09",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Branco/Verde",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-branco-verde-campo-wa09/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-azul-claro-rosa-campo-wa10",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Azul Claro/Rosa",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-azul-claro-rosa-campo-wa10/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-branco-azul-rosa-campo-wa11",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Branco/Azul/Rosa",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-branco-azul-rosa-campo-wa11/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-cinza-azul-marinho-campo-wa14",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Cinza/Azul Marinho",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-cinza-azul-marinho-campo-wa14/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-amarelo-neon-rosa-campo-wa15",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Amarelo Neon/Rosa",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-amarelo-neon-rosa-campo-wa15/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-vermelho-rosa-campo-wa16",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Vermelho/Rosa",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-vermelho-rosa-campo-wa16/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-branco-laranja-campo-wa18",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Branco/Laranja",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-branco-laranja-campo-wa18/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-preto-azul-galaxy-campo-wa19",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Preto/Azul Galaxy",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-preto-azul-galaxy-campo-wa19/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-verde-agua-limao-campo-wa20",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Verde Água/Limão",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-verde-agua-limao-campo-wa20/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-azul-verde-limao-campo-wa21",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Azul/Verde Limão",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-azul-verde-limao-campo-wa21/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-amarelo-cinza-campo-wa22",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Amarelo/Cinza",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-amarelo-cinza-campo-wa22/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-preto-azul-dourado-campo-wa23",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Preto/Azul/Dourado",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-preto-azul-dourado-campo-wa23/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-lilas-vermelho-campo-wa24",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Lilás/Vermelho",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-lilas-vermelho-campo-wa24/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-branco-azul-royal-campo-wa25",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Branco/Azul Royal",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-branco-azul-royal-campo-wa25/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-verde-neon-campo-wa26",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Verde Neon",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-verde-neon-campo-wa26/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-amarelo-laranja-campo-wa27",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Amarelo/Laranja",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-amarelo-laranja-campo-wa27/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-preto-dourado-campo-wa28",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Preto/Dourado",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-preto-dourado-campo-wa28/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-azul-claro-laranja-campo-wa29",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Azul Claro/Laranja",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-azul-claro-laranja-campo-wa29/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-preto-vermelho-campo-wa30",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Preto/Vermelho",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-preto-vermelho-campo-wa30/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-prata-multicolor-campo-wa31",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Prata/Multicolor",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-prata-multicolor-campo-wa31/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-preto-azul-rosa-campo-wa32",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Preto/Azul/Rosa",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-preto-azul-rosa-campo-wa32/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
+	},
+	{
+		"slug": "nike-phantom-6-elite-branco-vinho-campo-wa33",
+		"name": "Chuteira Campo Nike Phantom 6 Elite FG Branco/Vinho",
+		"price": 299,
+		"comparePrice": null,
+		"label": null,
+		"images": ["/images/chuteiras/nike-phantom-6-elite-branco-vinho-campo-wa33/1.webp"],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36,
+		"pix": 295
 	}
 ];
 //#endregion
@@ -9429,8 +10629,72 @@ const env = {
 	redisUrl: (e("KV_REST_API_URL") || e("UPSTASH_REDIS_REST_URL")).replace(/\/$/, ""),
 	redisToken: e("KV_REST_API_TOKEN") || e("UPSTASH_REDIS_REST_TOKEN")
 };
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_LEN = {
+	name: 120,
+	email: 160,
+	phone: 20,
+	cpf: 20,
+	cep: 12,
+	street: 160,
+	number: 20,
+	complement: 80,
+	district: 120,
+	city: 120,
+	state: 2
+};
+const REQUIRED = [
+	"name",
+	"email",
+	"phone",
+	"cpf",
+	"cep",
+	"street",
+	"number",
+	"district",
+	"city",
+	"state"
+];
+/** Valida o cliente na fronteira: presença, tamanho máximo e formato de e-mail/CPF. Devolve a mensagem de erro ou null. */
+function validateCustomer(c) {
+	const rec = c ?? {};
+	for (const k of REQUIRED) {
+		const v = String(rec[k] ?? "").trim();
+		if (!v) return `Preencha o campo ${k}`;
+		if (v.length > (MAX_LEN[k] ?? 200)) return `Campo ${k} muito longo`;
+	}
+	if (String(rec["complement"] ?? "").length > MAX_LEN.complement) return "Campo complemento muito longo";
+	if (!EMAIL_RE.test(String(rec["email"] ?? "").trim())) return "E-mail inválido";
+	if (String(rec["cpf"] ?? "").replace(/\D/g, "").length !== 11) return "CPF inválido";
+	return null;
+}
+/** Versão do pedido para log: mascara CPF e telefone (LGPD), mantém o que serve para rastrear. */
+function orderForLog(o) {
+	const mask = (s, keep = 3) => {
+		const d = String(s ?? "").replace(/\D/g, "");
+		return d.length <= keep ? "*".repeat(d.length) : "*".repeat(d.length - keep) + d.slice(-keep);
+	};
+	return {
+		reference: o.reference,
+		mpOrderId: o.mpOrderId,
+		total: o.total,
+		items: o.items.map((i) => ({
+			slug: i.slug,
+			size: i.size,
+			quantity: i.quantity
+		})),
+		customer: {
+			cpf: mask(o.customer.cpf),
+			phone: mask(o.customer.phone),
+			cep: o.customer.cep,
+			city: o.customer.city,
+			state: o.customer.state
+		}
+	};
+}
 /** Remonta o carrinho com os preços do catálogo: o preço nunca vem do navegador */
 function priceItems(items) {
+	if ((items?.length ?? 0) > 20) throw new Error("Carrinho inválido");
 	return items.map((i) => {
 		const product = getProduct(i.slug);
 		if (!product) throw new Error(`Produto não encontrado: ${i.slug}`);
@@ -9590,19 +10854,8 @@ async function POST(req) {
 		if (!env.mpToken) return json({ error: "Pagamento ainda não configurado" }, 503);
 		const lines = priceItems(items ?? []);
 		if (!lines.length) return json({ error: "Carrinho vazio" }, 400);
-		for (const k of [
-			"name",
-			"email",
-			"phone",
-			"cpf",
-			"cep",
-			"street",
-			"number",
-			"district",
-			"city",
-			"state"
-		]) if (!String(customer?.[k] ?? "").trim()) return json({ error: `Preencha o campo ${k}` }, 400);
-		if (customer.cpf.replace(/\D/g, "").length !== 11) return json({ error: "CPF inválido" }, 400);
+		const invalid = validateCustomer(customer);
+		if (invalid) return json({ error: invalid }, 400);
 		const ship = (await quoteShipping(customer.cep, lines)).find((q) => q.id === shippingId && (q.price > 0 || q.id === MANUAL_SHIPPING.id));
 		if (!ship) return json({ error: "Escolha uma opção de frete válida" }, 400);
 		const orderItems = [...lines.map((l) => ({
@@ -9673,7 +10926,7 @@ async function POST(req) {
 			console.error("Falha ao gravar pedido no Redis", reference, err);
 		}
 		else console.warn("Banco de pedidos não configurado (KV_REST_API_URL/TOKEN)");
-		if (!saved) console.log("Pedido sem banco", reference, JSON.stringify(stored));
+		if (!saved) console.log("Pedido sem banco", reference, JSON.stringify(orderForLog(stored)));
 		else console.log("Pedido criado", reference, order.id);
 		const result = {
 			url: String(order.checkout_url),

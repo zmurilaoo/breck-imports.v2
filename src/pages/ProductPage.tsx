@@ -63,7 +63,7 @@ function ProductDetail({ product }: { product: Product }) {
         <div className="product-detail">
           <div className="product-gallery">
             <div className="product-gallery-main">
-              <img key={product.images[image]} className="gallery-img-in" src={product.images[image]} alt={product.name} />
+              <img key={product.images[image]} className="gallery-img-in" src={product.images[image]} alt={product.name} fetchPriority="high" decoding="async" />
               <div className="labels">
                 {discount && <span className="label">{discount}% OFF</span>}
                 {product.label && <span className="label">{product.label}</span>}

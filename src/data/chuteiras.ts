@@ -1,7 +1,7 @@
 // Chuteiras por tipo (campo, society, futsal) — várias fotos por chuteira em public/images/chuteiras/<slug>/
 import type { Product } from "../types";
 
-export const chuteiras: Product[
+export const chuteiras: Product[] = [
   {
     "slug": "f50-elite-campo-rx-1qkag",
     "name": "Chuteira Campo Adidas F50 Elite FG Lamine Yamal Rosa/Roxo",

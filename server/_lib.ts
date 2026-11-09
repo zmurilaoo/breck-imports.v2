@@ -59,8 +59,45 @@ export interface Customer {
   state: string;
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_LEN: Record<string, number> = {
+  name: 120, email: 160, phone: 20, cpf: 20, cep: 12,
+  street: 160, number: 20, complement: 80, district: 120, city: 120, state: 2,
+};
+const REQUIRED = ["name", "email", "phone", "cpf", "cep", "street", "number", "district", "city", "state"] as const;
+
+/** Valida o cliente na fronteira: presença, tamanho máximo e formato de e-mail/CPF. Devolve a mensagem de erro ou null. */
+export function validateCustomer(c: Customer | null | undefined): string | null {
+  const rec = (c ?? {}) as Record<string, unknown>;
+  for (const k of REQUIRED) {
+    const v = String(rec[k] ?? "").trim();
+    if (!v) return `Preencha o campo ${k}`;
+    if (v.length > (MAX_LEN[k] ?? 200)) return `Campo ${k} muito longo`;
+  }
+  if (String(rec["complement"] ?? "").length > MAX_LEN.complement) return "Campo complemento muito longo";
+  if (!EMAIL_RE.test(String(rec["email"] ?? "").trim())) return "E-mail inválido";
+  if (String(rec["cpf"] ?? "").replace(/\D/g, "").length !== 11) return "CPF inválido";
+  return null;
+}
+
+/** Versão do pedido para log: mascara CPF e telefone (LGPD), mantém o que serve para rastrear. */
+export function orderForLog(o: StoredOrder) {
+  const mask = (s: string, keep = 3) => {
+    const d = String(s ?? "").replace(/\D/g, "");
+    return d.length <= keep ? "*".repeat(d.length) : "*".repeat(d.length - keep) + d.slice(-keep);
+  };
+  return {
+    reference: o.reference,
+    mpOrderId: o.mpOrderId,
+    total: o.total,
+    items: o.items.map((i) => ({ slug: i.slug, size: i.size, quantity: i.quantity })),
+    customer: { cpf: mask(o.customer.cpf), phone: mask(o.customer.phone), cep: o.customer.cep, city: o.customer.city, state: o.customer.state },
+  };
+}
+
 /** Remonta o carrinho com os preços do catálogo: o preço nunca vem do navegador */
 export function priceItems(items: CartInput[]) {
+  if ((items?.length ?? 0) > 20) throw new Error("Carrinho inválido");
   return items.map((i) => {
     const product = getProduct(i.slug);
     if (!product) throw new Error(`Produto não encontrado: ${i.slug}`);
