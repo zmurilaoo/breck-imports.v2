@@ -57,3 +57,39 @@ Pendência: e-mail "pedido enviado" só sai com etiqueta paga automaticamente.
 ## 05/11/2026 — EM PRODUÇÃO
 Pagamento dentro do site (Payment Brick: cartão, débito CAIXA, Pix, boleto) NO AR em breckimports.com.br, com animações e checkout novo. VITE_MP_PUBLIC_KEY (produção) cadastrada sem BOM — cuidado: valores enviados via PowerShell entram com BOM; use bash `printf '%s' valor | vercel env add`.
 Falta do dono: marcar evento "Pagamentos" no webhook do MP (senão etiqueta/e-mail não disparam para pagamentos do Brick); conta Resend + domínio no DNS + RESEND_API_KEY/LOJA_EMAIL_REMETENTE (e-mails); CNPJ no rodapé; primeira compra real pequena para validar.
+
+---
+
+## Estado em 09/11/2026 (retome por aqui)
+
+### No ar (breckimports.com.br)
+- Checkout em 3 passos com pagamento DENTRO do site (Payment Brick do Mercado Pago: cartão 12x, débito CAIXA, Pix com QR, boleto) — sem conta MP. Reserva: Checkout Pro se o Brick falhar.
+- Frete real SuperFrete (PAC/SEDEX) no checkout e no carrinho; etiqueta automática no carrinho da SuperFrete após pagamento (precisa do evento "Pagamentos" no webhook).
+- Promessas falsas removidas (frete grátis Sudeste, desconto Pix); login falso escondido; rodapé completo (falta CNPJ).
+- Animações (voar pro carrinho, botão Adicionado, transições), acabamento premium, hero 256 KB.
+- Home: banners "Leve uma chuteira e ganhe um par de meia" + "Coleção de chuteiras com meias grátis"; card Neymar (Puma laranja/roxa) em Mais Compradas; card Ronaldinho em Chuteiras Campo.
+- 24 chuteiras novas (F50 + Nike Phantom) das fotos do WhatsApp de 08/11 13h, fotos 1:1 em gramado, abrindo "As mais compradas".
+
+### Só no GitHub (NÃO publicado) — aguardando decisão do dono
+- 41 chuteiras de FUTSAL (fotos do WhatsApp 08/11 21h), commits 4f75e3f + b9319d2. Fotos atuais = originais com a mão, crop quadrado, fundo desfocado; chuteiras inteiras, mas aparecem as plaquinhas do fornecedor ("A1-10-1", "40ao43").
+  Opções: A) subir assim; B) pedir ao fornecedor fotos sem plaquinha (recomendado); C) fotografar; D) tarjar/desfocar as plaquinhas.
+  Modelos são palpite (Superfly = cano alto, Vapor = cano baixo; Phantom GX/Luna pelo formato) — confirmar com fornecedor.
+
+### Pedidos do dono ainda pendentes
+1. Webhook Mercado Pago (Produção): marcar evento "Pagamentos" — sem isso etiqueta e e-mails não disparam após pagamento no site. [dono]
+2. E-mails (pedido confirmado / enviado): conta Resend + domínio no DNS da Hostinger + RESEND_API_KEY e LOJA_EMAIL_REMETENTE na Vercel. Código pronto. [dono]
+3. CNPJ no rodapé (TODO em Footer.tsx e rodapé do checkout). [dono]
+4. Compra real pequena de ponta a ponta (Pix) para validar pagamento → etiqueta → e-mail. [dono]
+5. Futsal: decidir A/B/C/D acima e publicar. [dono → design]
+6. Painel admin (subir fotos, preço, banners sem dev) — ideia aprovada em conversa, não iniciada. [yellow + design]
+7. Desconto Pix real (Pix com valor próprio no servidor) — parecer pronto no yellow.md 13B. [dono decide → yellow]
+8. 7 fotos antigas cortadas pelo card 1:1 (lista em docs/revisao-premium-2026-11-08.md). [design]
+9. Ressalvas do security: mascarar CPF em logs, /api/pay-status exigir reference, limite de tamanho dos campos, CSP, aviso de pagamento duplicado, recusar webhook sem segredo em produção. [yellow]
+10. E-mail "pedido enviado" só sai com etiqueta paga automaticamente — falta gatilho quando a etiqueta é paga no painel. [automation]
+11. Plano Vercel Pro (uso comercial) e rotacionar o token SuperFrete (foi colado no chat). [dono]
+12. Proposta de numeração: security = Agente 07 (design é o 06) — aguarda ok. [dono]
+
+### Como publicar
+- Deploy é manual via Vercel CLI (Vercel NÃO está ligada ao GitHub: push não publica).
+- Bash: `PATH="/c/Program Files/nodejs:$APPDATA/npm:$PATH"; node "$APPDATA/npm/node_modules/vercel/dist/vc.js" deploy --prod --yes`
+- Variáveis na Vercel: enviar com `printf '%s' valor | vercel env add NOME --environment production` (PowerShell injeta BOM e quebra a chave).
