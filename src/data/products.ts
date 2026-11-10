@@ -3223,11 +3223,13 @@ const isChuteira = (p: Product) => p.categories.includes("chuteiras") || /chutei
 const isOldTn = (p: Product) => p.categories.includes("air-max-tn");
 // Produto sem foto não aparece na loja
 const hasPhoto = (p: Product) => !p.images[0]?.includes("sem-foto");
-export const products: Product[] = [...baseProducts.filter((p) => !isChuteira(p) && !isOldTn(p)), ...chuteiras, ...tenis.map((p) => ({ ...p, categories: [...p.categories, "tenis"] }))].filter(hasPhoto);
+// Futsal do WhatsApp (sufixo -fsNN) fica fora do site até o dono aprovar as fotos (ver PROGRESSO.md)
+const isPendingFutsal = (p: Product) => /-fs\d+$/.test(p.slug);
+export const products: Product[] = [...baseProducts.filter((p) => !isChuteira(p) && !isOldTn(p)), ...chuteiras, ...tenis.map((p) => ({ ...p, categories: [...p.categories, "tenis"] }))].filter(hasPhoto).filter((p) => !isPendingFutsal(p));
 
 
 const slugsOf = (tipo: string, limit = 12) =>
-  [...chuteiras, ...tenis].filter((p) => p.categories.includes(tipo)).slice(0, limit).map((p) => p.slug);
+  [...chuteiras, ...tenis].filter((p) => !isPendingFutsal(p)).filter((p) => p.categories.includes(tipo)).slice(0, limit).map((p) => p.slug);
 
 export const homeSections = {
   "promo500": [
