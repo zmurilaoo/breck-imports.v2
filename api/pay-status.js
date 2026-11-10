@@ -6,6 +6,61 @@ new Intl.NumberFormat("pt-BR", {
 //#region src/data/chuteiras.ts
 const chuteiras = [
 	{
+		"slug": "nike-tiempo-legend-r10-branca-dourada-campo",
+		"name": "Chuteira Campo Nike Tiempo Legend R10 Ronaldinho Branca/Dourada",
+		"price": 299,
+		"pix": 295,
+		"comparePrice": null,
+		"label": null,
+		"images": [
+			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/1.webp",
+			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/2.webp",
+			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/3.webp",
+			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/4.webp"
+		],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36
+	},
+	{
 		"slug": "f50-elite-campo-rx-1qkag",
 		"name": "Chuteira Campo Adidas F50 Elite FG Lamine Yamal Rosa/Roxo",
 		"price": 299,
@@ -10577,6 +10632,7 @@ const baseProducts = [
 const isChuteira = (p) => p.categories.includes("chuteiras") || /chuteira/i.test(p.name);
 const isOldTn = (p) => p.categories.includes("air-max-tn");
 const hasPhoto = (p) => !p.images[0]?.includes("sem-foto");
+const isPendingFutsal = (p) => /-fs\d+$/.test(p.slug);
 const products = [
 	...baseProducts.filter((p) => !isChuteira(p) && !isOldTn(p)),
 	...chuteiras,
@@ -10584,8 +10640,8 @@ const products = [
 		...p,
 		categories: [...p.categories, "tenis"]
 	}))
-].filter(hasPhoto);
-const slugsOf = (tipo, limit = 12) => [...chuteiras, ...tenis].filter((p) => p.categories.includes(tipo)).slice(0, limit).map((p) => p.slug);
+].filter(hasPhoto).filter((p) => !isPendingFutsal(p));
+const slugsOf = (tipo, limit = 12) => [...chuteiras, ...tenis].filter((p) => !isPendingFutsal(p)).filter((p) => p.categories.includes(tipo)).slice(0, limit).map((p) => p.slug);
 slugsOf("chuteira-campo"), slugsOf("chuteira-society"), slugsOf("chuteira-futsal"), slugsOf("air-max-tn", 15), slugsOf("mizuno");
 new Map(products.map((p) => [p.slug, p]));
 //#endregion
