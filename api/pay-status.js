@@ -12,12 +12,7 @@ const chuteiras = [
 		"pix": 295,
 		"comparePrice": null,
 		"label": null,
-		"images": [
-			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/1.webp",
-			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/2.webp",
-			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/3.webp",
-			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/4.webp"
-		],
+		"images": ["/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/1.webp"],
 		"sizes": [
 			{
 				"size": "37",
