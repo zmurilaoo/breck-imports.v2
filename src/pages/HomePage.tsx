@@ -23,13 +23,13 @@ export function HomePage() {
         subtitle="As chuteiras que a galera mais tá comprando"
         products={getSection("promo500")}
         banner={[banners.promo500, banners.meia]}
-        featured={{ image: "/images/card-mais-compradas.webp", alt: "Neymar segurando chuteira Puma laranja e roxa", to: "/categoria/chuteiras", label: "VER TODAS" }}
+        featured={{ image: "/images/card-mais-compradas.webp", alt: "Neymar segurando chuteira Puma laranja e roxa", to: "/produtos/puma-future-neymar-laranja-campo", label: "VER CHUTEIRA" }}
       />
       <ProductSection
         label="Chuteiras Campo"
         title="CHUTEIRAS CAMPO"
         products={getSection("chuteirasCampo")}
-        featured={{ image: "/images/card-ronaldinho-campo.webp", alt: "Ronaldinho segurando chuteira Nike Tiempo branca e dourada", to: "/categoria/chuteira-campo", label: "VER TODAS", mobileAspect: "4 / 5", mobilePosition: "center 100%", position: "65% center", mobileBtn: "top-end" }}
+        featured={{ image: "/images/card-ronaldinho-campo.webp", alt: "Ronaldinho segurando chuteira Nike Tiempo branca e dourada", to: "/produtos/nike-tiempo-legend-r10-branca-dourada-campo", label: "VER CHUTEIRA", mobileAspect: "4 / 5", mobilePosition: "center 100%", position: "65% center", mobileBtn: "top-end" }}
         cta={{ label: "VER TODAS DE CAMPO", to: "/categoria/chuteira-campo" }}
       />
       <ProductSection
