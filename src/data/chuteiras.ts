@@ -3,6 +3,58 @@ import type { Product } from "../types";
 
 export const chuteiras: Product[] = [
   {
+    "slug": "puma-future-neymar-laranja-campo",
+    "name": "Chuteira Campo Puma Future Ultimate Neymar Laranja/Roxo",
+    "price": 299,
+    "pix": 295,
+    "comparePrice": null,
+    "label": null,
+    "images": [
+      "/images/chuteiras/puma-future-neymar-laranja-campo/1.webp"
+    ],
+    "sizes": [
+      {
+        "size": "37",
+        "available": true
+      },
+      {
+        "size": "38",
+        "available": true
+      },
+      {
+        "size": "39",
+        "available": true
+      },
+      {
+        "size": "40",
+        "available": true
+      },
+      {
+        "size": "41",
+        "available": true
+      },
+      {
+        "size": "42",
+        "available": true
+      },
+      {
+        "size": "43",
+        "available": true
+      },
+      {
+        "size": "44",
+        "available": true
+      }
+    ],
+    "categories": [
+      "chuteira-campo",
+      "chuteiras",
+      "puma"
+    ],
+    "isNew": true,
+    "installment12": 32.36
+  },
+  {
     "slug": "nike-tiempo-legend-r10-branca-dourada-campo",
     "name": "Chuteira Campo Nike Tiempo Legend R10 Ronaldinho Branca/Dourada",
     "price": 299,
