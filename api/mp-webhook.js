@@ -64,10 +64,10 @@ const chuteiras = [
 		"comparePrice": null,
 		"label": null,
 		"images": [
-			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/1.webp",
-			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/2.webp",
-			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/3.webp",
-			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/4.webp"
+			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/v2-1.webp",
+			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/v2-2.webp",
+			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/v2-3.webp",
+			"/images/chuteiras/nike-tiempo-legend-r10-branca-dourada-campo/v2-4.webp"
 		],
 		"sizes": [
 			{
@@ -10693,7 +10693,7 @@ const products = [
 	}))
 ].filter(hasPhoto).filter((p) => !isPendingFutsal(p));
 const slugsOf = (tipo, limit = 12) => [...chuteiras, ...tenis].filter((p) => !isPendingFutsal(p)).filter((p) => p.categories.includes(tipo)).slice(0, limit).map((p) => p.slug);
-slugsOf("chuteira-campo"), slugsOf("chuteira-society"), slugsOf("chuteira-futsal"), slugsOf("air-max-tn", 15), slugsOf("mizuno");
+slugsOf("chuteira-campo", 13).filter((s) => s !== "puma-future-neymar-laranja-campo").slice(0, 12), slugsOf("chuteira-society"), slugsOf("chuteira-futsal"), slugsOf("air-max-tn", 15), slugsOf("mizuno");
 new Map(products.map((p) => [p.slug, p]));
 //#endregion
 //#region server/_lib.ts
