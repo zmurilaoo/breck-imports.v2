@@ -3274,7 +3274,7 @@ export const homeSections = {
     "air-max-dn8-blue",
     "air-max-dn8-yellow"
   ],
-  "chuteirasCampo": slugsOf("chuteira-campo"),
+  "chuteirasCampo": slugsOf("chuteira-campo", 13).filter((s) => s !== "puma-future-neymar-laranja-campo").slice(0, 12),
   "chuteirasSociety": slugsOf("chuteira-society"),
   "chuteirasFutsal": slugsOf("chuteira-futsal"),
   "airMaxTn": slugsOf("air-max-tn", 15),
