@@ -3234,6 +3234,7 @@ const slugsOf = (tipo: string, limit = 12) =>
 export const homeSections = {
   "promo500": [
     "puma-future-neymar-laranja-campo",
+    "adidas-f50-messi-argentina-branca-campo",
     "adidas-f50-elite-roxo-branco-campo-wa02",
     "adidas-f50-pro-branco-vermelho-society-wa04",
     "nike-phantom-6-elite-branco-verde-campo-wa09",
@@ -3243,8 +3244,7 @@ export const homeSections = {
     "nike-phantom-6-elite-amarelo-neon-rosa-campo-wa15",
     "nike-phantom-6-elite-vermelho-rosa-campo-wa16",
     "nike-phantom-6-elite-branco-laranja-campo-wa18",
-    "nike-phantom-6-elite-preto-azul-galaxy-campo-wa19",
-    "nike-phantom-6-elite-verde-agua-limao-campo-wa20"
+    "nike-phantom-6-elite-preto-azul-galaxy-campo-wa19"
   ],
   "tn350": [
     "air-max-tn-voltage-purple",

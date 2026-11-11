@@ -7,6 +7,63 @@ new Intl.NumberFormat("pt-BR", {
 //#region src/data/chuteiras.ts
 const chuteiras = [
 	{
+		"slug": "adidas-f50-messi-argentina-branca-campo",
+		"name": "Chuteira Campo Adidas F50 Messi Argentina Branca/Azul",
+		"price": 299,
+		"pix": 295,
+		"comparePrice": null,
+		"label": null,
+		"images": [
+			"/images/chuteiras/adidas-f50-messi-argentina-branca-campo/1.webp",
+			"/images/chuteiras/adidas-f50-messi-argentina-branca-campo/2.webp",
+			"/images/chuteiras/adidas-f50-messi-argentina-branca-campo/3.webp",
+			"/images/chuteiras/adidas-f50-messi-argentina-branca-campo/4.webp",
+			"/images/chuteiras/adidas-f50-messi-argentina-branca-campo/5.webp",
+			"/images/chuteiras/adidas-f50-messi-argentina-branca-campo/6.webp"
+		],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			},
+			{
+				"size": "44",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"adidas"
+		],
+		"isNew": true,
+		"installment12": 32.36
+	},
+	{
 		"slug": "puma-future-neymar-laranja-campo",
 		"name": "Chuteira Campo Puma Future Ultimate Neymar Laranja/Roxo",
 		"price": 299,
