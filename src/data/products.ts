@@ -3234,7 +3234,6 @@ const slugsOf = (tipo: string, limit = 12) =>
 export const homeSections = {
   "promo500": [
     "puma-future-neymar-laranja-campo",
-    "adidas-f50-messi-argentina-branca-campo",
     "adidas-f50-elite-roxo-branco-campo-wa02",
     "adidas-f50-pro-branco-vermelho-society-wa04",
     "nike-phantom-6-elite-branco-verde-campo-wa09",
