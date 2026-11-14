@@ -10883,6 +10883,7 @@ async function guard(req) {
 //#region server/admin-reindex.ts
 const LOCK_KEY = "brk:lock:admin-reindex";
 const LOCK_TTL_S = 60;
+const RELEASE_LOCK_LUA = "if redis.call(\"GET\", KEYS[1]) == ARGV[1] then return redis.call(\"DEL\", KEYS[1]) else return 0 end";
 const MAX_ROUNDS = 500;
 function createdMs(raw) {
 	try {
@@ -10934,7 +10935,7 @@ async function POST(req) {
 		return adminJson(req, { error: "falha ao reindexar" }, 502);
 	} finally {
 		try {
-			if (await redis("GET", LOCK_KEY) === lockId) await redis("DEL", LOCK_KEY);
+			await redis("EVAL", RELEASE_LOCK_LUA, 1, LOCK_KEY, lockId);
 		} catch (err) {
 			console.error("Admin reindex: falha ao liberar lock (expira em 60 s)", err);
 		}

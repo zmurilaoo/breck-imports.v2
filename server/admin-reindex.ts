@@ -6,6 +6,9 @@ import { ORDERS_INDEX, redis } from "./_lib";
 
 const LOCK_KEY = "brk:lock:admin-reindex";
 const LOCK_TTL_S = 60; // expira sozinho se a função morrer no meio
+// Compare-and-delete atômico: só apaga se o valor ainda é o nosso lockId (L3).
+// GET seguido de DEL tem janela: o lock expira, outra execução pega, e o DEL apaga o dela.
+const RELEASE_LOCK_LUA = 'if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end';
 const MAX_ROUNDS = 500; // 500 x COUNT 200 cobre ~100 mil chaves; se complete=false, chamar de novo
 
 function createdMs(raw: string | null): number {
@@ -53,9 +56,9 @@ export async function POST(req: Request) {
     console.error("Admin reindex", err);
     return adminJson(req, { error: "falha ao reindexar" }, 502);
   } finally {
-    // Só libera se o lock ainda é nosso (não apaga o de outra execução depois de expirar)
+    // Só libera se o lock ainda é nosso, numa única operação atômica no Redis
     try {
-      if ((await redis<string | null>("GET", LOCK_KEY)) === lockId) await redis("DEL", LOCK_KEY);
+      await redis<number>("EVAL", RELEASE_LOCK_LUA, 1, LOCK_KEY, lockId);
     } catch (err) {
       console.error("Admin reindex: falha ao liberar lock (expira em 60 s)", err);
     }

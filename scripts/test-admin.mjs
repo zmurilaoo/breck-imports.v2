@@ -9,7 +9,17 @@ const db = new Map();
 const zsets = new Map();
 const mpPayments = new Map();
 
+const redisLog = [];
+let onScan = null;
 function redisCmd([cmd, key, ...rest]) {
+  redisLog.push(cmd);
+  if (cmd === "EVAL") {
+    // Só o compare-and-delete do lock é suportado pelo mock.
+    if (!/redis\.call\("GET", KEYS\[1\]\) == ARGV\[1\].*redis\.call\("DEL", KEYS\[1\]\)/.test(key)) throw new Error("EVAL desconhecido");
+    const [numkeys, k, expected] = rest;
+    if (Number(numkeys) !== 1) throw new Error("EVAL numkeys");
+    return db.get(k) === expected ? (db.delete(k), 1) : 0;
+  }
   if (cmd === "GET") return db.get(key) ?? null;
   if (cmd === "SET") {
     if (rest.includes("NX") && db.has(key)) return null;
@@ -33,6 +43,7 @@ function redisCmd([cmd, key, ...rest]) {
     return z.slice(Number(off), Number(off) + Number(count)).flatMap(([m, sc]) => [m, String(sc)]);
   }
   if (cmd === "SCAN") {
+    onScan?.();
     const re = new RegExp("^" + rest[1].replace(/\*/g, ".*") + "$");
     return ["0", [...db.keys()].filter((k) => re.test(k))];
   }
@@ -165,6 +176,21 @@ await test("reindex com lock ativo: 409 e não mexe no índice nem no lock alhei
   const r = await reindex(new Request("http://x", { method: "POST", headers: auth() }));
   assert.equal(r.status, 409);
   assert.equal(zsets.get("brk:pedidos")?.size, before);
+  assert.equal(db.get("brk:lock:admin-reindex"), "outra-execucao");
+  db.delete("brk:lock:admin-reindex");
+});
+
+await test("reindex libera o lock com EVAL atômico e não apaga lock de outra execução", async () => {
+  redisLog.length = 0;
+  await reindex(new Request("http://x", { method: "POST", headers: auth() }));
+  assert.ok(redisLog.includes("EVAL"), "usa EVAL compare-and-delete");
+  assert.ok(!redisLog.includes("DEL"), "sem DEL solto (GET+DEL não é atômico)");
+  assert.equal(db.has("brk:lock:admin-reindex"), false);
+  // Lock expira no meio e outra execução o pega: ao terminar, o lock alheio fica.
+  onScan = () => db.set("brk:lock:admin-reindex", "outra-execucao");
+  try {
+    assert.equal((await reindex(new Request("http://x", { method: "POST", headers: auth() }))).status, 200);
+  } finally { onScan = null; }
   assert.equal(db.get("brk:lock:admin-reindex"), "outra-execucao");
   db.delete("brk:lock:admin-reindex");
 });
