@@ -9,7 +9,9 @@ import {
   mercadoPago,
   ORDER_TTL,
   orderForLog,
+  indexOrder,
   orderKey,
+  paymentFromMp,
   packageFor,
   priceItems,
   quoteShipping,
@@ -226,12 +228,14 @@ export async function POST(req: Request) {
         package: ship.id === MANUAL_SHIPPING.id ? null : packageFor(pairs),
         subtotal,
         total,
+        payment: paymentFromMp(payment),
       };
       let saved = false;
       if (dbReady()) {
         try {
           await redis("SET", orderKey(reference), JSON.stringify(stored), "EX", ORDER_TTL);
           saved = true;
+          await indexOrder(reference, Date.parse(stored.createdAt));
         } catch (err) {
           console.error("Falha ao gravar pedido no Redis", reference, err);
         }

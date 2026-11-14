@@ -10842,6 +10842,47 @@ const ORDER_TTL = 15552e3;
 const orderKey = (ref) => `brk:pedido:${ref}`;
 const shipmentKey = (ref) => `brk:envio:${ref}`;
 const lockKey = (ref) => `brk:envio-lock:${ref}`;
+function paymentFromMp(p) {
+	return {
+		id: String(p.id ?? ""),
+		status: String(p.status ?? ""),
+		statusDetail: String(p.status_detail ?? ""),
+		typeId: String(p.payment_type_id ?? ""),
+		methodId: String(p.payment_method_id ?? ""),
+		installments: Number.isFinite(Number(p.installments)) && p.installments != null ? Number(p.installments) : null,
+		approvedAt: p.date_approved ? String(p.date_approved) : null,
+		updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+	};
+}
+function paymentFromMpOrder(o) {
+	const tx = o.transactions?.payments?.[0] ?? {};
+	return {
+		id: String(o.id ?? ""),
+		status: String(o.status ?? ""),
+		statusDetail: String(o.status_detail ?? ""),
+		typeId: String(tx.payment_method?.type ?? ""),
+		methodId: String(tx.payment_method?.id ?? ""),
+		installments: Number.isFinite(Number(tx.payment_method?.installments)) && tx.payment_method?.installments != null ? Number(tx.payment_method.installments) : null,
+		approvedAt: o.status === "processed" ? String(o.last_updated_date ?? "") || null : null,
+		updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+	};
+}
+/** Grava o estado do pagamento no pedido, preservando o TTL. Falha só vai para o log. */
+async function recordPayment(reference, payment) {
+	if (!dbReady() || !reference) return;
+	try {
+		const raw = await redis("GET", orderKey(reference));
+		if (!raw) return;
+		const order = JSON.parse(raw);
+		const prev = order.payment;
+		const approved = (s) => s === "approved" || s === "processed";
+		if (prev && prev.id !== payment.id && approved(prev.status) && !approved(payment.status)) return;
+		order.payment = payment;
+		await redis("SET", orderKey(reference), JSON.stringify(order), "KEEPTTL");
+	} catch (err) {
+		console.error("Falha ao gravar status do pagamento", reference, err);
+	}
+}
 const json = (data, status = 200) => new Response(JSON.stringify(data), {
 	status,
 	headers: { "Content-Type": "application/json" }
@@ -11104,11 +11145,13 @@ async function POST(req) {
 			paid = p.status === "approved";
 			reference = String(p.external_reference ?? "");
 			paidAmount = Number(p.transaction_amount);
+			await recordPayment(reference, paymentFromMp(p));
 			console.log("Payment", p.id, reference, p.status, p.status_detail, paid ? "PAGO" : "");
 		} else {
 			const order = await mercadoPago(`/v1/orders/${encodeURIComponent(String(id))}`);
 			paid = order.status === "processed" && order.status_detail === "accredited";
 			reference = String(order.external_reference ?? "");
+			await recordPayment(reference, paymentFromMpOrder(order));
 			console.log("Order", order.id, reference, order.status, order.status_detail, paid ? "PAGO" : "");
 		}
 		if (!paid || !reference) return json({

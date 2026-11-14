@@ -10963,6 +10963,18 @@ async function redis(...command) {
 }
 const ORDER_TTL = 15552e3;
 const orderKey = (ref) => `brk:pedido:${ref}`;
+/** Índice de pedidos por data (sorted set, score = createdAt em ms) para a API administrativa */
+const ORDERS_INDEX = "brk:pedidos";
+/** ZADD no índice e poda do que já passou do TTL lógico do pedido. Falha não derruba a venda. */
+async function indexOrder(reference, createdAtMs) {
+	if (!dbReady()) return;
+	try {
+		await redis("ZADD", ORDERS_INDEX, createdAtMs, reference);
+		await redis("ZREMRANGEBYSCORE", ORDERS_INDEX, "-inf", Date.now() - ORDER_TTL * 1e3);
+	} catch (err) {
+		console.error("Falha ao indexar pedido", reference, err);
+	}
+}
 const json = (data, status = 200) => new Response(JSON.stringify(data), {
 	status,
 	headers: { "Content-Type": "application/json" }
@@ -11085,6 +11097,7 @@ async function POST(req) {
 		if (dbReady()) try {
 			await redis("SET", orderKey(reference), JSON.stringify(stored), "EX", ORDER_TTL);
 			saved = true;
+			await indexOrder(reference, Date.parse(stored.createdAt));
 		} catch (err) {
 			console.error("Falha ao gravar pedido no Redis", reference, err);
 		}

@@ -21,9 +21,11 @@ Object.assign(process.env, {
 });
 
 const db = new Map();
+const zsets = new Map(); // sorted sets: key -> Map(member -> score)
 const calls = [];
 let mpPayment = null; // resposta de POST /v1/payments
 const mpPayments = new Map(); // GET /v1/payments/:id
+const mpOrders = new Map(); // GET /v1/orders/:id
 
 function redisCmd([cmd, key, ...rest]) {
   if (cmd === "GET") return db.get(key) ?? null;
@@ -35,6 +37,30 @@ function redisCmd([cmd, key, ...rest]) {
   }
   if (cmd === "INCR") { const v = Number(db.get(key) ?? 0) + 1; db.set(key, String(v)); return v; }
   if (cmd === "EXPIRE") return 1;
+  if (cmd === "MGET") return [key, ...rest].map((k) => db.get(k) ?? null);
+  if (cmd === "ZADD") {
+    const z = zsets.get(key) ?? new Map();
+    for (let i = 0; i < rest.length; i += 2) z.set(String(rest[i + 1]), Number(rest[i]));
+    zsets.set(key, z);
+    return rest.length / 2;
+  }
+  if (cmd === "ZREMRANGEBYSCORE") {
+    const z = zsets.get(key) ?? new Map();
+    const max = Number(rest[1]);
+    let n = 0;
+    for (const [m, sc] of z) if (sc <= max) { z.delete(m); n++; }
+    return n;
+  }
+  if (cmd === "ZREVRANGEBYSCORE") {
+    const [max, min, , , off, count] = rest;
+    const z = [...(zsets.get(key) ?? new Map())].filter(([, sc]) => sc <= Number(max) && sc >= Number(min));
+    z.sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? 1 : -1));
+    return z.slice(Number(off), Number(off) + Number(count)).flatMap(([m, sc]) => [m, String(sc)]);
+  }
+  if (cmd === "SCAN") {
+    const pattern = new RegExp("^" + rest[1].replace(/\*/g, ".*") + "$");
+    return ["0", [...db.keys()].filter((k) => pattern.test(k))];
+  }
   throw new Error("cmd " + cmd);
 }
 
@@ -50,6 +76,8 @@ globalThis.fetch = async (url, init = {}) => {
   if (url === "https://api.mercadopago.com/v1/payments" && init.method === "POST") return ok({ ...mpPayment(body) });
   const m = url.match(/\/v1\/payments\/(\d+)$/);
   if (m) return ok(mpPayments.get(m[1]));
+  const mo = url.match(/\/v1\/orders\/([A-Za-z0-9_-]+)$/);
+  if (mo) return ok(mpOrders.get(mo[1]));
   if (url === "https://api.resend.com/emails") return ok({ id: "email-1" });
   throw new Error("fetch não mockado: " + url);
 };

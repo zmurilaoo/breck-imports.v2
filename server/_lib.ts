@@ -215,6 +215,83 @@ export interface StoredOrder {
   package: ReturnType<typeof packageFor> | null;
   subtotal: number;
   total: number;
+  /** Último estado do pagamento conhecido (gravado na criação pelo pay.ts e atualizado pelo webhook) */
+  payment?: StoredPayment | null;
+}
+
+export interface StoredPayment {
+  id: string;
+  /** Status cru do Mercado Pago (payment: approved/pending/...; order: processed/action_required/...) */
+  status: string;
+  statusDetail: string;
+  /** payment_type_id / payment_method_id crus; a normalização pix|card|ticket|other fica na API admin */
+  typeId: string;
+  methodId: string;
+  installments: number | null;
+  approvedAt: string | null;
+  updatedAt: string;
+}
+
+/** Índice de pedidos por data (sorted set, score = createdAt em ms) para a API administrativa */
+export const ORDERS_INDEX = "brk:pedidos";
+
+/** ZADD no índice e poda do que já passou do TTL lógico do pedido. Falha não derruba a venda. */
+export async function indexOrder(reference: string, createdAtMs: number) {
+  if (!dbReady()) return;
+  try {
+    await redis("ZADD", ORDERS_INDEX, createdAtMs, reference);
+    await redis("ZREMRANGEBYSCORE", ORDERS_INDEX, "-inf", Date.now() - ORDER_TTL * 1000);
+  } catch (err) {
+    console.error("Falha ao indexar pedido", reference, err);
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function paymentFromMp(p: Record<string, any>): StoredPayment {
+  return {
+    id: String(p.id ?? ""),
+    status: String(p.status ?? ""),
+    statusDetail: String(p.status_detail ?? ""),
+    typeId: String(p.payment_type_id ?? ""),
+    methodId: String(p.payment_method_id ?? ""),
+    installments: Number.isFinite(Number(p.installments)) && p.installments != null ? Number(p.installments) : null,
+    approvedAt: p.date_approved ? String(p.date_approved) : null,
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function paymentFromMpOrder(o: Record<string, any>): StoredPayment {
+  // SUPOSIÇÃO a conferir na doc da API de Orders: transactions.payments[0].payment_method.{id,type}
+  const tx = o.transactions?.payments?.[0] ?? {};
+  return {
+    id: String(o.id ?? ""),
+    status: String(o.status ?? ""),
+    statusDetail: String(o.status_detail ?? ""),
+    typeId: String(tx.payment_method?.type ?? ""),
+    methodId: String(tx.payment_method?.id ?? ""),
+    installments: Number.isFinite(Number(tx.payment_method?.installments)) && tx.payment_method?.installments != null ? Number(tx.payment_method.installments) : null,
+    approvedAt: o.status === "processed" ? String(o.last_updated_date ?? "") || null : null,
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+/** Grava o estado do pagamento no pedido, preservando o TTL. Falha só vai para o log. */
+export async function recordPayment(reference: string, payment: StoredPayment) {
+  if (!dbReady() || !reference) return;
+  try {
+    const raw = await redis<string | null>("GET", orderKey(reference));
+    if (!raw) return;
+    const order = JSON.parse(raw) as StoredOrder;
+    // Mesmo pedido pode ter tentativa recusada depois de uma aprovada (outro cartão): a aprovada não é sobrescrita
+    const prev = order.payment;
+    const approved = (s?: string) => s === "approved" || s === "processed";
+    if (prev && prev.id !== payment.id && approved(prev.status) && !approved(payment.status)) return;
+    order.payment = payment;
+    await redis("SET", orderKey(reference), JSON.stringify(order), "KEEPTTL");
+  } catch (err) {
+    console.error("Falha ao gravar status do pagamento", reference, err);
+  }
 }
 
 export interface StoredShipment {

@@ -10963,6 +10963,30 @@ async function redis(...command) {
 }
 const ORDER_TTL = 15552e3;
 const orderKey = (ref) => `brk:pedido:${ref}`;
+/** Índice de pedidos por data (sorted set, score = createdAt em ms) para a API administrativa */
+const ORDERS_INDEX = "brk:pedidos";
+/** ZADD no índice e poda do que já passou do TTL lógico do pedido. Falha não derruba a venda. */
+async function indexOrder(reference, createdAtMs) {
+	if (!dbReady()) return;
+	try {
+		await redis("ZADD", ORDERS_INDEX, createdAtMs, reference);
+		await redis("ZREMRANGEBYSCORE", ORDERS_INDEX, "-inf", Date.now() - ORDER_TTL * 1e3);
+	} catch (err) {
+		console.error("Falha ao indexar pedido", reference, err);
+	}
+}
+function paymentFromMp(p) {
+	return {
+		id: String(p.id ?? ""),
+		status: String(p.status ?? ""),
+		statusDetail: String(p.status_detail ?? ""),
+		typeId: String(p.payment_type_id ?? ""),
+		methodId: String(p.payment_method_id ?? ""),
+		installments: Number.isFinite(Number(p.installments)) && p.installments != null ? Number(p.installments) : null,
+		approvedAt: p.date_approved ? String(p.date_approved) : null,
+		updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+	};
+}
 const json = (data, status = 200) => new Response(JSON.stringify(data), {
 	status,
 	headers: { "Content-Type": "application/json" }
@@ -11171,11 +11195,12 @@ async function POST(req) {
 			body.installments = Math.max(1, Math.min(12, Math.floor(Number(formData.installments) || 1)));
 			if (formData.issuer_id) body.issuer_id = String(formData.issuer_id);
 		}
-		const result = toResult(await mercadoPago("/v1/payments", {
+		const payment = await mercadoPago("/v1/payments", {
 			method: "POST",
 			headers: { "X-Idempotency-Key": hash },
 			body: JSON.stringify(body)
-		}), reference);
+		});
+		const result = toResult(payment, reference);
 		console.log("Pagamento", reference, result.paymentId, method, result.status, result.statusDetail);
 		if (result.status !== "rejected") {
 			const pairs = lines.reduce((n, l) => n + l.quantity, 0);
@@ -11194,12 +11219,14 @@ async function POST(req) {
 				shipping: ship,
 				package: ship.id === MANUAL_SHIPPING.id ? null : packageFor(pairs),
 				subtotal,
-				total
+				total,
+				payment: paymentFromMp(payment)
 			};
 			let saved = false;
 			if (dbReady()) try {
 				await redis("SET", orderKey(reference), JSON.stringify(stored), "EX", ORDER_TTL);
 				saved = true;
+				await indexOrder(reference, Date.parse(stored.createdAt));
 			} catch (err) {
 				console.error("Falha ao gravar pedido no Redis", reference, err);
 			}

@@ -10,6 +10,9 @@ import {
   mercadoPago,
   ORDER_TTL,
   orderKey,
+  paymentFromMp,
+  paymentFromMpOrder,
+  recordPayment,
   redis,
   shipmentKey,
   shippingReady,
@@ -190,11 +193,13 @@ export async function POST(req: Request) {
       paid = p.status === "approved";
       reference = String(p.external_reference ?? "");
       paidAmount = Number(p.transaction_amount);
+      await recordPayment(reference, paymentFromMp(p));
       console.log("Payment", p.id, reference, p.status, p.status_detail, paid ? "PAGO" : "");
     } else {
       const order = await mercadoPago(`/v1/orders/${encodeURIComponent(String(id))}`);
       paid = order.status === "processed" && order.status_detail === "accredited";
       reference = String(order.external_reference ?? "");
+      await recordPayment(reference, paymentFromMpOrder(order));
       console.log("Order", order.id, reference, order.status, order.status_detail, paid ? "PAGO" : "");
     }
     if (!paid || !reference) return json({ ok: true, paid });

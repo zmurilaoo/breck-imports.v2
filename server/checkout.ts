@@ -7,6 +7,7 @@ import {
   mercadoPago,
   ORDER_TTL,
   orderForLog,
+  indexOrder,
   orderKey,
   packageFor,
   priceItems,
@@ -146,6 +147,7 @@ export async function POST(req: Request) {
       try {
         await redis("SET", orderKey(reference), JSON.stringify(stored), "EX", ORDER_TTL);
         saved = true;
+        await indexOrder(reference, Date.parse(stored.createdAt));
       } catch (err) {
         console.error("Falha ao gravar pedido no Redis", reference, err);
       }
