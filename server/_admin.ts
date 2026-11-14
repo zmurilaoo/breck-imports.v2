@@ -197,7 +197,7 @@ export function detail(l: Loaded) {
     items: o.items.map((i) => ({ slug: i.slug, name: i.name, size: i.size, quantity: i.quantity, unitPrice: i.unitPrice })),
     subtotal: round2(Number(o.subtotal) || 0),
     payment: p
-      ? { id: p.id, status: normPaymentStatus(p), statusDetail: p.statusDetail, method: normMethod(p), installments: p.installments, approvedAt: p.approvedAt }
+      ? { id: p.id, status: normPaymentStatus(p), statusDetail: p.statusDetail, method: normMethod(p), installments: p.installments ?? 1, approvedAt: p.approvedAt }
       : null,
     shipment: s
       ? { sfOrderId: s.sfOrderId, price: round2(Number(s.price) || 0), status: normShipment(s), tracking: s.tracking ?? null, createdAt: s.createdAt, paidAt: s.paidAt ?? null }
@@ -273,7 +273,8 @@ export async function livePayment(o: StoredOrder): Promise<StoredPayment | null>
     if (p) await redis("SET", cacheKey, JSON.stringify(p), "EX", MP_CACHE_S).catch(() => {});
     return p ?? o.payment ?? null;
   } catch (err) {
-    console.error("Admin: falha ao consultar o MP", o.reference, err);
+    // Só o status HTTP: o corpo de erro do MP não vai para o log (pode conter dado do pagador)
+    console.error("Admin: falha ao consultar o MP", o.reference, String(err).match(/Mercado Pago \d{3}/)?.[0] ?? "erro de rede");
     return o.payment ?? null;
   }
 }

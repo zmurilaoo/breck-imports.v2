@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "build:api": "node scripts/build-api.mjs",
     "test:e2e": "playwright test",
-    "test:api": "node scripts/build-api.mjs && node scripts/test-api.mjs",
+    "test:api": "node scripts/build-api.mjs && node scripts/test-api.mjs && node scripts/test-admin.mjs",
     "ci": "tsc -b && npm run build && npm run build:api"
   },
   "dependencies": {

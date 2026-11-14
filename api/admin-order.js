@@ -11035,7 +11035,7 @@ function detail(l) {
 			status: normPaymentStatus(p),
 			statusDetail: p.statusDetail,
 			method: normMethod(p),
-			installments: p.installments,
+			installments: p.installments ?? 1,
 			approvedAt: p.approvedAt
 		} : null,
 		shipment: s ? {
@@ -11086,7 +11086,7 @@ async function livePayment(o) {
 		if (p) await redis("SET", cacheKey, JSON.stringify(p), "EX", MP_CACHE_S).catch(() => {});
 		return p ?? o.payment ?? null;
 	} catch (err) {
-		console.error("Admin: falha ao consultar o MP", o.reference, err);
+		console.error("Admin: falha ao consultar o MP", o.reference, String(err).match(/Mercado Pago \d{3}/)?.[0] ?? "erro de rede");
 		return o.payment ?? null;
 	}
 }
