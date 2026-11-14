@@ -2,7 +2,7 @@
 // Rodar depois de `npm run build:api`: node scripts/test-admin.mjs
 import assert from "node:assert/strict";
 
-const TOKEN = "tok-admin-teste-123";
+const TOKEN = "tok-admin-teste-123-0123456789abcdef";
 Object.assign(process.env, { MP_ACCESS_TOKEN: "TEST-token", KV_REST_API_URL: "https://redis.mock", KV_REST_API_TOKEN: "x" });
 
 const db = new Map();
@@ -11,7 +11,12 @@ const mpPayments = new Map();
 
 function redisCmd([cmd, key, ...rest]) {
   if (cmd === "GET") return db.get(key) ?? null;
-  if (cmd === "SET") { db.set(key, rest[0]); return "OK"; }
+  if (cmd === "SET") {
+    if (rest.includes("NX") && db.has(key)) return null;
+    db.set(key, rest[0]);
+    return "OK";
+  }
+  if (cmd === "DEL") return db.delete(key) ? 1 : 0;
   if (cmd === "INCR") { const v = Number(db.get(key) ?? 0) + 1; db.set(key, String(v)); return v; }
   if (cmd === "EXPIRE") return 1;
   if (cmd === "MGET") return [key, ...rest].map((k) => db.get(k) ?? null);
@@ -102,6 +107,19 @@ await test("sem ADMIN_API_TOKEN: 503 admin api desligada", async () => {
 });
 process.env.ADMIN_API_TOKEN = TOKEN;
 
+await test("ADMIN_API_TOKEN com menos de 32 caracteres: 503 mesmo com o Bearer certo", async () => {
+  const short = "a".repeat(31);
+  process.env.ADMIN_API_TOKEN = short;
+  try {
+    const r = await get(orders, "", auth(short));
+    assert.equal(r.status, 503);
+    assert.deepEqual(await r.json(), { error: "admin api desligada" });
+  } finally {
+    process.env.ADMIN_API_TOKEN = TOKEN;
+  }
+  assert.equal((await get(orders, "", auth("a".repeat(32)))).status, 401, "32+ caracteres liga a API");
+});
+
 await test("sem header, token errado, prefixo, sufixo, vazio ou sem 'Bearer': 401", async () => {
   for (const h of [{}, auth("errado"), auth(TOKEN.slice(0, -1)), auth(TOKEN + "x"), { authorization: "Bearer " }, { authorization: TOKEN }]) {
     const r = await get(orders, "", { ...h, "x-real-ip": `203.0.113.${++ipSeq % 250}` });
@@ -138,6 +156,17 @@ await test("reindex reconstrói brk:pedidos a partir de brk:pedido:* e é idempo
   await call();
   assert.equal(zsets.get("brk:pedidos").size, 5);
   db.delete("brk:pedido:BRK-QUEBRADO-ZZZZZZ");
+  assert.equal(db.has("brk:lock:admin-reindex"), false, "lock liberado ao terminar");
+});
+
+await test("reindex com lock ativo: 409 e não mexe no índice nem no lock alheio", async () => {
+  db.set("brk:lock:admin-reindex", "outra-execucao");
+  const before = zsets.get("brk:pedidos")?.size;
+  const r = await reindex(new Request("http://x", { method: "POST", headers: auth() }));
+  assert.equal(r.status, 409);
+  assert.equal(zsets.get("brk:pedidos")?.size, before);
+  assert.equal(db.get("brk:lock:admin-reindex"), "outra-execucao");
+  db.delete("brk:lock:admin-reindex");
 });
 
 // ---------- Lista: período, status, paginação ----------

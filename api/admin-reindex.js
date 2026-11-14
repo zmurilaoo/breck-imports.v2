@@ -1,4 +1,4 @@
-import { createHash, timingSafeEqual } from "node:crypto";
+import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 new Intl.NumberFormat("pt-BR", {
 	style: "currency",
 	currency: "BRL"
@@ -10853,12 +10853,16 @@ function tokenOk(req, expected) {
 }
 const clientIp = (req) => (req.headers.get("x-real-ip") ?? req.headers.get("x-forwarded-for")?.split(",")[0] ?? "").trim() || "sem-ip";
 /**
-* Porta de entrada de todo endpoint admin. Ordem: desligada (503) → banco (503) → rate limit (429) → token (401).
+* Porta de entrada de todo endpoint admin. Ordem: desligada ou token curto (503) → banco (503) → rate limit (429) → token (401).
 * O rate limit vem antes do token para frear força bruta. Falha do Redis aqui fecha a porta (fail-closed).
 */
 async function guard(req) {
 	const token = e("ADMIN_API_TOKEN");
 	if (!token) return adminJson(req, { error: "admin api desligada" }, 503);
+	if (token.length < 32) {
+		console.error(`Admin: ADMIN_API_TOKEN com menos de 32 caracteres; API admin desligada`);
+		return adminJson(req, { error: "admin api desligada" }, 503);
+	}
 	if (!dbReady()) return adminJson(req, { error: "banco de pedidos não configurado" }, 503);
 	try {
 		const key = `brk:rl:admin:${sha(clientIp(req)).toString("hex")}`;
@@ -10877,6 +10881,8 @@ async function guard(req) {
 }
 //#endregion
 //#region server/admin-reindex.ts
+const LOCK_KEY = "brk:lock:admin-reindex";
+const LOCK_TTL_S = 60;
 const MAX_ROUNDS = 500;
 function createdMs(raw) {
 	try {
@@ -10888,6 +10894,13 @@ function createdMs(raw) {
 async function POST(req) {
 	const denied = await guard(req);
 	if (denied) return denied;
+	const lockId = randomUUID();
+	try {
+		if (await redis("SET", LOCK_KEY, lockId, "NX", "EX", LOCK_TTL_S) !== "OK") return adminJson(req, { error: "reindexação já em andamento" }, 409);
+	} catch (err) {
+		console.error("Admin reindex: falha no lock", err);
+		return adminJson(req, { error: "indisponível" }, 503);
+	}
 	try {
 		let cursor = "0", scanned = 0, indexed = 0, invalid = 0, rounds = 0;
 		do {
@@ -10919,6 +10932,12 @@ async function POST(req) {
 	} catch (err) {
 		console.error("Admin reindex", err);
 		return adminJson(req, { error: "falha ao reindexar" }, 502);
+	} finally {
+		try {
+			if (await redis("GET", LOCK_KEY) === lockId) await redis("DEL", LOCK_KEY);
+		} catch (err) {
+			console.error("Admin reindex: falha ao liberar lock (expira em 60 s)", err);
+		}
 	}
 }
 const OPTIONS = preflight;

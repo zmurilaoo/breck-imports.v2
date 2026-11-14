@@ -10893,12 +10893,16 @@ function tokenOk(req, expected) {
 }
 const clientIp = (req) => (req.headers.get("x-real-ip") ?? req.headers.get("x-forwarded-for")?.split(",")[0] ?? "").trim() || "sem-ip";
 /**
-* Porta de entrada de todo endpoint admin. Ordem: desligada (503) → banco (503) → rate limit (429) → token (401).
+* Porta de entrada de todo endpoint admin. Ordem: desligada ou token curto (503) → banco (503) → rate limit (429) → token (401).
 * O rate limit vem antes do token para frear força bruta. Falha do Redis aqui fecha a porta (fail-closed).
 */
 async function guard(req) {
 	const token = e("ADMIN_API_TOKEN");
 	if (!token) return adminJson(req, { error: "admin api desligada" }, 503);
+	if (token.length < 32) {
+		console.error(`Admin: ADMIN_API_TOKEN com menos de 32 caracteres; API admin desligada`);
+		return adminJson(req, { error: "admin api desligada" }, 503);
+	}
 	if (!dbReady()) return adminJson(req, { error: "banco de pedidos não configurado" }, 503);
 	try {
 		const key = `brk:rl:admin:${sha(clientIp(req)).toString("hex")}`;

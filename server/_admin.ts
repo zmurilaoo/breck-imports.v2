@@ -18,6 +18,8 @@ import {
 const e = (k: string) => (process.env[k] ?? "").trim();
 const RATE_LIMIT = 60;
 const RATE_WINDOW_S = 60;
+/** Token admin abaixo disso é tratado como configuração insegura: a API fica desligada */
+export const MIN_TOKEN_LENGTH = 32;
 /** Teto de pedidos lidos por consulta de período: a loja é pequena; acima disso o período precisa ser menor */
 export const MAX_RANGE_ORDERS = 5000;
 const MP_CACHE_S = 60;
@@ -62,12 +64,16 @@ const clientIp = (req: Request) =>
   (req.headers.get("x-real-ip") ?? req.headers.get("x-forwarded-for")?.split(",")[0] ?? "").trim() || "sem-ip";
 
 /**
- * Porta de entrada de todo endpoint admin. Ordem: desligada (503) → banco (503) → rate limit (429) → token (401).
+ * Porta de entrada de todo endpoint admin. Ordem: desligada ou token curto (503) → banco (503) → rate limit (429) → token (401).
  * O rate limit vem antes do token para frear força bruta. Falha do Redis aqui fecha a porta (fail-closed).
  */
 export async function guard(req: Request): Promise<Response | null> {
   const token = e("ADMIN_API_TOKEN");
   if (!token) return adminJson(req, { error: "admin api desligada" }, 503);
+  if (token.length < MIN_TOKEN_LENGTH) {
+    console.error(`Admin: ADMIN_API_TOKEN com menos de ${MIN_TOKEN_LENGTH} caracteres; API admin desligada`);
+    return adminJson(req, { error: "admin api desligada" }, 503);
+  }
   if (!dbReady()) return adminJson(req, { error: "banco de pedidos não configurado" }, 503);
   try {
     const key = `brk:rl:admin:${sha(clientIp(req)).toString("hex")}`;
