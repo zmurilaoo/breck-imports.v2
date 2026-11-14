@@ -76,8 +76,8 @@ export function Header() {
             </a>
           </div>
           <div className="topbar-social">
-            <a href={contact.instagram} target="_blank" rel="noreferrer" aria-label="instagram Breck Imports">
-              <InstagramIcon size={16} />
+            <a href={contact.instagram} target="_blank" rel="noreferrer" aria-label={`Instagram da Breck Imports ${contact.instagramHandle}`}>
+              <InstagramIcon size={16} /> <span>{contact.instagramHandle}</span>
             </a>
           </div>
         </div>
