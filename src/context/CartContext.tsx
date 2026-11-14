@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react
 import { getProduct } from "../data/catalog";
 import type { CartItem } from "../types";
 import { CartContext, type CartContextValue, type CartLine } from "./cart-context";
+import { track } from "../utils/track";
 
 const STORAGE_KEY = "breck-cart";
 
@@ -54,6 +55,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return [...prev, { slug, size, quantity }];
     });
     setLastAdded({ slug, size, quantity, product });
+    track("add_to_cart", { slug });
   }, []);
 
   const setQuantity = useCallback((slug: string, size: string, quantity: number) => {

@@ -26,6 +26,7 @@ import { useCart } from "../context/cart-context";
 import { contact, institutionalNav } from "../data/site";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { formatPrice } from "../utils/format";
+import { track, trackOnce } from "../utils/track";
 
 interface ShippingOption {
   id: number;
@@ -65,6 +66,12 @@ export function CheckoutPage() {
   const [initial] = useState(loadSaved);
   const [customer, setCustomer] = useState<Customer>(initial.customer);
   const [step, setStep] = useState<StepId>(initial.step);
+  useEffect(() => {
+    track("checkout_start");
+  }, []);
+  useEffect(() => {
+    track("checkout_step", { step });
+  }, [step]);
   const [done, setDone] = useState<Record<StepId, boolean>>({ contato: false, entrega: false, pagamento: false });
   const [touched, setTouched] = useState<Partial<Record<CustomerField, boolean>>>({});
   const [options, setOptions] = useState<ShippingOption[]>([]);
@@ -676,6 +683,11 @@ export function OrderResultPage() {
   const cleared = useRef(false);
   // Mercado Pago devolve external_reference / payment_id na URL de retorno
   const order = params.get("external_reference") || params.get("merchant_order_id") || params.get("payment_id") || params.get("collection_id");
+
+  useEffect(() => {
+    // Volta do pagamento aprovado: conta a compra uma vez por pedido na aba (é métrica de funil, não prova de pagamento)
+    if (key === "sucesso") trackOnce(`compra-${order ?? "sem-ref"}`, "purchase");
+  }, [key, order]);
 
   useEffect(() => {
     if (cleared.current || (key !== "sucesso" && key !== "pendente")) return;

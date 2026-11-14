@@ -8,6 +8,7 @@ import { SizeSelector } from "../components/product/SizeSelector";
 import { Carousel } from "../components/ui/Carousel";
 import { useCart } from "../context/cart-context";
 import { getProduct, getRelated } from "../data/catalog";
+import { track } from "../utils/track";
 import { categoryNames, contact } from "../data/site";
 import { usePageTitle } from "../hooks/usePageTitle";
 import type { Product } from "../types";
@@ -25,6 +26,9 @@ function ProductDetail({ product }: { product: Product }) {
   const [added, setAdded] = useState(false);
   const addedTimer = useRef<number>(undefined);
   useEffect(() => () => window.clearTimeout(addedTimer.current), []);
+  useEffect(() => {
+    track("product_view", { slug: product.slug });
+  }, [product.slug]);
   usePageTitle(product.name);
 
   const soldOut = product.sizes.length > 0 && product.sizes.every((s) => !s.available);

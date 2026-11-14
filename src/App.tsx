@@ -11,6 +11,7 @@ import { CartProvider } from "./context/CartContext";
 import { UIProvider } from "./context/UIContext";
 import { useUI } from "./context/ui-context";
 import { useScrollReveal } from "./hooks/useScrollReveal";
+import { track } from "./utils/track";
 // AccountPage (login/cadastro) desligada: não havia autenticação real. Ver docs/parecer-login.md.
 import { CheckoutPage, OrderResultPage } from "./pages/CheckoutPage";
 import { HomePage } from "./pages/HomePage";
@@ -23,6 +24,10 @@ function Layout() {
   const { pathname, search } = useLocation();
   const { setMenuOpen, setSearchOpen } = useUI();
   useScrollReveal();
+
+  useEffect(() => {
+    track("page_view");
+  }, [pathname]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
