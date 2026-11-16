@@ -208,10 +208,6 @@ const chuteiras = [
 			{
 				"size": "43",
 				"available": true
-			},
-			{
-				"size": "44",
-				"available": true
 			}
 		],
 		"categories": [
@@ -262,10 +258,6 @@ const chuteiras = [
 			},
 			{
 				"size": "43",
-				"available": true
-			},
-			{
-				"size": "44",
 				"available": true
 			}
 		],
