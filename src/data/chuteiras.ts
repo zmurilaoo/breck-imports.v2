@@ -3919,7 +3919,11 @@ export const chuteiras: Product[] = [
     "comparePrice": null,
     "label": null,
     "images": [
-      "/images/chuteiras/nike-phantom-6-elite-branco-azul-royal-campo-wa25/1.webp"
+      "/images/chuteiras/nike-phantom-6-elite-branco-azul-royal-campo-wa25/v2-1.webp",
+      "/images/chuteiras/nike-phantom-6-elite-branco-azul-royal-campo-wa25/v2-2.webp",
+      "/images/chuteiras/nike-phantom-6-elite-branco-azul-royal-campo-wa25/v2-3.webp",
+      "/images/chuteiras/nike-phantom-6-elite-branco-azul-royal-campo-wa25/v2-4.webp",
+      "/images/chuteiras/nike-phantom-6-elite-branco-azul-royal-campo-wa25/v2-5.webp"
     ],
     "sizes": [
       {
