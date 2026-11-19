@@ -168,6 +168,108 @@ const chuteiras = [
 		"installment12": 32.36
 	},
 	{
+		"slug": "nike-phantom-gx-galaxy-preta-roxa-society",
+		"name": "Chuteira Society Nike Phantom GX Galaxy Preta/Roxa",
+		"price": 299,
+		"pix": 295,
+		"comparePrice": null,
+		"label": null,
+		"images": [
+			"/images/chuteiras/nike-phantom-gx-galaxy-preta-roxa-society/1.webp",
+			"/images/chuteiras/nike-phantom-gx-galaxy-preta-roxa-society/2.webp",
+			"/images/chuteiras/nike-phantom-gx-galaxy-preta-roxa-society/3.webp",
+			"/images/chuteiras/nike-phantom-gx-galaxy-preta-roxa-society/4.webp"
+		],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-society",
+			"chuteiras",
+			"nike"
+		],
+		"isNew": true,
+		"installment12": 32.36
+	},
+	{
+		"slug": "puma-future-ultimate-branca-dourada-campo",
+		"name": "Chuteira Campo Puma Future Ultimate Branca/Dourada",
+		"price": 299,
+		"pix": 295,
+		"comparePrice": null,
+		"label": null,
+		"images": [
+			"/images/chuteiras/puma-future-ultimate-branca-dourada-campo/1.webp",
+			"/images/chuteiras/puma-future-ultimate-branca-dourada-campo/2.webp",
+			"/images/chuteiras/puma-future-ultimate-branca-dourada-campo/3.webp",
+			"/images/chuteiras/puma-future-ultimate-branca-dourada-campo/4.webp"
+		],
+		"sizes": [
+			{
+				"size": "37",
+				"available": true
+			},
+			{
+				"size": "38",
+				"available": true
+			},
+			{
+				"size": "39",
+				"available": true
+			},
+			{
+				"size": "40",
+				"available": true
+			},
+			{
+				"size": "41",
+				"available": true
+			},
+			{
+				"size": "42",
+				"available": true
+			},
+			{
+				"size": "43",
+				"available": true
+			}
+		],
+		"categories": [
+			"chuteira-campo",
+			"chuteiras",
+			"puma"
+		],
+		"isNew": true,
+		"installment12": 32.36
+	},
+	{
 		"slug": "f50-elite-campo-rx-1qkag",
 		"name": "Chuteira Campo Adidas F50 Elite FG Lamine Yamal Rosa/Roxo",
 		"price": 299,

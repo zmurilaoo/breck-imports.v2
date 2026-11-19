@@ -4862,3 +4862,32 @@ body.is-checkout .skip-link {
     padding: 10px 22px;
   }
 }
+
+/* Busca: o painel fica por cima do menu (antes o clique caía no menu) e o texto digitado aparece */
+.header-main { position: relative; z-index: 70; }
+.search-input { color: #111; }
+.search-input::placeholder { color: #666; }
+.search-suggestions { color: var(--fg); border: 1px solid var(--line); max-height: min(70vh, 560px); }
+.search-label {
+  margin: 6px 8px 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.search-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 8px 10px; }
+.search-chip {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--fg);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.search-chip:hover, .search-chip:focus-visible { border-color: var(--accent); color: var(--accent); }
+.search-modal .search-form { flex-wrap: wrap; }
+.search-modal .search-suggestions { position: static; max-height: none; margin-top: 10px; width: 100%; }
