@@ -11,7 +11,8 @@
     "build:api": "node scripts/build-api.mjs",
     "test:e2e": "playwright test",
     "test:api": "node scripts/build-api.mjs && node scripts/test-api.mjs && node scripts/test-admin.mjs && node scripts/test-visits.mjs",
-    "ci": "tsc -b && npm run build && npm run build:api"
+    "ci": "tsc -b && npm run build && npm run build:api",
+    "build:server": "node scripts/build-server.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",
