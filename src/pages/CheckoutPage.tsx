@@ -624,10 +624,10 @@ function CheckoutTop({ current }: { current: number | null }) {
   return (
     <div className="co-top">
       <div className="container co-top-inner">
-        <Link to="/" className="co-logo" aria-label="Breck Imports, voltar para a loja">
+        <a href="/" className="co-logo" aria-label="Breck Imports, voltar para a loja">
           <img src="/images/logo-breck.webp" alt="" width={44} height={44} />
           <span>Breck Imports</span>
-        </Link>
+        </a>
         {current !== null && (
           <ol className="co-stepper" aria-label="Etapas da compra">
             {STEPS.map((s, i) => (

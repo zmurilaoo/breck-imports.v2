@@ -89,14 +89,15 @@ export function Header() {
             <MenuIcon size={24} />
           </button>
 
-          <Link to="/" className="logo" aria-label="Breck Imports — página inicial">
+          {/* <a> de propósito (não <Link>): clicar na logo recarrega a página inteira, inclusive já estando na Início. */}
+          <a href="/" className="logo" aria-label="Breck Imports — página inicial">
             {/* Mesma arte em duas camadas: o personagem se mexe, o letreiro fica parado */}
             <img src="/images/logo-breck.webp" alt="Breck Imports" width={437} height={436} className="logo-word" />
             <span className="logo-char" aria-hidden>
               <img src="/images/logo-breck.webp" alt="" width={437} height={436} />
               <span className="logo-glint" />
             </span>
-          </Link>
+          </a>
 
           <div className="header-search only-desktop">
             <SearchForm key={location.pathname} />
