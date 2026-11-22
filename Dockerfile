@@ -4,7 +4,11 @@ FROM node:22-bookworm-slim AS build
 WORKDIR /src
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
+# Chave PÚBLICA do Mercado Pago (vai para o navegador de qualquer jeito; não é segredo).
+ARG VITE_MP_PUBLIC_KEY
+ENV VITE_MP_PUBLIC_KEY=$VITE_MP_PUBLIC_KEY
 COPY . .
+RUN test -n "$VITE_MP_PUBLIC_KEY" || (echo "falta --build-arg VITE_MP_PUBLIC_KEY" >&2; exit 1)
 RUN npm run build && npm run build:server && find dist -name "*.map" -delete
 
 FROM node:22-bookworm-slim
