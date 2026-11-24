@@ -1,3 +1,4 @@
+import { createHash, timingSafeEqual } from "node:crypto";
 new Intl.NumberFormat("pt-BR", {
 	style: "currency",
 	currency: "BRL"
@@ -10914,42 +10915,47 @@ const products = [
 ].filter(hasPhoto).filter((p) => !isPendingFutsal(p));
 const slugsOf = (tipo, limit = 12) => [...chuteiras, ...tenis].filter((p) => !isPendingFutsal(p)).filter((p) => p.categories.includes(tipo)).slice(0, limit).map((p) => p.slug);
 slugsOf("chuteira-campo", 13).filter((s) => s !== "puma-future-neymar-laranja-campo").slice(0, 12), slugsOf("chuteira-society"), slugsOf("chuteira-futsal"), slugsOf("air-max-tn", 15), slugsOf("mizuno");
-new Map(products.map((p) => [p.slug, p]));
+//#endregion
+//#region src/data/catalog.ts
+const bySlug = new Map(products.map((p) => [p.slug, p]));
+function getProduct(slug) {
+	return bySlug.get(slug);
+}
 //#endregion
 //#region server/_lib.ts
-const e = (k) => (process.env[k] ?? "").trim();
+const e$1 = (k) => (process.env[k] ?? "").trim();
 const num = (k, fallback) => {
 	const n = Number(process.env[k]);
 	return Number.isFinite(n) && n > 0 ? n : fallback;
 };
 const env = {
-	mpToken: e("MP_ACCESS_TOKEN"),
-	mpWebhookSecret: e("MP_WEBHOOK_SECRET"),
-	sfToken: e("SUPERFRETE_TOKEN"),
-	sfApi: e("SUPERFRETE_SANDBOX") === "true" ? "https://sandbox.superfrete.com" : "https://api.superfrete.com",
-	originCep: e("SUPERFRETE_CEP_ORIGEM").replace(/\D/g, ""),
-	siteUrl: (e("SITE_URL") || "https://breck-importsv2.vercel.app").replace(/\/$/, ""),
-	storeEmail: e("LOJA_EMAIL") || "contato@breckimports.com.br",
+	mpToken: e$1("MP_ACCESS_TOKEN"),
+	mpWebhookSecret: e$1("MP_WEBHOOK_SECRET"),
+	sfToken: e$1("SUPERFRETE_TOKEN"),
+	sfApi: e$1("SUPERFRETE_SANDBOX") === "true" ? "https://sandbox.superfrete.com" : "https://api.superfrete.com",
+	originCep: e$1("SUPERFRETE_CEP_ORIGEM").replace(/\D/g, ""),
+	siteUrl: (e$1("SITE_URL") || "https://breck-importsv2.vercel.app").replace(/\/$/, ""),
+	storeEmail: e$1("LOJA_EMAIL") || "contato@breckimports.com.br",
 	/** Peso de um par já na caixa, em kg. SUPOSIÇÃO: 1 kg até o dono pesar a caixa */
 	kgPerPair: num("SUPERFRETE_PESO_PAR_KG", 1),
 	/** Pagar a etiqueta com o saldo da SuperFrete logo depois de criar o envio (desligado por padrão) */
-	sfAutoPay: e("SUPERFRETE_AUTO_PAY") === "true",
+	sfAutoPay: e$1("SUPERFRETE_AUTO_PAY") === "true",
 	/** Freio de mão: acima disso a etiqueta fica no carrinho para o dono pagar no painel */
 	sfAutoPayMax: num("SUPERFRETE_AUTO_PAY_MAX", 80),
 	/** true = declaração de conteúdo; false exigiria nota fiscal, que a loja ainda não emite pela API */
-	sfNonCommercial: e("SUPERFRETE_NAO_COMERCIAL") !== "false",
+	sfNonCommercial: e$1("SUPERFRETE_NAO_COMERCIAL") !== "false",
 	sender: {
-		name: e("SUPERFRETE_REMETENTE_NOME"),
-		address: e("SUPERFRETE_REMETENTE_ENDERECO"),
-		number: e("SUPERFRETE_REMETENTE_NUMERO"),
-		complement: e("SUPERFRETE_REMETENTE_COMPLEMENTO"),
-		district: e("SUPERFRETE_REMETENTE_BAIRRO"),
-		city: e("SUPERFRETE_REMETENTE_CIDADE"),
-		state_abbr: e("SUPERFRETE_REMETENTE_UF").toUpperCase(),
-		document: e("SUPERFRETE_REMETENTE_DOCUMENTO").replace(/\D/g, "")
+		name: e$1("SUPERFRETE_REMETENTE_NOME"),
+		address: e$1("SUPERFRETE_REMETENTE_ENDERECO"),
+		number: e$1("SUPERFRETE_REMETENTE_NUMERO"),
+		complement: e$1("SUPERFRETE_REMETENTE_COMPLEMENTO"),
+		district: e$1("SUPERFRETE_REMETENTE_BAIRRO"),
+		city: e$1("SUPERFRETE_REMETENTE_CIDADE"),
+		state_abbr: e$1("SUPERFRETE_REMETENTE_UF").toUpperCase(),
+		document: e$1("SUPERFRETE_REMETENTE_DOCUMENTO").replace(/\D/g, "")
 	},
-	redisUrl: (e("KV_REST_API_URL") || e("UPSTASH_REDIS_REST_URL")).replace(/\/$/, ""),
-	redisToken: e("KV_REST_API_TOKEN") || e("UPSTASH_REDIS_REST_TOKEN")
+	redisUrl: (e$1("KV_REST_API_URL") || e$1("UPSTASH_REDIS_REST_URL")).replace(/\/$/, ""),
+	redisToken: e$1("KV_REST_API_TOKEN") || e$1("UPSTASH_REDIS_REST_TOKEN")
 };
 /** Caixa de um par: 15 (altura) x 20 (largura) x 30 (comprimento) cm. Pares a mais empilham na altura. */
 const BOX = {
@@ -10973,6 +10979,74 @@ async function redis(...command) {
 	return data.result;
 }
 //#endregion
+//#region server/_admin.ts
+const e = (k) => (process.env[k] ?? "").trim();
+const RATE_LIMIT = 60;
+const RATE_WINDOW_S = 60;
+function corsHeaders(req) {
+	const allowed = e("ADMIN_ALLOWED_ORIGIN").replace(/\/$/, "");
+	const origin = req.headers.get("origin") ?? "";
+	if (!allowed || origin !== allowed) return {};
+	return {
+		"Access-Control-Allow-Origin": allowed,
+		"Access-Control-Allow-Headers": "Authorization, Content-Type",
+		"Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+		"Access-Control-Max-Age": "600",
+		Vary: "Origin"
+	};
+}
+const adminJson = (req, data, status = 200) => new Response(JSON.stringify(data), {
+	status,
+	headers: {
+		"Content-Type": "application/json",
+		"Cache-Control": "no-store",
+		...corsHeaders(req)
+	}
+});
+/** Preflight do navegador: só responde com CORS se a origem bater com ADMIN_ALLOWED_ORIGIN */
+const preflight = (req) => new Response(null, {
+	status: 204,
+	headers: {
+		"Cache-Control": "no-store",
+		...corsHeaders(req)
+	}
+});
+const sha = (s) => createHash("sha256").update(s).digest();
+/** Compara o Bearer com ADMIN_API_TOKEN em tempo constante (hash de tamanho fixo antes do timingSafeEqual) */
+function tokenOk(req, expected) {
+	const m = (req.headers.get("authorization") ?? "").match(/^Bearer\s+(.+)$/i);
+	const given = m ? m[1].trim() : "";
+	return timingSafeEqual(sha(given), sha(expected)) && given.length > 0;
+}
+const clientIp = (req) => (req.headers.get("x-real-ip") ?? req.headers.get("x-forwarded-for")?.split(",")[0] ?? "").trim() || "sem-ip";
+/**
+* Porta de entrada de todo endpoint admin. Ordem: desligada ou token curto (503) → banco (503) → rate limit (429) → token (401).
+* O rate limit vem antes do token para frear força bruta. Falha do Redis aqui fecha a porta (fail-closed).
+*/
+async function guard(req) {
+	const token = e("ADMIN_API_TOKEN");
+	if (!token) return adminJson(req, { error: "admin api desligada" }, 503);
+	if (token.length < 32) {
+		console.error(`Admin: ADMIN_API_TOKEN com menos de 32 caracteres; API admin desligada`);
+		return adminJson(req, { error: "admin api desligada" }, 503);
+	}
+	if (!dbReady()) return adminJson(req, { error: "banco de pedidos não configurado" }, 503);
+	try {
+		const key = `brk:rl:admin:${sha(clientIp(req)).toString("hex")}`;
+		const count = await redis("INCR", key);
+		if (count === 1) await redis("EXPIRE", key, RATE_WINDOW_S);
+		if (count > RATE_LIMIT) return adminJson(req, { error: "muitas requisições" }, 429);
+	} catch (err) {
+		console.error("Admin: falha no rate limit", err);
+		return adminJson(req, { error: "indisponível" }, 503);
+	}
+	if (!tokenOk(req, token)) {
+		console.warn("Admin: token inválido");
+		return adminJson(req, { error: "não autorizado" }, 401);
+	}
+	return null;
+}
+//#endregion
 //#region server/_stock.ts
 const STOCK_KEY = "brk:esgotado";
 async function readSoldOut() {
@@ -10986,8 +11060,27 @@ async function readSoldOut() {
 		return {};
 	}
 }
+/** Marca (ou desmarca) um tamanho ou o produto inteiro (size = "*"). Valida contra o catálogo. */
+async function setSoldOut(slug, size, soldOut) {
+	const p = getProduct(slug);
+	if (!p) throw Object.assign(/* @__PURE__ */ new Error("Produto não encontrado no catálogo"), { status: 404 });
+	if (size !== "*" && !p.sizes.some((s) => s.size === size)) throw Object.assign(/* @__PURE__ */ new Error("Esse tamanho não existe nesse produto"), { status: 400 });
+	const m = await readSoldOut();
+	const cur = new Set(m[slug] ?? []);
+	if (soldOut) cur.add(size);
+	else if (size === "*") cur.clear();
+	else {
+		cur.delete(size);
+		cur.delete("*");
+	}
+	if (cur.size) m[slug] = [...cur].sort();
+	else delete m[slug];
+	await redis("SET", STOCK_KEY, JSON.stringify(m));
+	return m;
+}
 //#endregion
 //#region server/estoque.ts
+const OPTIONS = preflight;
 async function GET() {
 	const soldOut = await readSoldOut().catch(() => ({}));
 	return new Response(JSON.stringify({ soldOut }), { headers: {
@@ -10995,5 +11088,23 @@ async function GET() {
 		"Cache-Control": "public, max-age=30, stale-while-revalidate=60"
 	} });
 }
+async function POST(req) {
+	const denied = await guard(req);
+	if (denied) return denied;
+	const b = await req.json().catch(() => null);
+	const slug = typeof b?.slug === "string" ? b.slug.trim() : "";
+	const size = typeof b?.size === "string" ? b.size.trim() : "";
+	if (!/^[a-z0-9-]{3,120}$/.test(slug) || !/^(\*|[0-9]{2}(\.5)?|[A-Z]{1,3})$/.test(size) || typeof b?.soldOut !== "boolean") return adminJson(req, { error: "Envie slug, size (ex.: 41 ou *) e soldOut (true/false)" }, 400);
+	try {
+		const soldOut = await setSoldOut(slug, size, b.soldOut);
+		return adminJson(req, {
+			ok: true,
+			soldOut: soldOut[slug] ?? []
+		});
+	} catch (e) {
+		const status = e.status ?? 503;
+		return adminJson(req, { error: status === 503 ? "Não foi possível gravar o estoque agora" : e.message }, status);
+	}
+}
 //#endregion
-export { GET };
+export { GET, OPTIONS, POST };

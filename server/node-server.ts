@@ -22,7 +22,6 @@ import * as adminReindex from "./admin-reindex.ts";
 import * as track from "./track.ts";
 import * as adminVisits from "./admin-visits.ts";
 import * as estoque from "./estoque.ts";
-import * as adminStock from "./admin-stock.ts";
 
 type Handler = (req: Request) => Response | Promise<Response>;
 type Mod = Partial<Record<"GET" | "POST" | "PUT" | "DELETE" | "OPTIONS", Handler>>;
@@ -30,7 +29,7 @@ type Mod = Partial<Record<"GET" | "POST" | "PUT" | "DELETE" | "OPTIONS", Handler
 const ROUTES: Record<string, Mod> = {
   frete, checkout, "mp-webhook": mpWebhook, pay, "pay-status": payStatus,
   "admin-orders": adminOrders, "admin-order": adminOrder, "admin-stats": adminStats,
-  "admin-reindex": adminReindex, track, "admin-visits": adminVisits, estoque, "admin-stock": adminStock,
+  "admin-reindex": adminReindex, track, "admin-visits": adminVisits, estoque,
 } as unknown as Record<string, Mod>;
 
 const PORT = Number(process.env.PORT ?? 8080);

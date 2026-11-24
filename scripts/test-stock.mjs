@@ -22,12 +22,12 @@ globalThis.fetch = async (url, init = {}) => {
 };
 
 const { GET: estoque } = await import("../api/estoque.js");
-const { GET: adminGet, POST: adminPost } = await import("../api/admin-stock.js");
+const { POST: adminPost } = await import("../api/estoque.js");
 const { POST: pay } = await import("../api/pay.js");
 
 const SLUG = "adizero-pro-4-brown-and-black";
 const auth = { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" };
-const mark = (body, headers = auth) => adminPost(new Request("http://x/api/admin-stock", { method: "POST", headers, body: JSON.stringify(body) }));
+const mark = (body, headers = auth) => adminPost(new Request("http://x/api/estoque", { method: "POST", headers, body: JSON.stringify(body) }));
 let n = 0;
 const test = async (name, fn) => {
   await fn();
@@ -56,10 +56,9 @@ await test("marca e desmarca um tamanho; público vê na hora", async () => {
   assert.equal((await (await estoque()).json()).soldOut[SLUG], undefined);
 });
 
-await test("produto inteiro (*) e leitura do painel", async () => {
+await test("produto inteiro (*)", async () => {
   await mark({ slug: SLUG, size: "*", soldOut: true });
-  const g = await adminGet(new Request("http://x/api/admin-stock", { headers: auth }));
-  assert.deepEqual((await g.json()).soldOut[SLUG], ["*"]);
+  assert.deepEqual((await (await estoque()).json()).soldOut[SLUG], ["*"]);
 });
 
 await test("pagamento de tamanho esgotado é recusado com 409 antes de falar com o Mercado Pago", async () => {
