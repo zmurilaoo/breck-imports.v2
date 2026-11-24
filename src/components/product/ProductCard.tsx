@@ -3,15 +3,17 @@ import { Link } from "react-router-dom";
 import { useUI } from "../../context/ui-context";
 import type { Product } from "../../types";
 import { discountPercent } from "../../utils/format";
-import { CartIcon, ChevronLeft, ChevronRight } from "../Icons";
+import { CartIcon, ChevronLeft, ChevronRight, WhatsAppIcon } from "../Icons";
 import { PriceBlock } from "./PriceBlock";
+import { isProductSoldOut, notifyUrl, useStockProduct } from "../../lib/stock";
 
 /** Tempo de cada ângulo na troca automática do celular (ms) */
 const ANGLE_MS = 2200;
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product: base }: { product: Product }) {
   const { openQuickShop } = useUI();
-  const soldOut = product.sizes.length > 0 && product.sizes.every((s) => !s.available);
+  const product = useStockProduct(base);
+  const soldOut = isProductSoldOut(product);
   const discount = discountPercent(product);
   const { images } = product;
   const multi = images.length > 1;
@@ -49,7 +51,7 @@ export function ProductCard({ product }: { product: Product }) {
   };
 
   return (
-    <article className="product-card" ref={cardRef}>
+    <article className={`product-card${soldOut ? " is-soldout" : ""}`} ref={cardRef}>
       <Link
         to={`/produtos/${product.slug}`}
         viewTransition
@@ -87,8 +89,12 @@ export function ProductCard({ product }: { product: Product }) {
             </button>
           </>
         )}
+        {soldOut && (
+          <span className="soldout-tag" aria-hidden>
+            Esgotado
+          </span>
+        )}
         <div className="labels">
-          {soldOut && <span className="label label-muted">Esgotado</span>}
           {discount && <span className="label">{discount}% OFF</span>}
           {product.label && <span className="label">{product.label}</span>}
         </div>
@@ -98,16 +104,22 @@ export function ProductCard({ product }: { product: Product }) {
           {product.name}
         </Link>
         <PriceBlock product={product} />
-        <button
-          type="button"
-          className="btn btn-primary btn-block product-card-buy"
-          disabled={soldOut}
-          aria-label={`Compra rápida de ${product.name}`}
-          onClick={() => openQuickShop(product.slug)}
-        >
-          <CartIcon size={16} />
-          {soldOut ? "Esgotado" : "Comprar"}
-        </button>
+        {soldOut ? (
+          <a className="btn btn-outline btn-block product-card-buy" href={notifyUrl(product)} target="_blank" rel="noopener noreferrer" aria-label={`${product.name} esgotado. Avise-me quando voltar`}>
+            <WhatsAppIcon size={16} />
+            Avise-me quando voltar
+          </a>
+        ) : (
+          <button
+            type="button"
+            className="btn btn-primary btn-block product-card-buy"
+            aria-label={`Compra rápida de ${product.name}`}
+            onClick={() => openQuickShop(product.slug)}
+          >
+            <CartIcon size={16} />
+            Comprar
+          </button>
+        )}
       </div>
     </article>
   );

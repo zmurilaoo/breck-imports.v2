@@ -18,6 +18,7 @@ import {
   type Customer,
   type StoredOrder,
 } from "./_lib";
+import { soldOutError } from "./_stock";
 
 /** A API de Orders recebe valores como texto com 2 casas: "299.00" */
 export const money = (n: number) => n.toFixed(2);
@@ -69,6 +70,8 @@ export async function POST(req: Request) {
     if (!env.mpToken) return json({ error: "Pagamento ainda não configurado" }, 503);
     const lines = priceItems(items ?? []);
     if (!lines.length) return json({ error: "Carrinho vazio" }, 400);
+    const esgotado = await soldOutError(lines);
+    if (esgotado) return json({ error: esgotado }, 409);
     const invalid = validateCustomer(customer);
     if (invalid) return json({ error: invalid }, 400);
 

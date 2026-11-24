@@ -21,6 +21,7 @@ import {
   type Customer,
   type StoredOrder,
 } from "./_lib";
+import { soldOutError } from "./_stock";
 import { fingerprint, money, sha256Hex } from "./checkout";
 
 const IDEMPOTENCY_WINDOW_MS = 10 * 60 * 1000;
@@ -128,6 +129,8 @@ export async function POST(req: Request) {
     if (!env.mpToken) return json({ error: "Pagamento ainda não configurado" }, 503);
     const lines = priceItems(items ?? []);
     if (!lines.length) return json({ error: "Carrinho vazio" }, 400);
+    const esgotado = await soldOutError(lines);
+    if (esgotado) return json({ error: esgotado }, 409);
     const invalid = validateCustomer(customer);
     if (invalid) return json({ error: invalid }, 400);
     const cpf = customer.cpf.replace(/\D/g, "");

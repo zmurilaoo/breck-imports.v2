@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { applyStock, isProductSoldOut, useStock } from "../lib/stock";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { ProductCard } from "../components/product/ProductCard";
 import { getByCategory, products, searchProducts } from "../data/catalog";
@@ -30,11 +31,15 @@ export function ListingPage({ mode }: Props) {
     mode === "search" ? `Resultados para “${query}”` : mode === "category" ? (categoryNames[slug] ?? slug) : "Produtos";
   usePageTitle(mode === "search" ? `Busca: ${query}` : title);
 
+  const stock = useStock();
   const list = useMemo(() => {
     const base = mode === "search" ? searchProducts(query) : mode === "category" ? getByCategory(slug) : products;
     const sorter = sorters[sort];
-    return sorter ? [...base].sort(sorter) : base;
-  }, [mode, query, slug, sort]);
+    const sorted = sorter ? [...base].sort(sorter) : [...base];
+    // Esgotado vai para o fim, mantendo a ordem escolhida entre os disponíveis.
+    const out = (p: (typeof sorted)[number]) => (isProductSoldOut(applyStock(p, stock)) ? 1 : 0);
+    return sorted.map((p, i) => [p, i] as const).sort((a, b) => out(a[0]) - out(b[0]) || a[1] - b[1]).map(([p]) => p);
+  }, [mode, query, slug, sort, stock]);
 
   return (
     <div className="container listing">

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useCart } from "../../context/cart-context";
 import { useUI } from "../../context/ui-context";
 import { getProduct } from "../../data/catalog";
+import { useStockProduct } from "../../lib/stock";
 import { useLockBody } from "../../hooks/useLockBody";
 import type { Product } from "../../types";
 import { flyToCart } from "../../utils/flyToCart";
@@ -55,7 +56,7 @@ function QuickShopContent({ product, onClose }: { product: Product; onClose: () 
 
 export function QuickShopModal() {
   const { quickShopSlug, closeQuickShop } = useUI();
-  const product = quickShopSlug ? getProduct(quickShopSlug) : undefined;
+  const product = useStockProduct(quickShopSlug ? getProduct(quickShopSlug) : undefined);
   const close = useCallback(() => closeQuickShop(), [closeQuickShop]);
   useLockBody(!!product, close);
 

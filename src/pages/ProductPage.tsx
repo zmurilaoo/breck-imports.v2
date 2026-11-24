@@ -8,6 +8,7 @@ import { SizeSelector } from "../components/product/SizeSelector";
 import { Carousel } from "../components/ui/Carousel";
 import { useCart } from "../context/cart-context";
 import { getProduct, getRelated } from "../data/catalog";
+import { notifyUrl, useStockProduct } from "../lib/stock";
 import { track } from "../utils/track";
 import { categoryNames, contact } from "../data/site";
 import { usePageTitle } from "../hooks/usePageTitle";
@@ -107,6 +108,16 @@ function ProductDetail({ product }: { product: Product }) {
               Guia de medidas
             </Link>
 
+            {soldOut && (
+              <div className="soldout-notice" role="status">
+                <strong>Esgotado no momento.</strong> Chega mais em breve: chama a gente que você é avisado primeiro.
+                <a className="btn btn-outline" href={notifyUrl(product, size)} target="_blank" rel="noopener noreferrer">
+                  <WhatsAppIcon size={18} />
+                  Avise-me quando voltar
+                </a>
+              </div>
+            )}
+
             <div className="product-buy">
               <div className="qty qty-lg">
                 <button type="button" aria-label="Diminuir quantidade" onClick={() => setQuantity((q) => Math.max(1, q - 1))}>
@@ -193,7 +204,7 @@ function ProductDetail({ product }: { product: Product }) {
 
 export function ProductPage() {
   const { slug = "" } = useParams();
-  const product = getProduct(slug);
+  const product = useStockProduct(getProduct(slug));
   if (!product) return <NotFoundPage />;
   // A key reinicia tamanho/imagem/quantidade ao navegar entre produtos.
   return <ProductDetail key={product.slug} product={product} />;

@@ -11156,6 +11156,33 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), {
 	headers: { "Content-Type": "application/json" }
 });
 //#endregion
+//#region server/_stock.ts
+const STOCK_KEY = "brk:esgotado";
+async function readSoldOut() {
+	if (!dbReady()) return {};
+	const raw = await redis("GET", STOCK_KEY);
+	if (!raw) return {};
+	try {
+		const v = JSON.parse(raw);
+		return v && typeof v === "object" ? v : {};
+	} catch {
+		return {};
+	}
+}
+const isSoldOut = (m, slug, size) => {
+	const s = m[slug];
+	return Boolean(s && (s.includes("*") || s.includes(size)));
+};
+/**
+* Confere o carrinho contra o esgotado. Falha aberta: se o Redis cair, a venda segue
+* (o catálogo estático continua valendo); esgotado é proteção de experiência, não de valor.
+*/
+async function soldOutError(lines) {
+	const m = await readSoldOut().catch(() => ({}));
+	const hit = lines.find((l) => isSoldOut(m, l.product.slug, l.size));
+	return hit ? `${hit.product.name} no tamanho ${hit.size} acabou de esgotar. Tire do carrinho ou escolha outro tamanho.` : null;
+}
+//#endregion
 //#region server/checkout.ts
 /** A API de Orders recebe valores como texto com 2 casas: "299.00" */
 const money = (n) => n.toFixed(2);
@@ -11273,6 +11300,8 @@ async function POST(req) {
 		if (!env.mpToken) return json({ error: "Pagamento ainda não configurado" }, 503);
 		const lines = priceItems(items ?? []);
 		if (!lines.length) return json({ error: "Carrinho vazio" }, 400);
+		const esgotado = await soldOutError(lines);
+		if (esgotado) return json({ error: esgotado }, 409);
 		const invalid = validateCustomer(customer);
 		if (invalid) return json({ error: invalid }, 400);
 		const cpf = customer.cpf.replace(/\D/g, "");
