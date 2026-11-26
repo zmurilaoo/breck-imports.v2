@@ -10959,6 +10959,22 @@ const BOX = {
 	length: 30
 };
 Math.floor((200 - BOX.width - BOX.length) / BOX.height);
+async function superfrete(path, body) {
+	const res = await fetch(`${env.sfApi}${path}`, {
+		method: body === void 0 ? "GET" : "POST",
+		headers: {
+			Authorization: `Bearer ${env.sfToken}`,
+			"Content-Type": "application/json",
+			Accept: "application/json",
+			"User-Agent": `Breck Imports (${env.storeEmail})`
+		},
+		body: body === void 0 ? void 0 : JSON.stringify(body)
+	});
+	const data = await res.json().catch(() => null);
+	if (!res.ok) throw new Error(`SuperFrete ${res.status}: ${JSON.stringify(data)}`);
+	return data;
+}
+const shippingReady = () => Boolean(env.sfToken && env.originCep);
 async function mercadoPago(path, init = {}) {
 	const res = await fetch(`https://api.mercadopago.com${path}`, {
 		...init,
@@ -10986,8 +11002,10 @@ async function redis(...command) {
 	if (!res.ok || !data || data.error) throw new Error(`Redis ${res.status}: ${data?.error ?? "resposta inválida"}`);
 	return data.result;
 }
+const ORDER_TTL = 15552e3;
 const orderKey = (ref) => `brk:pedido:${ref}`;
 const shipmentKey = (ref) => `brk:envio:${ref}`;
+const lockKey = (ref) => `brk:envio-lock:${ref}`;
 function paymentFromMp(p) {
 	return {
 		id: String(p.id ?? ""),
@@ -11259,6 +11277,130 @@ async function livePayment(o) {
 	}
 }
 //#endregion
+//#region server/mp-webhook.ts
+const LOCK_TTL = 120;
+const missingSender = () => [
+	"name",
+	"address",
+	"district",
+	"city",
+	"state_abbr"
+].filter((k) => !env.sender[k]);
+/** Corpo do POST /api/v0/cart da SuperFrete a partir do pedido gravado */
+function cartBody(o) {
+	const c = o.customer;
+	const s = env.sender;
+	return {
+		from: {
+			name: s.name,
+			address: s.address,
+			...s.number && { number: s.number },
+			...s.complement && { complement: s.complement },
+			district: s.district,
+			city: s.city,
+			state_abbr: s.state_abbr,
+			postal_code: env.originCep,
+			...s.document && { document: s.document }
+		},
+		to: {
+			name: c.name,
+			address: c.street,
+			number: c.number,
+			...c.complement && { complement: c.complement },
+			district: c.district,
+			city: c.city,
+			state_abbr: c.state.toUpperCase(),
+			postal_code: c.cep.replace(/\D/g, ""),
+			document: c.cpf.replace(/\D/g, ""),
+			email: c.email,
+			...c.phone.replace(/\D/g, "").length === 11 && { phone: c.phone.replace(/\D/g, "") }
+		},
+		service: o.shipping.id,
+		products: o.items.map((i) => ({
+			name: `${i.name} - Tam. ${i.size}`,
+			quantity: String(i.quantity),
+			unitary_value: i.unitPrice.toFixed(2)
+		})),
+		volumes: o.package,
+		options: {
+			insurance_value: o.subtotal,
+			receipt: false,
+			own_hand: false,
+			non_commercial: env.sfNonCommercial,
+			tags: [{
+				tag: o.reference,
+				url: env.siteUrl
+			}]
+		},
+		platform: "Breck Imports"
+	};
+}
+/** Cria (uma vez) e, se permitido, paga a etiqueta. Lança erro quando vale o Mercado Pago tentar de novo. */
+async function ensureShipment(reference, opts = {}) {
+	if (!dbReady()) return { skipped: "banco de pedidos não configurado" };
+	if (!shippingReady()) return { skipped: "SuperFrete não configurada" };
+	const raw = await redis("GET", orderKey(reference));
+	if (!raw) return { skipped: "pedido não encontrado no banco" };
+	const order = JSON.parse(raw);
+	if (!order.package || order.shipping.id === 0) return { skipped: "frete a combinar" };
+	const missing = missingSender();
+	if (missing.length) return { skipped: `remetente incompleto: ${missing.join(", ")}` };
+	let shipment = JSON.parse(await redis("GET", shipmentKey(reference)) ?? "null");
+	if (!shipment) {
+		if (await redis("SET", lockKey(reference), "1", "NX", "EX", LOCK_TTL) !== "OK") throw new Error(`Envio de ${reference} já está sendo criado por outra execução`);
+		try {
+			const again = await redis("GET", shipmentKey(reference));
+			if (again) shipment = JSON.parse(again);
+			else {
+				const cart = await superfrete("/api/v0/cart", cartBody(order));
+				if (!cart?.id) throw new Error(`SuperFrete não devolveu id do envio: ${JSON.stringify(cart)}`);
+				shipment = {
+					sfOrderId: cart.id,
+					price: Number(cart.price),
+					status: cart.status ?? "pending",
+					createdAt: (/* @__PURE__ */ new Date()).toISOString()
+				};
+				await redis("SET", shipmentKey(reference), JSON.stringify(shipment), "EX", ORDER_TTL);
+				console.log("Envio criado na SuperFrete", reference, cart.id, cart.price);
+			}
+		} finally {
+			await redis("DEL", lockKey(reference)).catch(() => {});
+		}
+	}
+	const payMax = opts.payNow ? Math.min(opts.payMax ?? env.sfAutoPayMax, 300) : env.sfAutoPayMax;
+	if (shipment && shipment.status === "pending" && (env.sfAutoPay || opts.payNow)) {
+		if (shipment.price > payMax) {
+			if (opts.payNow) return {
+				shipment,
+				skipped: `etiqueta de R$ ${shipment.price} acima do limite confirmado (R$ ${payMax})`
+			};
+			if (!shipment.note) {
+				shipment.note = `Etiqueta de R$ ${shipment.price} acima do limite automático (R$ ${env.sfAutoPayMax}): pagar no painel`;
+				await redis("SET", shipmentKey(reference), JSON.stringify(shipment), "EX", ORDER_TTL);
+				console.warn(reference, shipment.note);
+			}
+		} else {
+			if (await redis("SET", `${lockKey(reference)}:pagar`, "1", "NX", "EX", LOCK_TTL) !== "OK") throw new Error(`Pagamento da etiqueta de ${reference} em andamento`);
+			try {
+				const res = await superfrete("/api/v0/checkout", { orders: [shipment.sfOrderId] });
+				if (!res?.success) throw new Error(`SuperFrete não confirmou o pagamento: ${JSON.stringify(res)}`);
+				const paid = res.purchase?.orders?.find((o) => o.id === shipment.sfOrderId);
+				shipment = {
+					...shipment,
+					status: "released",
+					tracking: paid?.tracking ?? null,
+					paidAt: (/* @__PURE__ */ new Date()).toISOString()
+				};
+				await redis("SET", shipmentKey(reference), JSON.stringify(shipment), "EX", ORDER_TTL);
+				console.log("Etiqueta paga", reference, shipment.sfOrderId, shipment.tracking);
+			} finally {
+				await redis("DEL", `${lockKey(reference)}:pagar`).catch(() => {});
+			}
+		}
+	}
+	return { shipment: shipment ?? void 0 };
+}
+//#endregion
 //#region server/admin-order.ts
 async function GET(req) {
 	const denied = await guard(req);
@@ -11275,6 +11417,45 @@ async function GET(req) {
 		return adminJson(req, { error: "falha ao ler pedido" }, 502);
 	}
 }
+async function POST(req) {
+	const denied = await guard(req);
+	if (denied) return denied;
+	const body = await req.json().catch(() => ({}));
+	const ref = typeof body.ref === "string" ? body.ref.trim().toUpperCase() : "";
+	const acao = body.acao;
+	if (!REF_RE.test(ref)) return adminJson(req, { error: "ref inválida" }, 400);
+	if (acao !== "criar_envio" && acao !== "pagar_etiqueta") return adminJson(req, { error: "acao inválida" }, 400);
+	const limite = typeof body.limite === "number" && Number.isFinite(body.limite) ? body.limite : void 0;
+	if (acao === "pagar_etiqueta" && (limite === void 0 || limite <= 0 || limite > 300)) return adminJson(req, { error: "limite obrigatório (até R$ 300)" }, 400);
+	try {
+		const loaded = await loadOne(ref);
+		if (!loaded) return adminJson(req, { error: "pedido não encontrado" }, 404);
+		const payment = await livePayment(loaded.order);
+		if (normPaymentStatus(payment) !== "approved") return adminJson(req, { error: "pedido ainda não está pago" }, 409);
+		const r = await ensureShipment(ref, acao === "pagar_etiqueta" ? {
+			payNow: true,
+			payMax: limite
+		} : {});
+		const after = await loadOne(ref);
+		console.log("Admin envio", ref, acao, r.skipped ?? "ok");
+		return adminJson(req, {
+			ok: !r.skipped || Boolean(r.shipment),
+			skipped: r.skipped ?? null,
+			order: after ? detail({
+				...after,
+				order: {
+					...after.order,
+					payment
+				}
+			}) : null
+		});
+	} catch (err) {
+		console.error("Admin envio", ref, acao, err);
+		const msg = String(err?.message ?? "");
+		const sf = /^SuperFrete \d+:/.test(msg) ? msg.slice(0, 300).replace(/\d{11,14}/g, "***") : null;
+		return adminJson(req, { error: sf ? `A SuperFrete recusou: ${sf}` : "falha ao criar o envio" }, 502);
+	}
+}
 const OPTIONS = preflight;
 //#endregion
-export { GET, OPTIONS };
+export { GET, OPTIONS, POST };

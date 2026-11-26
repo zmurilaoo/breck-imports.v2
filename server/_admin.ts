@@ -1,5 +1,5 @@
-// Base da API administrativa SÓ-LEITURA consumida pelo dash: auth por token, rate limit, CORS,
-// máscaras de dado pessoal (LGPD) e leitura do índice de pedidos. Nenhum endpoint daqui escreve em pedido.
+// Base da API administrativa consumida pelo dash: auth por token, rate limit, CORS,
+// máscaras de dado pessoal (LGPD) e leitura do índice de pedidos. Só o POST /api/admin-order cria envio de pedido pago.
 import { createHash, timingSafeEqual } from "node:crypto";
 import {
   dbReady,

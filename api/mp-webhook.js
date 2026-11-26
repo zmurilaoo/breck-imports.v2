@@ -11204,7 +11204,7 @@ function cartBody(o) {
 	};
 }
 /** Cria (uma vez) e, se permitido, paga a etiqueta. Lança erro quando vale o Mercado Pago tentar de novo. */
-async function ensureShipment(reference) {
+async function ensureShipment(reference, opts = {}) {
 	if (!dbReady()) return { skipped: "banco de pedidos não configurado" };
 	if (!shippingReady()) return { skipped: "SuperFrete não configurada" };
 	const raw = await redis("GET", orderKey(reference));
@@ -11235,8 +11235,13 @@ async function ensureShipment(reference) {
 			await redis("DEL", lockKey(reference)).catch(() => {});
 		}
 	}
-	if (shipment && shipment.status === "pending" && env.sfAutoPay) {
-		if (shipment.price > env.sfAutoPayMax) {
+	const payMax = opts.payNow ? Math.min(opts.payMax ?? env.sfAutoPayMax, 300) : env.sfAutoPayMax;
+	if (shipment && shipment.status === "pending" && (env.sfAutoPay || opts.payNow)) {
+		if (shipment.price > payMax) {
+			if (opts.payNow) return {
+				shipment,
+				skipped: `etiqueta de R$ ${shipment.price} acima do limite confirmado (R$ ${payMax})`
+			};
 			if (!shipment.note) {
 				shipment.note = `Etiqueta de R$ ${shipment.price} acima do limite automático (R$ ${env.sfAutoPayMax}): pagar no painel`;
 				await redis("SET", shipmentKey(reference), JSON.stringify(shipment), "EX", ORDER_TTL);
@@ -11336,4 +11341,4 @@ function GET() {
 	return json({ ok: true });
 }
 //#endregion
-export { GET, POST };
+export { GET, POST, ensureShipment };
