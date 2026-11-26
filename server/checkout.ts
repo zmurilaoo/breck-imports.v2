@@ -9,6 +9,7 @@ import {
   orderForLog,
   indexOrder,
   orderKey,
+  overLimit,
   packageFor,
   priceItems,
   quoteShipping,
@@ -68,7 +69,13 @@ export async function POST(req: Request) {
       shippingId: number;
     };
     if (!env.mpToken) return json({ error: "Pagamento ainda não configurado" }, 503);
-    const lines = priceItems(items ?? []);
+    if (await overLimit(req, "checkout", 12, 15 * 60)) return json({ error: "Muitos pedidos seguidos. Aguarde alguns minutos." }, 429);
+    let lines: ReturnType<typeof priceItems>;
+    try {
+      lines = priceItems(items ?? []);
+    } catch {
+      return json({ error: "Produto ou tamanho inválido. Atualize a página e tente de novo." }, 400);
+    }
     if (!lines.length) return json({ error: "Carrinho vazio" }, 400);
     const esgotado = await soldOutError(lines);
     if (esgotado) return json({ error: esgotado }, 409);

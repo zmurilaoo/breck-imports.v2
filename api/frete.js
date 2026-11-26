@@ -10963,9 +10963,11 @@ function priceItems(items) {
 		const product = getProduct(i.slug);
 		if (!product) throw new Error(`Produto não encontrado: ${i.slug}`);
 		const quantity = Math.max(1, Math.min(10, Math.floor(i.quantity)));
+		const size = String(i.size ?? "").trim();
+		if (!product.sizes.some((s) => s.size === size)) throw new Error(`Tamanho inválido: ${product.slug}`);
 		return {
 			product,
-			size: String(i.size),
+			size,
 			quantity
 		};
 	});
@@ -11035,10 +11037,42 @@ async function quoteShipping(cep, lines) {
 		days: q.delivery_time
 	})).sort((a, b) => a.price - b.price);
 }
+const dbReady = () => Boolean(env.redisUrl && env.redisToken);
+async function redis(...command) {
+	const res = await fetch(env.redisUrl, {
+		method: "POST",
+		headers: {
+			Authorization: `Bearer ${env.redisToken}`,
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(command)
+	});
+	const data = await res.json().catch(() => null);
+	if (!res.ok || !data || data.error) throw new Error(`Redis ${res.status}: ${data?.error ?? "resposta inválida"}`);
+	return data.result;
+}
 const json = (data, status = 200) => new Response(JSON.stringify(data), {
 	status,
 	headers: { "Content-Type": "application/json" }
 });
+/**
+* Limite por IP numa janela (Upstash INCR). Freia pedido falso em massa, abuso de Pix/boleto e de cotação
+* de frete (cota da SuperFrete). Falha do Redis não bloqueia a venda.
+*/
+async function overLimit(req, name, limit, windowS) {
+	if (!dbReady()) return false;
+	try {
+		const ip = (req.headers.get("x-real-ip") ?? req.headers.get("x-forwarded-for")?.split(",")[0] ?? "").trim() || "sem-ip";
+		const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(ip));
+		const key = `brk:rl:${name}:${Buffer.from(digest).toString("hex").slice(0, 32)}`;
+		const count = await redis("INCR", key);
+		if (count === 1) await redis("EXPIRE", key, windowS);
+		return count > limit;
+	} catch (err) {
+		console.error("Falha no limite de requisições", name, err);
+		return false;
+	}
+}
 //#endregion
 //#region server/frete.ts
 async function POST(req) {
@@ -11046,6 +11080,7 @@ async function POST(req) {
 		const { cep, items } = await req.json();
 		const to = String(cep ?? "").replace(/\D/g, "");
 		if (to.length !== 8) return json({ error: "CEP inválido" }, 400);
+		if (await overLimit(req, "frete", 40, 600)) return json({ error: "Muitas consultas de frete. Aguarde alguns minutos." }, 429);
 		const options = await quoteShipping(to, priceItems(items ?? []));
 		if (!options.length) return json({ error: "Nenhuma opção de entrega para esse CEP" }, 422);
 		return json({ options });

@@ -75,6 +75,12 @@ export function validateCustomer(c: Customer | null | undefined): string | null 
     if (v.length > (MAX_LEN[k] ?? 200)) return `Campo ${k} muito longo`;
   }
   if (String(rec["complement"] ?? "").length > MAX_LEN.complement) return "Campo complemento muito longo";
+  // Nome, cidade e bairro viram dado lido pela IA do painel: só letras, números e pontuação de endereço.
+  if (!/^[\p{L}\p{M}\s'.-]{2,60}$/u.test(String(rec["city"] ?? "").trim())) return "Cidade inválida";
+  for (const k of ["name", "district", "street", "number", "complement"] as const) {
+    const v = String(rec[k] ?? "");
+    if (/[\p{Cc}\p{Cf}<>{}[\]`|\\]/u.test(v)) return `Campo ${k} com caractere inválido`;
+  }
   if (!EMAIL_RE.test(String(rec["email"] ?? "").trim())) return "E-mail inválido";
   if (String(rec["cpf"] ?? "").replace(/\D/g, "").length !== 11) return "CPF inválido";
   return null;
@@ -102,7 +108,10 @@ export function priceItems(items: CartInput[]) {
     const product = getProduct(i.slug);
     if (!product) throw new Error(`Produto não encontrado: ${i.slug}`);
     const quantity = Math.max(1, Math.min(10, Math.floor(i.quantity)));
-    return { product, size: String(i.size), quantity };
+    // Tamanho só do catálogo: texto livre aqui viraria título no Mercado Pago e dado lido pela IA do painel.
+    const size = String(i.size ?? "").trim();
+    if (!product.sizes.some((s) => s.size === size)) throw new Error(`Tamanho inválido: ${product.slug}`);
+    return { product, size, quantity };
   });
 }
 
@@ -306,3 +315,22 @@ export interface StoredShipment {
 
 export const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
+
+/**
+ * Limite por IP numa janela (Upstash INCR). Freia pedido falso em massa, abuso de Pix/boleto e de cotação
+ * de frete (cota da SuperFrete). Falha do Redis não bloqueia a venda.
+ */
+export async function overLimit(req: Request, name: string, limit: number, windowS: number): Promise<boolean> {
+  if (!dbReady()) return false;
+  try {
+    const ip = (req.headers.get("x-real-ip") ?? req.headers.get("x-forwarded-for")?.split(",")[0] ?? "").trim() || "sem-ip";
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(ip));
+    const key = `brk:rl:${name}:${Buffer.from(digest).toString("hex").slice(0, 32)}`;
+    const count = await redis<number>("INCR", key);
+    if (count === 1) await redis("EXPIRE", key, windowS);
+    return count > limit;
+  } catch (err) {
+    console.error("Falha no limite de requisições", name, err);
+    return false;
+  }
+}

@@ -11136,7 +11136,10 @@ async function sendOrderEmail(kind, order, tracking) {
 * Manifesto conforme a doc de webhooks do Mercado Pago: "id:{data.id};request-id:{x-request-id};ts:{ts};"
 */
 function validSignature(req, dataId) {
-	if (!env.mpWebhookSecret) return true;
+	if (!env.mpWebhookSecret) {
+		console.error("Webhook do MP recusado: MP_WEBHOOK_SECRET não configurado");
+		return false;
+	}
 	const header = req.headers.get("x-signature") ?? "";
 	const parts = Object.fromEntries(header.split(",").map((p) => p.trim().split("=")));
 	if (!parts.ts || !parts.v1) return false;

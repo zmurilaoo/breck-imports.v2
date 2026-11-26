@@ -11,6 +11,7 @@ import {
   orderForLog,
   indexOrder,
   orderKey,
+  overLimit,
   paymentFromMp,
   packageFor,
   priceItems,
@@ -127,7 +128,12 @@ export async function POST(req: Request) {
       shippingId: number;
     };
     if (!env.mpToken) return json({ error: "Pagamento ainda não configurado" }, 503);
-    const lines = priceItems(items ?? []);
+    let lines: ReturnType<typeof priceItems>;
+    try {
+      lines = priceItems(items ?? []);
+    } catch {
+      return json({ error: "Produto ou tamanho inválido. Atualize a página e tente de novo." }, 400);
+    }
     if (!lines.length) return json({ error: "Carrinho vazio" }, 400);
     const esgotado = await soldOutError(lines);
     if (esgotado) return json({ error: esgotado }, 409);
@@ -141,6 +147,8 @@ export async function POST(req: Request) {
     const isBoleto = method === "bolbradesco" || method === "pec";
     const token = String(formData.token ?? "");
     if (!isPix && !isBoleto && !token) return json({ error: "Dados do cartão incompletos" }, 400);
+    if ((isPix || isBoleto) && (await overLimit(req, "pay-pix", 12, 15 * 60)))
+      return json({ error: "Muitos pedidos seguidos. Aguarde alguns minutos." }, 429);
     if (!isPix && !isBoleto && (await cardAttemptsExceeded(req)))
       return json({ error: "Muitas tentativas com cartão. Aguarde alguns minutos ou pague com Pix." }, 429);
 
