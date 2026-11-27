@@ -65,7 +65,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
   "font-src 'self' data:",
-  "connect-src 'self' https://api.mercadopago.com https://api.mercadolibre.com https://*.mercadopago.com https://*.mercadolibre.com https://*.mlstatic.com",
+  "connect-src 'self' https://api.mercadopago.com https://api.mercadolibre.com https://*.mercadopago.com https://*.mercadolibre.com https://*.mlstatic.com https://viacep.com.br",
   "frame-src https://*.mercadopago.com https://*.mercadolibre.com https://*.mlstatic.com",
   "frame-ancestors 'self'",
   "base-uri 'self'",
