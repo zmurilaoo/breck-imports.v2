@@ -66,38 +66,3 @@ export async function POST(req: Request) {
 }
 
 export const OPTIONS = preflight;
-
-// GET /api/admin-reindex?export=1 → TEMPORÁRIO (migração Vercel → VPS, 27/11/2026): exporta as chaves brk:* do Redis
-// (pedidos, envios, pagamentos, índice, esgotado, visitas) com tipo e validade. Só com o token admin. Remover depois.
-const SKIP = /^brk:(rl:|lock:|admin-mp:|envio-lock:|pay-idem:)/;
-export async function GET(req: Request) {
-  const denied = await guard(req);
-  if (denied) return denied;
-  if (new URL(req.url).searchParams.get("export") !== "1") return adminJson(req, { error: "use ?export=1" }, 400);
-  try {
-    const out: { k: string; t: string; ttl: number; v: unknown }[] = [];
-    let cursor = "0", rounds = 0;
-    do {
-      const [next, keys] = await redis<[string, string[]]>("SCAN", cursor, "MATCH", "brk:*", "COUNT", 500);
-      cursor = String(next);
-      for (const k of keys) {
-        if (SKIP.test(k)) continue;
-        const t = await redis<string>("TYPE", k);
-        const ttl = await redis<number>("PTTL", k);
-        let v: unknown = null;
-        if (t === "string") v = await redis("GET", k);
-        else if (t === "hash") v = await redis("HGETALL", k);
-        else if (t === "zset") v = await redis("ZRANGE", k, 0, -1, "WITHSCORES");
-        else if (t === "set") v = await redis("SMEMBERS", k);
-        else if (t === "list") v = await redis("LRANGE", k, 0, -1);
-        else continue;
-        out.push({ k, t, ttl, v });
-      }
-    } while (cursor !== "0" && ++rounds < 200);
-    console.log("Admin export", out.length, "chaves");
-    return adminJson(req, { complete: cursor === "0", count: out.length, keys: out });
-  } catch (err) {
-    console.error("Admin export", err);
-    return adminJson(req, { error: "falha ao exportar" }, 502);
-  }
-}
